@@ -303,15 +303,18 @@ function devApiPlugin(): Plugin {
         const method = req.method;
 
         // Helper to read JSON body
-        const readBody = (): Promise<any> => {
-          return new Promise((resolve) => {
-            let data = '';
-            req.on('data', chunk => { data += chunk; });
-            req.on('end', () => {
-              try { resolve(JSON.parse(data || '{}')); }
-              catch { resolve({}); }
-            });
-          });
+        const readBody = async (): Promise<any> => {
+          if ((req as any).body) return (req as any).body;
+          const chunks: Buffer[] = [];
+          for await (const chunk of req) {
+            chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
+          }
+          const data = Buffer.concat(chunks).toString('utf8');
+          try {
+            return JSON.parse(data || '{}');
+          } catch {
+            return {};
+          }
         };
 
         const json = (data: any, status = 200) => {
