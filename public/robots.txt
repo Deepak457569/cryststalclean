@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+Allow: /products
+Allow: /categories
+Allow: /product/
+Allow: /about
+Allow: /contact
+Allow: /privacy
+Allow: /terms
+
+# Disallow administrative portals and private customer confirmation references
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /confirmation/
+Disallow: /confirmation/*
+Disallow: /api/
+
+Sitemap: https://crystalclean.in/sitemap.xml

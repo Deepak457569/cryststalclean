@@ -1,0 +1,28 @@
+name = "crystalclean"
+main = "worker/index.ts"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+
+# Cloudflare D1 Database binding
+[[d1_databases]]
+binding = "DB"
+database_name = "crystalclean-db"
+database_id = "crystalclean-db-binding"
+
+# Environment variables
+[vars]
+ENVIRONMENT = "production"
+BUSINESS_WHATSAPP = "919149953610"
+INITIAL_ADMIN_EMAIL = "admin@crystalclean.in"
+ADMIN_ALLOWLIST = "admin@crystalclean.in"
+JWT_SECRET = "crystalclean-jwt-secret-replace-in-production-secrets"
+
+# Secrets to be set via: wrangler secret put <NAME>
+# - JWT_SECRET
+# - GOOGLE_CLIENT_ID
+# - GOOGLE_CLIENT_SECRET
+# - INITIAL_ADMIN_PASSWORD

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <rect width="48" height="48" rx="10" fill="#141619"/>
+  <!-- Faceted Crystal Diamond Monogram -->
+  <path d="M24 7L36 17L24 41L12 17L24 7Z" stroke="#C5A880" stroke-width="2" stroke-linejoin="round" fill="none"/>
+  <path d="M12 17H36" stroke="#C5A880" stroke-width="1.5"/>
+  <path d="M19 17L24 7L29 17L24 41L19 17Z" stroke="#C5A880" stroke-width="1.5" fill="rgba(197, 168, 128, 0.15)"/>
+</svg>

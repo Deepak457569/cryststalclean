@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 64" fill="none">
+  <!-- Monogram Icon -->
+  <g transform="translate(4, 6)">
+    <rect width="52" height="52" rx="10" fill="#22252A" stroke="#C5A880" stroke-width="1"/>
+    <path d="M26 9L39 19L26 43L13 19L26 9Z" stroke="#E2D5BE" stroke-width="2" stroke-linejoin="round" fill="none"/>
+    <path d="M13 19H39" stroke="#E2D5BE" stroke-width="1.5"/>
+    <path d="M21 19L26 9L31 19L26 43L21 19Z" stroke="#E2D5BE" stroke-width="1.5" fill="rgba(226, 213, 190, 0.22)"/>
+  </g>
+  <!-- Brand Typography -->
+  <text x="68" y="34" font-family="'Playfair Display', Georgia, serif" font-size="22" font-weight="700" letter-spacing="3" fill="#FFFFFF">CRYSTALCLEAN</text>
+  <text x="69" y="49" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="8.5" font-weight="600" letter-spacing="3.5" fill="#E2D5BE">HOTEL AMENITIES &amp; HOSPITALITY</text>
+</svg>
