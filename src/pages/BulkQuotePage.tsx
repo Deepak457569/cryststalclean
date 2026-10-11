@@ -22,6 +22,8 @@ export const BulkQuotePage: React.FC = () => {
   const [estimatedQuantity, setEstimatedQuantity] = useState('500 - 1,000 units / month');
   const [notes, setNotes] = useState('');
   const [accessCode, setAccessCode] = useState('');
+  const [customLogoRequired, setCustomLogoRequired] = useState(false);
+  const [customBrandingNotes, setCustomBrandingNotes] = useState('');
 
   // Access code check state
   const [checkingCode, setCheckingCode] = useState(false);
@@ -95,6 +97,8 @@ export const BulkQuotePage: React.FC = () => {
       const combinedNotes = [
         `Requested Categories: ${selectedCategories.join(', ')}`,
         `Estimated Volume: ${estimatedQuantity}`,
+        customLogoRequired ? `Logo Customization Required: Yes (Bags/Packaging/Amenities)` : '',
+        customBrandingNotes.trim() ? `Branding Details: ${customBrandingNotes.trim()}` : '',
         notes.trim() ? `Specifications: ${notes.trim()}` : '',
       ].filter(Boolean).join('\n');
 
@@ -109,7 +113,7 @@ export const BulkQuotePage: React.FC = () => {
         expected_date: expectedDate || undefined,
         notes: combinedNotes,
         items: selectedCategories.map((catName) => ({
-          product_name: `Bulk Category Request: ${catName}`,
+          product_name: `Bulk Category Request: ${catName}${customLogoRequired ? ' (Logo Customization Required)' : ''}`,
           pack_size: estimatedQuantity,
           quantity: 1,
         })),
@@ -309,13 +313,21 @@ export const BulkQuotePage: React.FC = () => {
               </select>
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-charcoal-800 uppercase tracking-wider mb-1.5">
-                Custom Hotel Branding Requirements
+            <div className="space-y-2">
+              <label className="flex items-center gap-2.5 text-xs font-semibold text-charcoal-900 cursor-pointer pt-1">
+                <input
+                  type="checkbox"
+                  checked={customLogoRequired}
+                  onChange={(e) => setCustomLogoRequired(e.target.checked)}
+                  className="w-4 h-4 rounded text-champagne-600 focus:ring-champagne-500 border-cream-300"
+                />
+                <span>Logo Customization Requirement (for Bags, Coasters, Glass Wraps &amp; Amenities)</span>
               </label>
               <input
                 type="text"
-                placeholder="e.g. Yes, logo printing on boxes &amp; slippers"
+                value={customBrandingNotes}
+                onChange={(e) => setCustomBrandingNotes(e.target.value)}
+                placeholder="e.g. Yes, hotel logo on carry bags and coasters"
                 className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
               />
             </div>

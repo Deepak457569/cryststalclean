@@ -63,6 +63,7 @@ export async function bootstrapDatabase(db: D1Database, env: Env): Promise<void>
         pack_size TEXT,
         specs_json TEXT DEFAULT '{}',
         is_featured INTEGER DEFAULT 0,
+        is_customizable INTEGER DEFAULT 0,
         is_active INTEGER DEFAULT 1,
         created_at TEXT DEFAULT (datetime('now')),
         updated_at TEXT DEFAULT (datetime('now'))
@@ -266,8 +267,8 @@ export async function createProduct(db: D1Database, data: Partial<Product>): Pro
   await db.prepare(`
     INSERT INTO products (
       id, name, slug, description, category_id, image_url,
-      gallery_json, variants_json, pack_size, specs_json, is_featured, is_active
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      gallery_json, variants_json, pack_size, specs_json, is_featured, is_customizable, is_active
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).bind(
     id,
     data.name,
@@ -280,7 +281,8 @@ export async function createProduct(db: D1Database, data: Partial<Product>): Pro
     data.pack_size || null,
     data.specs_json || '{}',
     data.is_featured ? 1 : 0,
-    data.is_active !== undefined ? (data.is_active ? 1 : 0) : 1
+    data.is_customizable ? 1 : 0,
+    data.is_active !== undefined ? (data.is_active ? 1 : 0) : 0
   ).run();
 
   return (await getProductById(db, id))!;
@@ -299,6 +301,7 @@ export async function updateProduct(db: D1Database, id: string, data: Partial<Pr
       pack_size = COALESCE(?, pack_size),
       specs_json = COALESCE(?, specs_json),
       is_featured = COALESCE(?, is_featured),
+      is_customizable = COALESCE(?, is_customizable),
       is_active = COALESCE(?, is_active),
       updated_at = datetime('now')
     WHERE id = ?
@@ -313,6 +316,7 @@ export async function updateProduct(db: D1Database, id: string, data: Partial<Pr
     data.pack_size !== undefined ? data.pack_size : null,
     data.specs_json !== undefined ? data.specs_json : null,
     data.is_featured !== undefined ? (data.is_featured ? 1 : 0) : null,
+    data.is_customizable !== undefined ? (data.is_customizable ? 1 : 0) : null,
     data.is_active !== undefined ? (data.is_active ? 1 : 0) : null,
     id
   ).run();

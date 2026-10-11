@@ -63,6 +63,7 @@ export interface Product {
   pack_size: string | null;
   specs_json: string;
   is_featured: number;
+  is_customizable?: number;
   is_active: number;
   created_at: string;
   updated_at: string;

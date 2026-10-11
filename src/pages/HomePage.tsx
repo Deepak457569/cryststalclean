@@ -85,103 +85,85 @@ export const HomePage: React.FC = () => {
         </div>
       )}
 
-      {/* HERO SECTION */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-cream-100/70 via-cream-50 to-white pt-16 pb-24 border-b border-cream-200">
+      {/* HERO BANNER SECTION */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-cream-100/70 via-cream-50 to-white pt-6 sm:pt-10 pb-16 sm:pb-20 border-b border-cream-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          
+          {/* Main Official Banner Showcase */}
+          <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-cream-300/80 bg-[#FAF8F5] mb-8 group">
+            <img
+              src="/hero-banner.png"
+              alt="CrystalClean - Quality Hospitality Supplies. Exceptional Guest Experiences."
+              className="w-full h-auto object-contain block mx-auto transition-transform duration-700 group-hover:scale-[1.008]"
+            />
+            {/* Overlay badge on larger screens */}
+            <div className="hidden sm:flex absolute top-5 right-5 bg-charcoal-900/90 backdrop-blur-md text-white border border-champagne-400/40 px-4 py-2 rounded-full items-center gap-2 shadow-xl">
+              <Award className="w-4 h-4 text-champagne-400" />
+              <span className="text-xs font-semibold tracking-wide">5-Star Hospitality Standard</span>
+            </div>
             
-            {/* Left Hero Content */}
-            <div className="lg:col-span-7 space-y-6 text-left">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-champagne-100 border border-champagne-300 text-champagne-700 text-xs font-semibold tracking-wider uppercase">
+            {/* Brand crest badge on bottom-left */}
+            <div className="hidden md:flex absolute bottom-4 left-4 bg-white/95 backdrop-blur-md border border-champagne-300/70 py-1.5 px-3 rounded-xl items-center gap-2 shadow-lg">
+              <img src="/logo.png" alt="CrystalClean Crest" className="w-8 h-8 object-contain" />
+              <div className="text-left">
+                <span className="text-[9px] uppercase font-bold tracking-wider text-champagne-700 block leading-none">Bespoke Amenities</span>
+                <span className="text-xs font-serif font-bold text-charcoal-900 block leading-tight">CrystalClean® Trade Supply</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Interactive B2B Action Bar */}
+          <div className="bg-white rounded-2xl p-6 sm:p-8 border border-cream-200 shadow-luxury flex flex-col lg:flex-row items-center justify-between gap-6">
+            <div className="space-y-2 text-left max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-champagne-100 border border-champagne-300 text-champagne-700 text-xs font-semibold uppercase tracking-wider">
                 <Sparkles className="w-3.5 h-3.5 text-champagne-600" />
-                Luxury Hospitality Supply Partner
+                Wholesale Hotel Supply Partner
               </div>
-
-              <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-charcoal-900 leading-[1.15]">
-                Quality Hotel Amenities. <br />
-                <span className="italic font-normal text-champagne-700">Exceptional Guest Experiences.</span>
-              </h1>
-
-              <p className="text-base sm:text-lg text-charcoal-800 leading-relaxed max-w-xl">
-                CrystalClean supplies premium hotel amenities, bespoke toiletries, biodegradable dental kits, and room accessories to luxury hotels, resorts, boutique villas, and hospitality groups across India.
+              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-charcoal-900 leading-snug">
+                Supplying Premium Hospitality Amenities Across India
+              </h2>
+              <p className="text-sm text-charcoal-800 leading-relaxed">
+                Explore curated guest toiletries, dental kits, linens, and bulk 5L refill supplies. Zero public pricing protects your trade margins.
               </p>
-
-              {/* CTAs */}
-              <div className="flex flex-wrap gap-4 pt-2">
-                <Link
-                  to="/products"
-                  className="inline-flex items-center gap-2.5 px-7 py-3.5 bg-charcoal-900 hover:bg-charcoal-800 text-white font-medium rounded-xl text-sm transition-all shadow-luxury hover:shadow-luxury-hover"
-                >
-                  <span>Explore Products</span>
-                  <ArrowRight className="w-4 h-4 text-champagne-400" />
-                </Link>
-                <Link
-                  to="/quote"
-                  className="inline-flex items-center gap-2 px-6 py-3.5 bg-white hover:bg-cream-100 text-charcoal-900 font-medium rounded-xl text-sm transition-all border border-cream-300 shadow-sm"
-                >
-                  <span>Request Bulk Quotation</span>
-                </Link>
-                <a
-                  href="https://wa.me/919149953610"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-3.5 bg-whatsapp-600 hover:bg-whatsapp-700 text-white font-medium rounded-xl text-sm transition-all shadow-sm"
-                >
-                  <MessageCircle className="w-4 h-4 fill-white stroke-none" />
-                  <span>WhatsApp Inquiries</span>
-                </a>
-              </div>
-
-              {/* Verified Access Code Explainer Link */}
-              <div className="pt-2 flex items-center gap-2 text-xs text-charcoal-800">
-                <Key className="w-4 h-4 text-champagne-600" />
-                <span>Wholesale B2B supply. An access code is required for inquiry submission.</span>
+              <div className="flex flex-wrap items-center gap-2 text-xs text-charcoal-800 pt-1">
+                <Key className="w-4 h-4 text-champagne-600 flex-shrink-0" />
+                <span>Customer access code required for quote submission.</span>
                 <button
                   onClick={() => setCodeModalOpen(true)}
-                  className="underline text-champagne-700 font-semibold hover:text-charcoal-950"
+                  className="underline text-champagne-700 font-semibold hover:text-charcoal-950 ml-1"
                 >
-                  How it works
+                  Verify or request access code
                 </button>
               </div>
             </div>
 
-            {/* Right Hero Visual Showcase */}
-            <div className="lg:col-span-5 relative">
-              <div className="relative mx-auto max-w-md lg:max-w-none">
-                <div className="aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl border-2 border-white relative group">
-                  <img
-                    src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=1000&q=80"
-                    alt="CrystalClean Luxury Hotel Amenities"
-                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-charcoal-950/80 via-transparent to-transparent"></div>
-                  
-                  {/* Floating card */}
-                  <div className="absolute bottom-6 left-6 right-6 p-4 rounded-xl bg-white/95 backdrop-blur-md border border-champagne-200 shadow-xl">
-                    <p className="text-xs uppercase tracking-wider font-semibold text-champagne-700">Custom Monogram Available</p>
-                    <p className="font-serif font-bold text-charcoal-900 text-sm mt-0.5">Customized Hotel Logo Printing &amp; Embossing</p>
-                    <p className="text-[11px] text-charcoal-800 mt-1">Available across tubes, bottles, kraft boxes, and velvet slippers.</p>
-                  </div>
-                </div>
-
-                {/* Decorative badge */}
-                <div className="absolute -top-4 -right-4 bg-charcoal-900 text-white border border-champagne-500/50 p-3 rounded-2xl shadow-xl flex items-center gap-2">
-                  <Award className="w-5 h-5 text-champagne-400" />
-                  <span className="text-xs font-semibold tracking-wide">5-Star Standard</span>
-                </div>
-
-                {/* Official Crest Badge */}
-                <div className="absolute -top-6 -left-6 bg-white border border-champagne-300 p-1.5 rounded-2xl shadow-xl flex items-center gap-2.5 backdrop-blur-md">
-                  <img src="/logo.png" alt="CrystalClean Crest" className="w-12 h-12 object-contain" />
-                  <div className="pr-3 text-left">
-                    <span className="text-[9px] uppercase font-bold tracking-wider text-champagne-700 block">Brand Heritage</span>
-                    <span className="text-xs font-serif font-bold text-charcoal-900 block">CrystalClean®</span>
-                  </div>
-                </div>
-              </div>
+            {/* CTAs */}
+            <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-start lg:justify-end">
+              <Link
+                to="/products"
+                className="inline-flex items-center gap-2 px-6 py-3.5 bg-charcoal-900 hover:bg-charcoal-800 text-white font-medium rounded-xl text-sm transition-all shadow-luxury hover:shadow-luxury-hover"
+              >
+                <span>Browse Products</span>
+                <ArrowRight className="w-4 h-4 text-champagne-400" />
+              </Link>
+              <Link
+                to="/quote"
+                className="inline-flex items-center gap-2 px-5 py-3.5 bg-white hover:bg-cream-100 text-charcoal-900 font-medium rounded-xl text-sm transition-all border border-cream-300 shadow-sm"
+              >
+                <span>Request Bulk Quotation</span>
+              </Link>
+              <a
+                href="https://wa.me/919149953610"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-5 py-3.5 bg-whatsapp-600 hover:bg-whatsapp-700 text-white font-medium rounded-xl text-sm transition-all shadow-sm"
+              >
+                <MessageCircle className="w-4 h-4 fill-white stroke-none" />
+                <span>WhatsApp Order Desk</span>
+              </a>
             </div>
-
           </div>
+
         </div>
       </section>
 
@@ -318,7 +300,7 @@ export const HomePage: React.FC = () => {
                   className="bg-white rounded-2xl border border-cream-200 shadow-luxury hover:shadow-luxury-hover transition-all duration-300 flex flex-col overflow-hidden"
                 >
                   {/* Product Image */}
-                  <Link to={`/product/${product.id}`} className="aspect-[4/3] overflow-hidden bg-cream-100 relative group">
+                  <Link to={`/product/${product.id}`} className="aspect-[4/3] overflow-hidden bg-[#FAF8F5] relative group block border-b border-cream-200">
                     <img
                       src={product.image_url}
                       alt={product.name}
@@ -327,6 +309,12 @@ export const HomePage: React.FC = () => {
                     {product.pack_size && (
                       <span className="absolute top-3 right-3 bg-charcoal-900/90 text-white text-[11px] font-medium px-2.5 py-1 rounded-md backdrop-blur-sm">
                         {product.pack_size}
+                      </span>
+                    )}
+                    {product.is_customizable === 1 && (
+                      <span className="absolute top-3 left-3 bg-white/95 text-champagne-800 border border-champagne-400 text-[10px] font-bold px-2 py-0.5 rounded-md shadow-sm flex items-center gap-1">
+                        <Sparkles className="w-3 h-3 text-champagne-600" />
+                        Custom Logo
                       </span>
                     )}
                     <span className="absolute bottom-3 left-3 bg-white/95 text-charcoal-900 text-[10px] font-semibold tracking-wider uppercase px-2.5 py-1 rounded-md shadow-sm">

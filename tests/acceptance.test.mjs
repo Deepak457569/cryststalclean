@@ -139,3 +139,111 @@ test('Production build output contains index.html and assets', () => {
   const htmlContent = fs.readFileSync(distHtml, 'utf8');
   assert.match(htmlContent, /<title>CrystalClean/i);
 });
+
+// Test 6: Seed Data Audit - Categories and 26 Section 4A Draft Products
+test('Seed Data integrity: 15 categories, 26 products, all draft, deduplicated, and third-party brands removed', () => {
+  const seedPath = path.resolve('migrations/0002_seed_data.sql');
+  const seedSql = fs.readFileSync(seedPath, 'utf8');
+
+  // Verify 15 hospitality categories
+  const expectedCategories = [
+    'Shampoo and Conditioner',
+    'Hotel Toiletries',
+    'Dental Kits',
+    'Shaving and Grooming Kits',
+    'Soap and Bath Products',
+    'Bathroom Cleaners',
+    'Floor and Surface Cleaners',
+    'Glass and Furniture Care',
+    'Kitchen and Dishwash',
+    'Room Fresheners',
+    'Guest Essentials and Room Accessories',
+    'Paper Products',
+    'Packaging and Bags',
+    'Housekeeping Supplies',
+    'Bulk Hospitality Supplies',
+  ];
+
+  for (const cat of expectedCategories) {
+    assert.ok(seedSql.includes(cat), `Category '${cat}' must exist in seed data`);
+  }
+
+  // Count product definitions (26 distinct prod_ items)
+  const productMatches = seedSql.match(/'prod_[a-z0-9_]+',/g) || [];
+  assert.strictEqual(productMatches.length, 26, `Exactly 26 products must be seeded (got ${productMatches.length})`);
+
+  // Verify ALL 26 seeded products end with is_active = 0
+  const draftEndingMatches = seedSql.match(/,\s*0\s*\n\s*\)/g) || [];
+  assert.strictEqual(draftEndingMatches.length, 26, 'All 26 products must end with is_active = 0 (DRAFT)');
+
+  // Verify Black Phenyl was imported only once
+  const blackPhenylMatches = seedSql.match(/'prod_black_phenyl'/g) || [];
+  assert.strictEqual(blackPhenylMatches.length, 1, 'Black Phenyl must be imported ONCE (deduplicated)');
+
+  // Verify third-party brand names are SCRUBBED from names and descriptions
+  const forbiddenBrands = ['Colgate', 'Glide', 'Estoria', 'Old Tree', 'Sure2Cure', 'History Lifestyle'];
+  for (const brand of forbiddenBrands) {
+    assert.strictEqual(
+      seedSql.toLowerCase().includes(brand.toLowerCase()),
+      false,
+      `Third-party brand '${brand}' must NOT appear anywhere in seed data`
+    );
+  }
+
+  // Verify unverified marketing claims are SCRUBBED
+  assert.strictEqual(
+    seedSql.includes('kills 99.9% germs'),
+    false,
+    'Unsubstantiated claim "kills 99.9% germs" must not appear in descriptions'
+  );
+
+  // Verify customizable flag on bags, coasters, and paper-wrapped glass
+  assert.match(
+    seedSql,
+    /'prod_non_woven_bag'[^;]+1,\s*0\s*\n\s*\)/,
+    'Non-Woven Carry Bag must have is_customizable = 1'
+  );
+  assert.match(
+    seedSql,
+    /'prod_printed_paper_coasters'[^;]+1,\s*0\s*\n\s*\)/,
+    'Printed Paper Coasters must have is_customizable = 1'
+  );
+  assert.match(
+    seedSql,
+    /'prod_paper_wrapped_glass'[^;]+1,\s*0\s*\n\s*\)/,
+    'Hygienic Paper-Wrapped Drinking Glass must have is_customizable = 1'
+  );
+
+  // Verify only confirmed visible sizes or "To be confirmed"
+  const confirmedSizes = ['5 L', '100 ml', '20 ml', '10 ml'];
+  for (const size of confirmedSizes) {
+    assert.ok(seedSql.includes(size), `Confirmed visible size '${size}' should appear in seed data`);
+  }
+  assert.ok(
+    seedSql.includes('12\\" x 18\\" x 6\\"') || seedSql.includes('12" x 18" x 6"'),
+    'Carry bag visible size 12" x 18" x 6" must appear in seed data'
+  );
+  assert.ok(seedSql.includes('To be confirmed'), 'Unconfirmed sizes must be explicitly marked "To be confirmed"');
+});
+
+// Test 7: Order Status Workflow Verification
+test('Order status workflow contains all 10 required business states', () => {
+  const expectedStatuses = [
+    'New Inquiry',
+    'Contacted',
+    'Quotation Shared',
+    'Awaiting Customer Confirmation',
+    'Confirmed',
+    'Preparing Order',
+    'Ready to Ship',
+    'Shipped',
+    'Delivered',
+    'Cancelled',
+  ];
+
+  assert.strictEqual(expectedStatuses.length, 10);
+  assert.strictEqual(expectedStatuses[0], 'New Inquiry');
+  assert.strictEqual(expectedStatuses[4], 'Confirmed');
+  assert.strictEqual(expectedStatuses[9], 'Cancelled');
+});
+

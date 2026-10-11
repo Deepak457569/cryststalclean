@@ -205,7 +205,7 @@ export const ProductsPage: React.FC = () => {
                 className="bg-white rounded-2xl border border-cream-200 shadow-sm hover:shadow-luxury-hover transition-all duration-300 flex flex-col overflow-hidden group"
               >
                 {/* Image */}
-                <Link to={`/product/${product.id}`} className="aspect-[4/3] overflow-hidden bg-cream-100 relative">
+                <Link to={`/product/${product.id}`} className="aspect-[4/3] overflow-hidden bg-[#FAF8F5] relative block border-b border-cream-200">
                   <img
                     src={product.image_url}
                     alt={product.name}
@@ -214,6 +214,12 @@ export const ProductsPage: React.FC = () => {
                   {product.pack_size && (
                     <span className="absolute top-3 right-3 bg-charcoal-900/90 text-white text-[11px] font-medium px-2.5 py-1 rounded-md backdrop-blur-sm">
                       {product.pack_size}
+                    </span>
+                  )}
+                  {product.is_customizable === 1 && (
+                    <span className="absolute top-3 left-3 bg-white/95 text-champagne-800 border border-champagne-400 text-[10px] font-bold px-2 py-0.5 rounded-md shadow-sm flex items-center gap-1">
+                      <Sparkles className="w-3 h-3 text-champagne-600" />
+                      Custom Logo
                     </span>
                   )}
                   <span className="absolute bottom-3 left-3 bg-white/95 text-charcoal-900 text-[10px] font-semibold tracking-wider uppercase px-2.5 py-1 rounded-md shadow-sm">

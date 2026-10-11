@@ -141,9 +141,17 @@ export const ProductDetailPage: React.FC = () => {
         {/* Specifications & Add to Cart Column */}
         <div className="lg:col-span-6 space-y-6">
           <div>
-            <span className="inline-block px-3 py-1 bg-champagne-100 text-champagne-800 text-[11px] font-semibold tracking-wider uppercase rounded-md mb-2">
-              {product.category_name || 'Hospitality Amenity'}
-            </span>
+            <div className="flex flex-wrap items-center gap-2 mb-2">
+              <span className="inline-block px-3 py-1 bg-champagne-100 text-champagne-800 text-[11px] font-semibold tracking-wider uppercase rounded-md">
+                {product.category_name || 'Hospitality Amenity'}
+              </span>
+              {(product.is_customizable === 1 || String(specs.customizable_logo) === 'true') && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-cream-100 border border-champagne-400/80 text-charcoal-900 text-[11px] font-semibold tracking-wide rounded-md">
+                  <Sparkles className="w-3.5 h-3.5 text-champagne-600" />
+                  Customizable with your logo
+                </span>
+              )}
+            </div>
             <h1 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal-900 leading-tight">
               {product.name}
             </h1>

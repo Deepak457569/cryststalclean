@@ -114,6 +114,33 @@ The admin dashboard supports a 10-stage lifecycle workflow with audit timestamps
 
 ---
 
+## 📌 Assumptions
+
+1. **Logo Spellings**: The uploaded logo file at `public/logo.png` spells the brand "CRYSTSTAL CLEAN". As instructed, all public site headings, metadata, page titles, and schema code use the correct spelling **CrystalClean**. The logo is isolated to `public/logo.png` so replacing this single file updates the mark site-wide.
+2. **Product Draft Status**: All 26 seeded products from Section 4A are stored as `DRAFT` (`is_active = 0`). They remain completely hidden from the public website, XML sitemaps, and search engines until the business owner reviews and clicks "Publish" in the Admin Dashboard.
+3. **No-Pricing Policy**: Public pages, carts, WhatsApp handoffs, and notifications omit all prices, currency signs, taxes, or discounts. Commercial quotations are negotiated one-on-one via WhatsApp or phone.
+4. **Access Code Protection**: Customer access codes enforce rate limits, expiration dates, and atomic usage caps for web submissions. A note on the site clarifies that customers may still message the WhatsApp hotline directly.
+5. **Image Upload Pipeline**: Supports direct upload to Cloudflare R2 (`/api/upload`) with fallback to image URLs or locally served assets in `public/`.
+6. **Custom Logo Availability**: Enabled by default on Non-Woven Carry Bags, Printed Paper Coasters, and Hygienic Paper-Wrapped Glasses. Kept off by default on mini toiletries pending confirmation from the owner.
+
+---
+
+## 🖼️ How to Replace Placeholder Images via Admin Dashboard
+
+1. Log in to the Admin Dashboard at `/admin/login`.
+2. Navigate to the **Products** tab.
+3. Locate the draft product you want to update (e.g., *Non-Woven Carry Bag*, *Disposable Terry Slippers*, or *Embossed Tissue Roll*).
+4. Click the **Edit** (pencil) icon.
+5. Under **Image URL**, either:
+   - Click **Choose File** under **Or Upload Image to Cloudflare R2** to upload your photograph directly from your computer, OR
+   - Paste the direct HTTPS URL of your uploaded image.
+6. Click **Save Product**.
+7. Click the **Preview** (eye) icon to verify how the product card appears on the neutral off-white background.
+8. When satisfied, click **Publish** to make the product live on the public website.
+
+---
+
 ## 📖 Deployment Documentation
 
 For step-by-step instructions on deploying to Cloudflare Workers, configuring Cloudflare D1, setting up Google OAuth, and connecting your custom domain, refer to [DEPLOYMENT.md](file:///c:/Users/harsh/OneDrive/Desktop/cryststalclean/DEPLOYMENT.md).
+

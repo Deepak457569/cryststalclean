@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS products (
   pack_size TEXT,
   specs_json TEXT DEFAULT '{}',
   is_featured INTEGER DEFAULT 0,
+  is_customizable INTEGER DEFAULT 0,
   is_active INTEGER DEFAULT 1,
   created_at TEXT DEFAULT (datetime('now')),
   updated_at TEXT DEFAULT (datetime('now'))

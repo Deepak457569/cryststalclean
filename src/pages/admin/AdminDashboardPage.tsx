@@ -41,6 +41,7 @@ export const AdminDashboardPage: React.FC = () => {
   const [inquirySearch, setInquirySearch] = useState('');
   const [inquiryStatusFilter, setInquiryStatusFilter] = useState('');
   const [productSearch, setProductSearch] = useState('');
+  const [productStatusFilter, setProductStatusFilter] = useState<'all' | 'published' | 'draft'>('all');
 
   // Modals & Drawers
   const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
@@ -52,6 +53,8 @@ export const AdminDashboardPage: React.FC = () => {
   const [productModalOpen, setProductModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Partial<Product> | null>(null);
   const [productVariantsInput, setProductVariantsInput] = useState('');
+  const [previewProduct, setPreviewProduct] = useState<Product | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   // Access code modal
   const [codeModalOpen, setCodeModalOpen] = useState(false);
@@ -234,6 +237,49 @@ export const AdminDashboardPage: React.FC = () => {
     }
   };
 
+  // Quick Toggle Publish / Unpublish Product
+  const handleTogglePublishProduct = async (product: Product) => {
+    const nextStatus = product.is_active ? 0 : 1;
+    try {
+      const res = await fetch(`/api/products/${product.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_active: nextStatus }),
+      });
+      if (res.ok) {
+        loadAllData();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Direct Image File Upload
+  const handleImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !editingProduct) return;
+    setUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        setEditingProduct({ ...editingProduct, image_url: data.url });
+      } else {
+        alert(data.error || 'Failed to upload image');
+      }
+    } catch (err) {
+      console.error('Image upload failed', err);
+      alert('Network error while uploading image');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   // Save Access Code
   const handleSaveAccessCode = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -299,12 +345,19 @@ export const AdminDashboardPage: React.FC = () => {
   });
 
   // Filtered products
-  const filteredProducts = products.filter(
-    (p) =>
+  const filteredProducts = products.filter((p) => {
+    const matchSearch =
       !productSearch ||
       p.name.toLowerCase().includes(productSearch.toLowerCase()) ||
-      p.description.toLowerCase().includes(productSearch.toLowerCase())
-  );
+      p.description.toLowerCase().includes(productSearch.toLowerCase());
+    const matchStatus =
+      productStatusFilter === 'all'
+        ? true
+        : productStatusFilter === 'published'
+        ? p.is_active === 1
+        : p.is_active === 0;
+    return matchSearch && matchStatus;
+  });
 
   const statusesList: OrderStatus[] = [
     'New Inquiry',
@@ -701,16 +754,51 @@ export const AdminDashboardPage: React.FC = () => {
         {/* TAB 3: PRODUCTS MANAGEMENT */}
         {activeTab === 'products' && (
           <div className="space-y-6 animate-fade-in">
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 rounded-2xl border border-cream-200 shadow-sm">
-              <div className="relative w-full sm:w-80">
-                <input
-                  type="text"
-                  value={productSearch}
-                  onChange={(e) => setProductSearch(e.target.value)}
-                  placeholder="Search products..."
-                  className="w-full pl-9 pr-4 py-2 bg-cream-50 border border-cream-300 rounded-xl text-xs font-medium focus:outline-none"
-                />
-                <Search className="w-4 h-4 text-charcoal-800 absolute left-3 top-2.5" />
+            <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 bg-white p-4 rounded-2xl border border-cream-200 shadow-sm">
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="relative w-full sm:w-72">
+                  <input
+                    type="text"
+                    value={productSearch}
+                    onChange={(e) => setProductSearch(e.target.value)}
+                    placeholder="Search amenities or cleaning supplies..."
+                    className="w-full pl-9 pr-4 py-2 bg-cream-50 border border-cream-300 rounded-xl text-xs font-medium focus:outline-none"
+                  />
+                  <Search className="w-4 h-4 text-charcoal-800 absolute left-3 top-2.5" />
+                </div>
+
+                <div className="flex items-center gap-1.5 bg-cream-100 p-1 rounded-xl">
+                  <button
+                    onClick={() => setProductStatusFilter('all')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                      productStatusFilter === 'all'
+                        ? 'bg-charcoal-900 text-white shadow-xs'
+                        : 'text-charcoal-700 hover:text-charcoal-950'
+                    }`}
+                  >
+                    All ({products.length})
+                  </button>
+                  <button
+                    onClick={() => setProductStatusFilter('published')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                      productStatusFilter === 'published'
+                        ? 'bg-emerald-800 text-white shadow-xs'
+                        : 'text-emerald-800 hover:text-emerald-950'
+                    }`}
+                  >
+                    Published ({products.filter((p) => p.is_active === 1).length})
+                  </button>
+                  <button
+                    onClick={() => setProductStatusFilter('draft')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                      productStatusFilter === 'draft'
+                        ? 'bg-amber-800 text-white shadow-xs'
+                        : 'text-amber-800 hover:text-amber-950'
+                    }`}
+                  >
+                    Drafts ({products.filter((p) => p.is_active === 0).length})
+                  </button>
+                </div>
               </div>
 
               <button
@@ -720,17 +808,18 @@ export const AdminDashboardPage: React.FC = () => {
                     category_id: categories[0]?.id || '',
                     description: '',
                     image_url: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=800&q=80',
-                    pack_size: 'Case of 200 Units',
-                    is_active: 1,
+                    pack_size: 'To be confirmed',
+                    is_active: 0,
                     is_featured: 0,
+                    is_customizable: 0,
                   });
-                  setProductVariantsInput('30 ml Bottle, 50 ml Tube');
+                  setProductVariantsInput('Standard Pack');
                   setProductModalOpen(true);
                 }}
-                className="px-4 py-2.5 bg-charcoal-900 hover:bg-charcoal-800 text-white rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm w-full sm:w-auto justify-center"
+                className="px-4 py-2.5 bg-charcoal-900 hover:bg-charcoal-800 text-white rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm justify-center"
               >
                 <Plus className="w-4 h-4 text-champagne-400" />
-                <span>Add New Amenity</span>
+                <span>Add Product</span>
               </button>
             </div>
 
@@ -742,7 +831,8 @@ export const AdminDashboardPage: React.FC = () => {
                     <tr>
                       <th className="py-3.5 px-4">Amenity Product</th>
                       <th className="py-3.5 px-4">Category</th>
-                      <th className="py-3.5 px-4">Standard Pack Size</th>
+                      <th className="py-3.5 px-4">Pack Size</th>
+                      <th className="py-3.5 px-4">Custom Branding</th>
                       <th className="py-3.5 px-4">Status</th>
                       <th className="py-3.5 px-4">Featured</th>
                       <th className="py-3.5 px-4 text-right">Actions</th>
@@ -753,36 +843,71 @@ export const AdminDashboardPage: React.FC = () => {
                       <tr key={p.id} className="hover:bg-cream-50 transition-colors">
                         <td className="py-3.5 px-4">
                           <div className="flex items-center gap-3">
-                            <img
-                              src={p.image_url}
-                              alt={p.name}
-                              className="w-10 h-10 rounded-lg object-cover border border-cream-200"
-                            />
+                            <div className="w-10 h-10 rounded-lg bg-[#FAF8F5] border border-cream-200 p-1 flex items-center justify-center shrink-0">
+                              <img
+                                src={p.image_url}
+                                alt={p.name}
+                                className="w-full h-full object-contain"
+                              />
+                            </div>
                             <div>
                               <span className="font-semibold text-charcoal-900 block">{p.name}</span>
-                              <span className="text-[11px] text-charcoal-800 line-clamp-1">{p.description}</span>
+                              <span className="text-[11px] text-charcoal-600 line-clamp-1">{p.description}</span>
                             </div>
                           </div>
                         </td>
                         <td className="py-3.5 px-4 font-medium text-charcoal-800">{p.category_name}</td>
-                        <td className="py-3.5 px-4 text-charcoal-800">{p.pack_size || 'N/A'}</td>
+                        <td className="py-3.5 px-4 text-charcoal-800">{p.pack_size || 'To be confirmed'}</td>
+                        <td className="py-3.5 px-4">
+                          {p.is_customizable ? (
+                            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-champagne-100 text-champagne-900 border border-champagne-200">
+                              Customizable
+                            </span>
+                          ) : (
+                            <span className="text-charcoal-400 text-[11px]">—</span>
+                          )}
+                        </td>
                         <td className="py-3.5 px-4">
                           <span
-                            className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                              p.is_active ? 'bg-emerald-50 text-emerald-800' : 'bg-rose-50 text-rose-800'
+                            className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
+                              p.is_active
+                                ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                                : 'bg-amber-50 text-amber-800 border-amber-200'
                             }`}
                           >
-                            {p.is_active ? 'Active' : 'Unpublished'}
+                            {p.is_active ? 'Published' : 'Draft'}
                           </span>
                         </td>
                         <td className="py-3.5 px-4">
                           {p.is_featured ? (
                             <span className="text-amber-600 font-semibold text-[11px]">★ Featured</span>
                           ) : (
-                            <span className="text-charcoal-800 text-[11px]">—</span>
+                            <span className="text-charcoal-400 text-[11px]">—</span>
                           )}
                         </td>
-                        <td className="py-3.5 px-4 text-right space-x-2">
+                        <td className="py-3.5 px-4 text-right space-x-1.5 whitespace-nowrap">
+                          {/* Quick Publish / Unpublish Toggle */}
+                          <button
+                            onClick={() => handleTogglePublishProduct(p)}
+                            className={`px-2.5 py-1 rounded-md text-[11px] font-semibold border transition-colors ${
+                              p.is_active
+                                ? 'bg-cream-100 hover:bg-amber-50 text-amber-900 border-amber-200'
+                                : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border-emerald-200'
+                            }`}
+                            title={p.is_active ? 'Unpublish from public catalog' : 'Publish to public catalog'}
+                          >
+                            {p.is_active ? 'Unpublish' : 'Publish'}
+                          </button>
+
+                          {/* Preview Product Card */}
+                          <button
+                            onClick={() => setPreviewProduct(p)}
+                            className="p-1.5 hover:bg-cream-200 rounded text-charcoal-800"
+                            title="Preview public card"
+                          >
+                            <Eye className="w-3.5 h-3.5" />
+                          </button>
+
                           <button
                             onClick={() => {
                               let vars: string[] = [];
@@ -1267,13 +1392,39 @@ export const AdminDashboardPage: React.FC = () => {
               <label className="block text-xs font-semibold text-charcoal-800 uppercase mb-1">
                 Image URL *
               </label>
-              <input
-                type="url"
-                required
-                value={editingProduct.image_url || ''}
-                onChange={(e) => setEditingProduct({ ...editingProduct, image_url: e.target.value })}
-                className="w-full px-3 py-2 bg-cream-50 border border-cream-300 rounded-lg text-xs"
-              />
+              <div className="space-y-2">
+                <input
+                  type="url"
+                  required
+                  value={editingProduct.image_url || ''}
+                  onChange={(e) => setEditingProduct({ ...editingProduct, image_url: e.target.value })}
+                  className="w-full px-3 py-2 bg-cream-50 border border-cream-300 rounded-lg text-xs"
+                />
+                
+                {/* Cloudflare R2 direct image file upload */}
+                <div className="bg-cream-100/70 p-3 rounded-xl border border-cream-200">
+                  <label className="block text-[11px] font-semibold text-charcoal-800 uppercase mb-1">
+                    Or Upload Image to Cloudflare R2
+                  </label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageFileChange}
+                      disabled={uploadingImage}
+                      className="text-xs text-charcoal-700 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-charcoal-900 file:text-white hover:file:bg-charcoal-800 cursor-pointer disabled:opacity-50"
+                    />
+                    {uploadingImage && (
+                      <span className="text-xs text-champagne-700 font-medium animate-pulse">
+                        Uploading to R2...
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-charcoal-500 mt-1">
+                    Uploads directly to Cloudflare R2 bucket and stores reference URL.
+                  </p>
+                </div>
+              </div>
             </div>
 
             <div>
@@ -1282,7 +1433,7 @@ export const AdminDashboardPage: React.FC = () => {
               </label>
               <input
                 type="text"
-                placeholder="e.g. Case of 200 Units / Carton of 100 Pairs"
+                placeholder="e.g. 5 L, 20 ml, or 'To be confirmed'"
                 value={editingProduct.pack_size || ''}
                 onChange={(e) => setEditingProduct({ ...editingProduct, pack_size: e.target.value })}
                 className="w-full px-3 py-2 bg-cream-50 border border-cream-300 rounded-lg text-xs"
@@ -1297,12 +1448,12 @@ export const AdminDashboardPage: React.FC = () => {
                 type="text"
                 value={productVariantsInput}
                 onChange={(e) => setProductVariantsInput(e.target.value)}
-                placeholder="30 ml Bottle, 50 ml Tube, 100 ml Pump"
+                placeholder="e.g. 5 L Container, 20 ml Bottle, Standard Pack"
                 className="w-full px-3 py-2 bg-cream-50 border border-cream-300 rounded-lg text-xs"
               />
             </div>
 
-            <div className="flex gap-6 pt-2">
+            <div className="flex flex-wrap gap-4 pt-2 border-t border-cream-200">
               <label className="flex items-center gap-2 text-xs font-semibold text-charcoal-900 cursor-pointer">
                 <input
                   type="checkbox"
@@ -1322,6 +1473,16 @@ export const AdminDashboardPage: React.FC = () => {
                 />
                 <span>Feature on Homepage</span>
               </label>
+
+              <label className="flex items-center gap-2 text-xs font-semibold text-charcoal-900 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={!!editingProduct.is_customizable}
+                  onChange={(e) => setEditingProduct({ ...editingProduct, is_customizable: e.target.checked ? 1 : 0 })}
+                  className="rounded text-charcoal-900"
+                />
+                <span className="text-champagne-800 font-bold">Customizable with your logo</span>
+              </label>
             </div>
 
             <div className="pt-4 flex justify-end gap-3 border-t border-cream-200">
@@ -1334,12 +1495,99 @@ export const AdminDashboardPage: React.FC = () => {
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 bg-charcoal-900 hover:bg-charcoal-800 text-white rounded-lg text-xs font-semibold"
+                className="px-5 py-2 bg-charcoal-900 hover:bg-charcoal-800 text-white rounded-lg text-xs font-semibold shadow-sm"
               >
                 Save Product
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {/* PUBLIC PRODUCT CARD PREVIEW MODAL */}
+      {previewProduct && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-charcoal-950/70 backdrop-blur-sm animate-fade-in">
+          <div className="relative w-full max-w-md bg-white rounded-3xl p-6 shadow-2xl border border-cream-300 space-y-4">
+            <button
+              type="button"
+              onClick={() => setPreviewProduct(null)}
+              className="absolute top-5 right-5 p-2 text-charcoal-800 hover:text-charcoal-950"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="flex items-center justify-between pr-8">
+              <span className="text-xs font-semibold text-champagne-700 uppercase tracking-wider">
+                Public Card Preview
+              </span>
+              <span
+                className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                  previewProduct.is_active ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                }`}
+              >
+                {previewProduct.is_active ? 'Published' : 'Draft (Unpublished)'}
+              </span>
+            </div>
+
+            {/* Product Card Container (Exact replica of public view on neutral off-white background) */}
+            <div className="bg-[#FAF8F5] border border-cream-300 rounded-2xl overflow-hidden p-4 space-y-3 shadow-xs">
+              <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-white border border-cream-200 flex items-center justify-center">
+                <img
+                  src={previewProduct.image_url}
+                  alt={previewProduct.name}
+                  className="w-full h-full object-contain p-4"
+                />
+                {previewProduct.is_customizable === 1 && (
+                  <span className="absolute top-2 left-2 px-2.5 py-1 bg-champagne-700 text-white text-[10px] font-semibold tracking-wider uppercase rounded-md shadow-sm">
+                    Customizable with your logo
+                  </span>
+                )}
+              </div>
+              <div>
+                <span className="text-[10px] font-semibold tracking-wider uppercase text-champagne-700">
+                  {previewProduct.category_name}
+                </span>
+                <h4 className="font-serif font-bold text-lg text-charcoal-900 leading-snug">
+                  {previewProduct.name}
+                </h4>
+                <p className="text-xs text-charcoal-600 line-clamp-2 mt-1">
+                  {previewProduct.description}
+                </p>
+                <div className="mt-3 pt-3 border-t border-cream-200 flex justify-between items-center text-xs">
+                  <span className="text-charcoal-600">
+                    Standard Pack: <strong className="text-charcoal-900">{previewProduct.pack_size || 'To be confirmed'}</strong>
+                  </span>
+                  <span className="text-charcoal-500 italic text-[11px]">
+                    No public prices displayed
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const p = previewProduct;
+                  setPreviewProduct(null);
+                  handleTogglePublishProduct(p);
+                }}
+                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-colors ${
+                  previewProduct.is_active
+                    ? 'bg-amber-700 text-white hover:bg-amber-800'
+                    : 'bg-emerald-700 text-white hover:bg-emerald-800'
+                }`}
+              >
+                {previewProduct.is_active ? 'Unpublish from Catalog' : 'Publish to Catalog'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setPreviewProduct(null)}
+                className="px-4 py-2 bg-cream-100 hover:bg-cream-200 text-charcoal-800 rounded-xl text-xs font-semibold"
+              >
+                Close Preview
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
