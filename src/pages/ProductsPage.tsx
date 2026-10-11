@@ -209,6 +209,7 @@ export const ProductsPage: React.FC = () => {
                   <img
                     src={product.image_url}
                     alt={product.name}
+                    onError={(e) => { (e.target as HTMLImageElement).src = '/images/products/placeholder.svg'; }}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   {product.pack_size && (

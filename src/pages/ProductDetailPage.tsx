@@ -117,6 +117,7 @@ export const ProductDetailPage: React.FC = () => {
             <img
               src={activeImage}
               alt={product.name}
+              onError={(e) => { (e.target as HTMLImageElement).src = '/images/products/placeholder.svg'; }}
               className="w-full h-full object-cover object-center"
             />
           </div>
@@ -131,7 +132,12 @@ export const ProductDetailPage: React.FC = () => {
                     activeImage === imgUrl ? 'border-champagne-500 scale-95 shadow-md' : 'border-transparent opacity-75'
                   }`}
                 >
-                  <img src={imgUrl} alt={`Thumbnail ${i + 1}`} className="w-full h-full object-cover" />
+                  <img
+                    src={imgUrl}
+                    alt={`Thumbnail ${i + 1}`}
+                    onError={(e) => { (e.target as HTMLImageElement).src = '/images/products/placeholder.svg'; }}
+                    className="w-full h-full object-cover"
+                  />
                 </button>
               ))}
             </div>

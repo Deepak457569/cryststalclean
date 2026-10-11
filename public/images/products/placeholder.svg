@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300">
+  <rect width="100%" height="100%" fill="#FAF8F5"/>
+  <rect x="12" y="12" width="376" height="276" rx="12" fill="none" stroke="#E2DCD5" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <g transform="translate(200, 130)" text-anchor="middle">
+    <circle r="36" fill="#F2ECE4"/>
+    <path d="M-14 -6 L0 -20 L14 -6 L14 16 L-14 16 Z" fill="none" stroke="#8C7A6B" stroke-width="2" stroke-linejoin="round"/>
+    <circle cx="0" cy="2" r="4" fill="#8C7A6B"/>
+    <text y="54" font-family="serif" font-size="14" font-weight="600" fill="#4A423B" letter-spacing="1">CRYSTALCLEAN</text>
+    <text y="72" font-family="sans-serif" font-size="11" fill="#8C7A6B">Hospitality Amenity Image</text>
+  </g>
+</svg>

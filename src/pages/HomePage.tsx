@@ -92,7 +92,7 @@ export const HomePage: React.FC = () => {
           {/* Main Official Banner Showcase */}
           <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-cream-300/80 bg-[#FAF8F5] mb-8 group">
             <img
-              src="/hero-banner.png"
+              src="/crystalclean-banner.png"
               alt="CrystalClean - Quality Hospitality Supplies. Exceptional Guest Experiences."
               className="w-full h-auto object-contain block mx-auto transition-transform duration-700 group-hover:scale-[1.008]"
             />
@@ -119,11 +119,11 @@ export const HomePage: React.FC = () => {
                 <Sparkles className="w-3.5 h-3.5 text-champagne-600" />
                 Wholesale Hotel Supply Partner
               </div>
-              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-charcoal-900 leading-snug">
-                Supplying Premium Hospitality Amenities Across India
-              </h2>
-              <p className="text-sm text-charcoal-800 leading-relaxed">
-                Explore curated guest toiletries, dental kits, linens, and bulk 5L refill supplies. Zero public pricing protects your trade margins.
+              <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-charcoal-900 leading-tight">
+                Quality Hospitality Supplies. Exceptional Guest Experiences.
+              </h1>
+              <p className="text-sm sm:text-base text-charcoal-800 leading-relaxed pt-1">
+                Supplying premium guest amenities, luxury toiletries, biodegradable dental sets, and institutional housekeeping cleaning formulations to hotels, resorts, and bulk buyers across India.
               </p>
               <div className="flex flex-wrap items-center gap-2 text-xs text-charcoal-800 pt-1">
                 <Key className="w-4 h-4 text-champagne-600 flex-shrink-0" />
@@ -143,11 +143,11 @@ export const HomePage: React.FC = () => {
                 to="/products"
                 className="inline-flex items-center gap-2 px-6 py-3.5 bg-charcoal-900 hover:bg-charcoal-800 text-white font-medium rounded-xl text-sm transition-all shadow-luxury hover:shadow-luxury-hover"
               >
-                <span>Browse Products</span>
+                <span>Explore Products</span>
                 <ArrowRight className="w-4 h-4 text-champagne-400" />
               </Link>
               <Link
-                to="/quote"
+                to="/bulk-quote"
                 className="inline-flex items-center gap-2 px-5 py-3.5 bg-white hover:bg-cream-100 text-charcoal-900 font-medium rounded-xl text-sm transition-all border border-cream-300 shadow-sm"
               >
                 <span>Request Bulk Quotation</span>
@@ -304,6 +304,7 @@ export const HomePage: React.FC = () => {
                     <img
                       src={product.image_url}
                       alt={product.name}
+                      onError={(e) => { (e.target as HTMLImageElement).src = '/images/products/placeholder.svg'; }}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     {product.pack_size && (

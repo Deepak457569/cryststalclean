@@ -847,6 +847,7 @@ export const AdminDashboardPage: React.FC = () => {
                               <img
                                 src={p.image_url}
                                 alt={p.name}
+                                onError={(e) => { (e.target as HTMLImageElement).src = '/images/products/placeholder.svg'; }}
                                 className="w-full h-full object-contain"
                               />
                             </div>
@@ -1534,6 +1535,7 @@ export const AdminDashboardPage: React.FC = () => {
                 <img
                   src={previewProduct.image_url}
                   alt={previewProduct.name}
+                  onError={(e) => { (e.target as HTMLImageElement).src = '/images/products/placeholder.svg'; }}
                   className="w-full h-full object-contain p-4"
                 />
                 {previewProduct.is_customizable === 1 && (
