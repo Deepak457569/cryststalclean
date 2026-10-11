@@ -169,6 +169,15 @@ export const HomePage: React.FC = () => {
                   <Award className="w-5 h-5 text-champagne-400" />
                   <span className="text-xs font-semibold tracking-wide">5-Star Standard</span>
                 </div>
+
+                {/* Official Crest Badge */}
+                <div className="absolute -top-6 -left-6 bg-white border border-champagne-300 p-1.5 rounded-2xl shadow-xl flex items-center gap-2.5 backdrop-blur-md">
+                  <img src="/logo.png" alt="CrystalClean Crest" className="w-12 h-12 object-contain" />
+                  <div className="pr-3 text-left">
+                    <span className="text-[9px] uppercase font-bold tracking-wider text-champagne-700 block">Brand Heritage</span>
+                    <span className="text-xs font-serif font-bold text-charcoal-900 block">CrystalClean®</span>
+                  </div>
+                </div>
               </div>
             </div>
 

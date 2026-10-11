@@ -53,8 +53,12 @@ export const AdminLoginPage: React.FC = () => {
       <div className="w-full max-w-md bg-white rounded-3xl border border-cream-200 shadow-luxury p-8 sm:p-10 space-y-8 animate-fade-in">
         {/* Brand Header */}
         <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-2xl bg-charcoal-900 border border-champagne-500/40 flex items-center justify-center text-champagne-300 mx-auto shadow-sm">
-            <Lock className="w-6 h-6" />
+          <div className="w-16 h-16 rounded-full overflow-hidden bg-white border border-cream-300 flex items-center justify-center p-1 mx-auto shadow-md">
+            <img
+              src="/logo.png"
+              alt="CrystalClean Official Logo"
+              className="w-full h-full object-contain"
+            />
           </div>
           <h1 className="font-serif text-2xl sm:text-3xl font-bold text-charcoal-900">
             Admin Authentication

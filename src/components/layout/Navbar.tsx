@@ -60,13 +60,13 @@ export const Navbar: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Brand Logo */}
-            <Link to="/" className="flex items-center gap-3 group">
-              <div className="w-11 h-11 rounded-xl bg-charcoal-900 flex items-center justify-center border border-champagne-500/40 shadow-sm group-hover:scale-105 transition-transform">
-                <svg className="w-7 h-7" viewBox="0 0 48 48" fill="none">
-                  <path d="M24 7L36 17L24 41L12 17L24 7Z" stroke="#C5A880" stroke-width="2.5" stroke-linejoin="round" />
-                  <path d="M12 17H36" stroke="#C5A880" stroke-width="1.8" />
-                  <path d="M19 17L24 7L29 17L24 41L19 17Z" stroke="#C5A880" stroke-width="1.5" fill="rgba(197, 168, 128, 0.2)" />
-                </svg>
+            <Link to="/" className="flex items-center gap-3.5 group">
+              <div className="w-12 h-12 rounded-full overflow-hidden bg-white flex items-center justify-center border border-cream-300 shadow-sm group-hover:scale-105 transition-transform p-0.5">
+                <img
+                  src="/logo.png"
+                  alt="CrystalClean Official Logo"
+                  className="w-full h-full object-contain"
+                />
               </div>
               <div>
                 <span className="font-serif text-xl sm:text-2xl font-bold tracking-widest text-charcoal-900 block leading-tight">

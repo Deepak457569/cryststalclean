@@ -34,12 +34,13 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
           {/* Brand Column */}
           <div className="lg:col-span-2 space-y-4">
-            <Link to="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-charcoal-800 border border-champagne-500/50 flex items-center justify-center">
-                <svg className="w-6 h-6" viewBox="0 0 48 48" fill="none">
-                  <path d="M24 7L36 17L24 41L12 17L24 7Z" stroke="#E2D5BE" stroke-width="2.5" stroke-linejoin="round" />
-                  <path d="M12 17H36" stroke="#E2D5BE" stroke-width="1.8" />
-                </svg>
+            <Link to="/" className="flex items-center gap-3.5 group">
+              <div className="w-12 h-12 rounded-full overflow-hidden bg-white flex items-center justify-center border border-champagne-500/50 p-0.5 shadow-sm group-hover:scale-105 transition-transform">
+                <img
+                  src="/logo.png"
+                  alt="CrystalClean Official Logo"
+                  className="w-full h-full object-contain"
+                />
               </div>
               <div>
                 <span className="font-serif text-xl font-bold tracking-widest text-white block">
