@@ -137,6 +137,23 @@ export async function bootstrapDatabase(db: D1Database, env: Env): Promise<void>
         value TEXT NOT NULL,
         updated_at TEXT DEFAULT (datetime('now'))
       );
+
+      CREATE TABLE IF NOT EXISTS sessions (
+        token_id TEXT PRIMARY KEY,
+        admin_id TEXT NOT NULL,
+        token_hash TEXT,
+        created_at TEXT DEFAULT (datetime('now')),
+        expires_at TEXT NOT NULL,
+        revoked INTEGER DEFAULT 0
+      );
+
+      CREATE TABLE IF NOT EXISTS password_reset_tokens (
+        token TEXT PRIMARY KEY,
+        admin_id TEXT NOT NULL,
+        expires_at TEXT NOT NULL,
+        used INTEGER DEFAULT 0,
+        created_at TEXT DEFAULT (datetime('now'))
+      );
     `);
 
     // Ensure Initial Admin exists

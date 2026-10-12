@@ -111,6 +111,23 @@ CREATE TABLE IF NOT EXISTS business_settings (
   updated_at TEXT DEFAULT (datetime('now'))
 );
 
+CREATE TABLE IF NOT EXISTS sessions (
+  token_id TEXT PRIMARY KEY,
+  admin_id TEXT NOT NULL REFERENCES administrators(id) ON DELETE CASCADE,
+  token_hash TEXT,
+  created_at TEXT DEFAULT (datetime('now')),
+  expires_at TEXT NOT NULL,
+  revoked INTEGER DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+  token TEXT PRIMARY KEY,
+  admin_id TEXT NOT NULL REFERENCES administrators(id) ON DELETE CASCADE,
+  expires_at TEXT NOT NULL,
+  used INTEGER DEFAULT 0,
+  created_at TEXT DEFAULT (datetime('now'))
+);
+
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_products_category ON products(category_id);
 CREATE INDEX IF NOT EXISTS idx_products_active ON products(is_active);
@@ -118,3 +135,5 @@ CREATE INDEX IF NOT EXISTS idx_access_codes_code ON access_codes(code);
 CREATE INDEX IF NOT EXISTS idx_inquiries_ref ON inquiries(reference);
 CREATE INDEX IF NOT EXISTS idx_inquiries_status ON inquiries(status);
 CREATE INDEX IF NOT EXISTS idx_inquiry_items_inquiry ON inquiry_items(inquiry_id);
+CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token_id);
+CREATE INDEX IF NOT EXISTS idx_password_reset_tokens ON password_reset_tokens(token);
