@@ -731,7 +731,7 @@ export async function updateInquiryStatus(
 }
 
 export async function updateInquiryAdminNotes(db: D1Database, id: string, adminNotes: string): Promise<boolean> {
-  await db.prepare('UPDATE inquiries SET admin_notes = ?, updated_at = datetime('now') WHERE id = ?').bind(adminNotes, id).run();
+  await db.prepare(`UPDATE inquiries SET admin_notes = ?, updated_at = datetime('now') WHERE id = ?`).bind(adminNotes, id).run();
   return true;
 }
 
