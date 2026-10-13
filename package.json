@@ -11,8 +11,8 @@
     "preview": "vite preview",
     "admin:provision": "node scripts/provision-admin.mjs",
     "deploy": "npm run build && wrangler deploy",
-    "d1:init:local": "wrangler d1 execute crystalclean-db --local --file=./migrations/0001_initial_schema.sql && wrangler d1 execute crystalclean-db --local --file=./migrations/0002_seed_data.sql",
-    "d1:init:remote": "wrangler d1 execute crystalclean-db --remote --file=./migrations/0001_initial_schema.sql && wrangler d1 execute crystalclean-db --remote --file=./migrations/0002_seed_data.sql"
+    "d1:init:local": "wrangler d1 execute crystalclean-db --local --file=./migrations/0001_initial_schema.sql && wrangler d1 execute crystalclean-db --local --file=./migrations/0002_seed_data.sql && wrangler d1 execute crystalclean-db --local --file=./migrations/0003_fix_product_images.sql",
+    "d1:init:remote": "wrangler d1 execute crystalclean-db --remote --file=./migrations/0001_initial_schema.sql && wrangler d1 execute crystalclean-db --remote --file=./migrations/0002_seed_data.sql && wrangler d1 execute crystalclean-db --remote --file=./migrations/0003_fix_product_images.sql"
   },
   "dependencies": {
     "lucide-react": "^1.55.0",
