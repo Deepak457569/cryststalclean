@@ -20,7 +20,6 @@ BUSINESS_WHATSAPP = "919149953610"
 INITIAL_ADMIN_EMAIL = "crystalclean457@gmail.com"
 ADMIN_ALLOWLIST = "crystalclean457@gmail.com,admin@crystalclean.in"
 JWT_SECRET = "crystalclean-jwt-secret-replace-in-production-secrets"
-GOOGLE_CLIENT_SECRET = "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"
 
 # Secrets to be set via: wrangler secret put <NAME>
 # - JWT_SECRET
