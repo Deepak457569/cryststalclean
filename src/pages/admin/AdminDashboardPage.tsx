@@ -13,7 +13,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 
 export const AdminDashboardPage: React.FC = () => {
-  const { adminUser, logout, loading: authLoading } = useAuth();
+  const { adminUser, logout, loading: authLoading, setPreviewDrafts } = useAuth();
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState<'overview' | 'inquiries' | 'products' | 'categories' | 'codes' | 'settings'>('overview');
@@ -801,26 +801,40 @@ export const AdminDashboardPage: React.FC = () => {
                 </div>
               </div>
 
-              <button
-                onClick={() => {
-                  setEditingProduct({
-                    name: '',
-                    category_id: categories[0]?.id || '',
-                    description: '',
-                    image_url: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=800&q=80',
-                    pack_size: 'To be confirmed',
-                    is_active: 0,
-                    is_featured: 0,
-                    is_customizable: 0,
-                  });
-                  setProductVariantsInput('Standard Pack');
-                  setProductModalOpen(true);
-                }}
-                className="px-4 py-2.5 bg-charcoal-900 hover:bg-charcoal-800 text-white rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm justify-center"
-              >
-                <Plus className="w-4 h-4 text-champagne-400" />
-                <span>Add Product</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPreviewDrafts(true);
+                    navigate('/products?preview=drafts');
+                  }}
+                  className="px-4 py-2.5 bg-champagne-100 hover:bg-champagne-200 text-charcoal-900 border border-champagne-300 rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm transition-colors"
+                  title="Review all draft products on the public site layout"
+                >
+                  <Eye className="w-4 h-4 text-champagne-700" />
+                  <span>Preview as Public (Drafts)</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setEditingProduct({
+                      name: '',
+                      category_id: categories[0]?.id || '',
+                      description: '',
+                      image_url: '/products/placeholder.svg',
+                      pack_size: 'To be confirmed',
+                      is_active: 1,
+                      is_featured: 0,
+                      is_customizable: 0,
+                    });
+                    setProductVariantsInput('Standard Pack');
+                    setProductModalOpen(true);
+                  }}
+                  className="px-4 py-2.5 bg-charcoal-900 hover:bg-charcoal-800 text-white rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm justify-center"
+                >
+                  <Plus className="w-4 h-4 text-champagne-400" />
+                  <span>Add Product</span>
+                </button>
+              </div>
             </div>
 
             {/* Products Table */}
@@ -847,7 +861,7 @@ export const AdminDashboardPage: React.FC = () => {
                               <img
                                 src={p.image_url}
                                 alt={p.name}
-                                onError={(e) => { (e.target as HTMLImageElement).src = '/images/products/placeholder.svg'; }}
+                                onError={(e) => { (e.target as HTMLImageElement).src = '/products/placeholder.svg'; }}
                                 className="w-full h-full object-contain"
                               />
                             </div>
@@ -952,7 +966,7 @@ export const AdminDashboardPage: React.FC = () => {
                     name: '',
                     slug: '',
                     description: '',
-                    image_url: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=800&q=80',
+                    image_url: '/products/placeholder.svg',
                     is_active: 1,
                   });
                   setCategoryModalOpen(true);
@@ -971,11 +985,14 @@ export const AdminDashboardPage: React.FC = () => {
                   className="bg-white rounded-2xl border border-cream-200 p-5 shadow-sm space-y-3 flex flex-col justify-between"
                 >
                   <div className="space-y-2">
-                    <img
-                      src={cat.image_url || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80'}
-                      alt={cat.name}
-                      className="w-full h-32 rounded-xl object-cover"
-                    />
+                    <div className="w-full h-32 rounded-xl overflow-hidden bg-[#FAF8F5] p-2 flex items-center justify-center border border-cream-200">
+                      <img
+                        src={cat.image_url || '/products/placeholder.svg'}
+                        alt={cat.name}
+                        onError={(e) => { (e.target as HTMLImageElement).src = '/products/placeholder.svg'; }}
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
                     <h4 className="font-serif font-bold text-base text-charcoal-900">{cat.name}</h4>
                     <p className="text-xs text-charcoal-800 line-clamp-2">{cat.description}</p>
                   </div>
@@ -1535,7 +1552,7 @@ export const AdminDashboardPage: React.FC = () => {
                 <img
                   src={previewProduct.image_url}
                   alt={previewProduct.name}
-                  onError={(e) => { (e.target as HTMLImageElement).src = '/images/products/placeholder.svg'; }}
+                  onError={(e) => { (e.target as HTMLImageElement).src = '/products/placeholder.svg'; }}
                   className="w-full h-full object-contain p-4"
                 />
                 {previewProduct.is_customizable === 1 && (

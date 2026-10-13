@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingBag, Key, Menu, X, Shield, PhoneCall } from 'lucide-react';
+import { ShoppingBag, Key, Menu, X, Shield, PhoneCall, Eye } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 import { AccessCodeModal } from '../common/AccessCodeModal';
 
 export const Navbar: React.FC = () => {
   const { itemCount } = useCart();
+  const { previewDrafts, setPreviewDrafts } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [codeModalOpen, setCodeModalOpen] = useState(false);
   const location = useLocation();
@@ -26,6 +28,25 @@ export const Navbar: React.FC = () => {
 
   return (
     <>
+      {previewDrafts && (
+        <div className="bg-amber-500 text-charcoal-950 px-4 py-2 text-xs font-semibold flex items-center justify-between shadow-sm z-50 relative">
+          <div className="max-w-7xl mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <Eye className="w-4 h-4 text-charcoal-950 flex-shrink-0" />
+              <span>Admin Preview Active: Viewing unpublished draft catalog (Local review enabled).</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Link to="/admin" className="underline hover:text-charcoal-800">Admin Dashboard</Link>
+              <button
+                onClick={() => setPreviewDrafts(false)}
+                className="px-2.5 py-0.5 bg-charcoal-900 text-white rounded-md text-[11px] font-semibold hover:bg-charcoal-800 transition-colors"
+              >
+                Exit Preview
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-cream-200 transition-all">
         {/* Top Hospitality Service Bar */}
         <div className="bg-charcoal-900 text-cream-100 text-xs py-1.5 px-4 sm:px-8 border-b border-charcoal-800">

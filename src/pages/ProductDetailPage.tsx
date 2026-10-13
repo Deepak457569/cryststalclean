@@ -113,12 +113,12 @@ export const ProductDetailPage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
         {/* Gallery Column */}
         <div className="lg:col-span-6 space-y-4">
-          <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-cream-100 border border-cream-200 shadow-md">
+          <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-[#FAF8F5] border border-cream-200 shadow-md p-6 flex items-center justify-center">
             <img
               src={activeImage}
               alt={product.name}
-              onError={(e) => { (e.target as HTMLImageElement).src = '/images/products/placeholder.svg'; }}
-              className="w-full h-full object-cover object-center"
+              onError={(e) => { (e.target as HTMLImageElement).src = '/products/placeholder.svg'; }}
+              className="w-full h-full object-contain"
             />
           </div>
 
@@ -128,15 +128,15 @@ export const ProductDetailPage: React.FC = () => {
                 <button
                   key={i}
                   onClick={() => setActiveImage(imgUrl)}
-                  className={`w-20 h-20 rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 ${
-                    activeImage === imgUrl ? 'border-champagne-500 scale-95 shadow-md' : 'border-transparent opacity-75'
+                  className={`w-20 h-20 rounded-xl overflow-hidden bg-[#FAF8F5] p-1 flex items-center justify-center border-2 transition-all flex-shrink-0 ${
+                    activeImage === imgUrl ? 'border-champagne-500 scale-95 shadow-md' : 'border-cream-200 opacity-75'
                   }`}
                 >
                   <img
                     src={imgUrl}
-                    alt={`Thumbnail ${i + 1}`}
-                    onError={(e) => { (e.target as HTMLImageElement).src = '/images/products/placeholder.svg'; }}
-                    className="w-full h-full object-cover"
+                    alt={`${product.name} Thumbnail ${i + 1}`}
+                    onError={(e) => { (e.target as HTMLImageElement).src = '/products/placeholder.svg'; }}
+                    className="w-full h-full object-contain"
                   />
                 </button>
               ))}

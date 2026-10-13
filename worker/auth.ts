@@ -167,6 +167,19 @@ export async function authenticateAdmin(request: Request, env: Env): Promise<Adm
     return null;
   }
 
+  // Check if session has been revoked in database
+  if (payload.jti && env.DB) {
+    try {
+      const session = await env.DB.prepare('SELECT revoked, expires_at FROM sessions WHERE token_id = ?').bind(payload.jti).first<{ revoked: number; expires_at: string }>();
+      if (session) {
+        if (session.revoked === 1) return null;
+        if (session.expires_at && new Date(session.expires_at).getTime() < Date.now()) return null;
+      }
+    } catch {
+      // Fallback if table is not yet initialized
+    }
+  }
+
   return {
     id: String(payload.sub || payload.id || ''),
     email,

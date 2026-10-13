@@ -64,8 +64,8 @@ export const ContactPage: React.FC = () => {
               </a>
 
               <div className="flex items-start gap-4 p-4 rounded-2xl bg-cream-50 border border-cream-200">
-                <div className="w-10 h-10 rounded-xl bg-charcoal-900 flex items-center justify-center text-champagne-400 flex-shrink-0">
-                  <Mail className="w-5 h-5" />
+                <div className="w-10 h-10 rounded-xl bg-charcoal-900 flex items-center justify-center text-champagne-300 flex-shrink-0 shadow-sm">
+                  <Mail className="w-5 h-5 text-champagne-300 stroke-[2.2]" />
                 </div>
                 <div>
                   <span className="text-xs font-bold text-charcoal-800 uppercase tracking-wider block">Official Procurement Email</span>
@@ -77,8 +77,8 @@ export const ContactPage: React.FC = () => {
               </div>
 
               <div className="flex items-start gap-4 p-4 rounded-2xl bg-cream-50 border border-cream-200">
-                <div className="w-10 h-10 rounded-xl bg-charcoal-900 flex items-center justify-center text-champagne-400 flex-shrink-0">
-                  <MapPin className="w-5 h-5" />
+                <div className="w-10 h-10 rounded-xl bg-charcoal-900 flex items-center justify-center text-champagne-300 flex-shrink-0 shadow-sm">
+                  <MapPin className="w-5 h-5 text-champagne-300 stroke-[2.2]" />
                 </div>
                 <div>
                   <span className="text-xs font-bold text-charcoal-800 uppercase tracking-wider block">Distribution Hub</span>
@@ -92,8 +92,8 @@ export const ContactPage: React.FC = () => {
               </div>
 
               <div className="flex items-start gap-4 p-4 rounded-2xl bg-cream-50 border border-cream-200">
-                <div className="w-10 h-10 rounded-xl bg-charcoal-900 flex items-center justify-center text-champagne-400 flex-shrink-0">
-                  <Clock className="w-5 h-5" />
+                <div className="w-10 h-10 rounded-xl bg-charcoal-900 flex items-center justify-center text-champagne-300 flex-shrink-0 shadow-sm">
+                  <Clock className="w-5 h-5 text-champagne-300 stroke-[2.2]" />
                 </div>
                 <div>
                   <span className="text-xs font-bold text-charcoal-800 uppercase tracking-wider block">Operating Hours</span>

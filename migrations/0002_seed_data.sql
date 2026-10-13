@@ -13,23 +13,23 @@ INSERT OR IGNORE INTO business_settings (key, value) VALUES
 
 -- 15 Searchable and Filterable Categories (Admin-Editable)
 INSERT OR REPLACE INTO categories (id, name, slug, description, image_url, sort_order, is_active) VALUES
-('cat_shampoo', 'Shampoo and Conditioner', 'shampoo-and-conditioner', 'Guest hair care amenities, conditioning blends, and refillable mini bottles for luxury hospitality.', 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&w=800&q=80', 1, 1),
-('cat_toiletries', 'Hotel Toiletries', 'hotel-toiletries', 'Individual mini guest amenities including body washes, nourishing lotions, and vanity accessories.', 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=800&q=80', 2, 1),
-('cat_dental', 'Dental Kits', 'dental-kits', 'Hygienic dental care travel sets in eco-friendly kraft packaging with soft-bristle brushes.', 'https://images.unsplash.com/photo-1559591937-e62fb330bc1f?auto=format&fit=crop&w=800&q=80', 3, 1),
-('cat_shaving', 'Shaving and Grooming Kits', 'shaving-and-grooming-kits', 'Single and twin blade guest razors paired with soothing shaving sachets in water-resistant sleeves.', 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=800&q=80', 4, 1),
-('cat_soap', 'Soap and Bath Products', 'soap-and-bath-products', 'Gentle guest bath soaps, vegetable glycerin bars, and liquid hand wash bulk refills.', 'https://images.unsplash.com/photo-1607006314644-8e3b1c8c50e2?auto=format&fit=crop&w=800&q=80', 5, 1),
-('cat_bathroom', 'Bathroom Cleaners', 'bathroom-cleaners', 'Institutional descalers, toilet bowl disinfectants, and sanitary ware surface cleaners.', 'https://images.unsplash.com/photo-1585421514738-01798e348b17?auto=format&fit=crop&w=800&q=80', 6, 1),
-('cat_floor', 'Floor and Surface Cleaners', 'floor-and-surface-cleaners', 'High-performance commercial floor disinfectants, phenolic cleaners, and black phenyl concentrates.', 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80', 7, 1),
-('cat_glass', 'Glass and Furniture Care', 'glass-and-furniture-care', 'Streak-free window and mirror sprays, wood polish, and laminate surface cleaners.', 'https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=800&q=80', 8, 1),
-('cat_kitchen', 'Kitchen and Dishwash', 'kitchen-and-dishwash', 'Commercial dishwashing concentrates and food-safe grease-cutting kitchen formulations.', 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80', 9, 1),
-('cat_room', 'Room Fresheners', 'room-fresheners', 'Ambient room freshener sprays, floral mists, and long-lasting diffuser fragrance oils.', 'https://images.unsplash.com/photo-1602928321679-560bb453f190?auto=format&fit=crop&w=800&q=80', 10, 1),
-('cat_essentials', 'Guest Essentials and Room Accessories', 'guest-essentials-and-room-accessories', 'Disposable hotel slippers, absorbent paper coasters, and hygienic drinking glass wraps.', 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80', 11, 1),
-('cat_paper', 'Paper Products', 'paper-products', 'Embossed washroom tissue jumbo rolls and interleaved folded paper hand towels.', 'https://images.unsplash.com/photo-1584556812952-905ffd0c611a?auto=format&fit=crop&w=800&q=80', 12, 1),
-('cat_packaging', 'Packaging and Bags', 'packaging-and-bags', 'Customizable non-woven carry bags and retail packaging for hospitality groups.', 'https://images.unsplash.com/photo-1597484661643-2f5fef640dd1?auto=format&fit=crop&w=800&q=80', 13, 1),
-('cat_housekeeping', 'Housekeeping Supplies', 'housekeeping-supplies', 'Commercial garbage bags, heavy-duty bin liners, and housekeeping utility supplies.', 'https://images.unsplash.com/photo-1610557892470-55d9e80c0bce?auto=format&fit=crop&w=800&q=80', 14, 1),
-('cat_bulk', 'Bulk Hospitality Supplies', 'bulk-hospitality-supplies', '5-Litre institutional gallon containers and bulk dispenser supply solutions.', 'https://images.unsplash.com/photo-1608248597359-5f28f0942526?auto=format&fit=crop&w=800&q=80', 15, 1);
+('cat_shampoo', 'Shampoo and Conditioner', 'shampoo-and-conditioner', 'Guest hair care amenities, conditioning blends, and refillable mini bottles for luxury hospitality.', '/products/hotel-conditioner-mini-bottle.jpg', 1, 1),
+('cat_toiletries', 'Hotel Toiletries', 'hotel-toiletries', 'Individual mini guest amenities including body washes, nourishing lotions, and vanity accessories.', '/products/comb-with-kraft-box.jpg', 2, 1),
+('cat_dental', 'Dental Kits', 'dental-kits', 'Hygienic dental care travel sets in eco-friendly kraft packaging with soft-bristle brushes.', '/products/dental-kit.jpg', 3, 1),
+('cat_shaving', 'Shaving and Grooming Kits', 'shaving-and-grooming-kits', 'Single and twin blade guest razors paired with soothing shaving sachets in water-resistant sleeves.', '/products/shaving-kit.jpg', 4, 1),
+('cat_soap', 'Soap and Bath Products', 'soap-and-bath-products', 'Gentle guest bath soaps, vegetable glycerin bars, and liquid hand wash bulk refills.', '/products/hand-wash.jpg', 5, 1),
+('cat_bathroom', 'Bathroom Cleaners', 'bathroom-cleaners', 'Institutional descalers, toilet bowl disinfectants, and sanitary ware surface cleaners.', '/products/toilet-cleaner.jpg', 6, 1),
+('cat_floor', 'Floor and Surface Cleaners', 'floor-and-surface-cleaners', 'High-performance commercial floor disinfectants, phenolic cleaners, and black phenyl concentrates.', '/products/floor-cleaner.jpg', 7, 1),
+('cat_glass', 'Glass and Furniture Care', 'glass-and-furniture-care', 'Streak-free window and mirror sprays, wood polish, and laminate surface cleaners.', '/products/glass-cleaner-spray.jpg', 8, 1),
+('cat_kitchen', 'Kitchen and Dishwash', 'kitchen-and-dishwash', 'Commercial dishwashing concentrates and food-safe grease-cutting kitchen formulations.', '/products/dish-wash-plus.jpg', 9, 1),
+('cat_room', 'Room Fresheners', 'room-fresheners', 'Ambient room freshener sprays, floral mists, and long-lasting diffuser fragrance oils.', '/products/lemon-room-spray.jpg', 10, 1),
+('cat_essentials', 'Guest Essentials and Room Accessories', 'guest-essentials-and-room-accessories', 'Disposable hotel slippers, absorbent paper coasters, and hygienic drinking glass wraps.', '/products/disposable-terry-slippers.jpg', 11, 1),
+('cat_paper', 'Paper Products', 'paper-products', 'Embossed washroom tissue jumbo rolls and interleaved folded paper hand towels.', '/products/folded-paper-hand-towels.jpg', 12, 1),
+('cat_packaging', 'Packaging and Bags', 'packaging-and-bags', 'Customizable non-woven carry bags and retail packaging for hospitality groups.', '/products/non-woven-carry-bag.jpg', 13, 1),
+('cat_housekeeping', 'Housekeeping Supplies', 'housekeeping-supplies', 'Commercial garbage bags, heavy-duty bin liners, and housekeeping utility supplies.', '/products/black-garbage-bags.jpg', 14, 1),
+('cat_bulk', 'Bulk Hospitality Supplies', 'bulk-hospitality-supplies', '5-Litre institutional gallon containers and bulk dispenser supply solutions.', '/products/embossed-tissue-roll.jpg', 15, 1);
 
--- All 26 Initial Products from Section 4A (Seeded as DRAFT: is_active = 0)
+-- All 26 Initial Products from Section 4A (Seeded as LIVE: is_active = 1)
 INSERT OR REPLACE INTO products (id, name, slug, description, category_id, image_url, gallery_json, variants_json, pack_size, specs_json, is_featured, is_customizable, is_active) VALUES
 (
   'prod_shaving_kit',
@@ -37,14 +37,14 @@ INSERT OR REPLACE INTO products (id, name, slug, description, category_id, image
   'shaving-kit-razor-shave-gel',
   'Compact guest shaving set featuring a razor paired with a soothing shaving gel sachet for single-use hospitality vanity kits.',
   'cat_shaving',
-  '/images/products/prod_shaving_kit.jpg',
-  '["/images/products/prod_shaving_kit.jpg',
+  '/products/shaving-kit.jpg',
+  '["/products/shaving-kit.jpg"]',
   '["Twin-Blade Razor & Shave Gel Sachet"]',
   'To be confirmed',
   '{"components": "Razor with lubricating strip, Shaving gel sachet", "packaging": "Sealed moisture-resistant sleeve"}',
   0,
   0,
-  0
+  1
 ),
 (
   'prod_dental_kit',
@@ -52,14 +52,14 @@ INSERT OR REPLACE INTO products (id, name, slug, description, category_id, image
   'dental-kit-kraft-box',
   'Complete guest dental kit containing an individually sleeved toothbrush and travel-size mint toothpaste enclosed in an eco-friendly kraft carton.',
   'cat_dental',
-  '/images/products/prod_dental_kit.jpg',
-  '["/images/products/prod_dental_kit.jpg',
+  '/products/dental-kit.jpg',
+  '["/products/dental-kit.jpg"]',
   '["Toothbrush & Toothpaste in Kraft Box"]',
   'To be confirmed',
   '{"components": "Soft bristle toothbrush, Toothpaste tube", "packaging": "Recycled kraft paper carton"}',
   0,
   0,
-  0
+  1
 ),
 (
   'prod_non_woven_bag',
@@ -67,14 +67,14 @@ INSERT OR REPLACE INTO products (id, name, slug, description, category_id, image
   'non-woven-carry-bag',
   'Durable non-woven fabric shopping and laundry carry bag with reinforced handles, designed for hotel guest amenities and retail packaging.',
   'cat_packaging',
-  '/images/products/prod_non_woven_bag.jpg',
-  '["/images/products/prod_non_woven_bag.jpg',
+  '/products/non-woven-carry-bag.jpg',
+  '["/products/non-woven-carry-bag.jpg"]',
   '["12\" x 18\" x 6\" (D-Cut / Loop Handle)"]',
   'To be confirmed',
   '{"dimensions": "12\" x 18\" x 6\"", "material": "Non-Woven Polypropylene", "customizable_logo": true}',
   0,
   1,
-  0
+  1
 ),
 (
   'prod_folded_paper_towels',
@@ -82,14 +82,14 @@ INSERT OR REPLACE INTO products (id, name, slug, description, category_id, image
   'folded-paper-hand-towels',
   'Absorbent interleaved folded paper towels for washroom and housekeeping dispensers, offering clean one-at-a-time towel dispensing.',
   'cat_paper',
-  '/images/products/prod_folded_paper_towels.jpg',
-  '["/images/products/prod_folded_paper_towels.jpg',
+  '/products/folded-paper-hand-towels.jpg',
+  '["/products/folded-paper-hand-towels.jpg"]',
   '["M-Fold / V-Fold Interleaved Paper Towels"]',
   'To be confirmed',
   '{"fold_type": "Interleaved M-Fold", "material": "Virgin / recycled pulp blend"}',
   0,
   0,
-  0
+  1
 ),
 (
   'prod_black_phenyl',
@@ -97,14 +97,14 @@ INSERT OR REPLACE INTO products (id, name, slug, description, category_id, image
   'black-phenyl-5l',
   'Heavy-duty institutional black disinfectant phenyl formulated for deep floor sanitization and odor control in commercial facilities.',
   'cat_floor',
-  '/images/products/prod_black_phenyl.jpg',
-  '["/images/products/prod_black_phenyl.jpg',
+  '/products/black-phenyl.jpg',
+  '["/products/black-phenyl.jpg"]',
   '["5 Litre Can"]',
   '5 L',
   '{"volume": "5 L", "formulation": "Commercial grade disinfectant fluid", "dilution": "Water soluble emulsion"}',
   0,
   0,
-  0
+  1
 ),
 (
   'prod_phenolic_cleaner',
@@ -112,14 +112,14 @@ INSERT OR REPLACE INTO products (id, name, slug, description, category_id, image
   'phenolic-cleaner-5l',
   'Commercial-grade phenolic floor cleaner and surface deodorizer packaged in an institutional 5-litre container.',
   'cat_floor',
-  '/images/products/prod_phenolic_cleaner.jpg',
-  '["/images/products/prod_phenolic_cleaner.jpg',
+  '/products/phenolic-cleaner.jpg',
+  '["/products/phenolic-cleaner.jpg"]',
   '["5 Litre Can"]',
   '5 L',
   '{"volume": "5 L", "surface_application": "Ceramic, mosaic, concrete and marble floors"}',
   0,
   0,
-  0
+  1
 ),
 (
   'prod_magic_cleaner',
@@ -127,14 +127,14 @@ INSERT OR REPLACE INTO products (id, name, slug, description, category_id, image
   'magic-cleaner',
   'Multi-purpose concentrated surface cleaning liquid engineered for tough stains and routine housekeeping maintenance.',
   'cat_floor',
-  '/images/products/prod_magic_cleaner.jpg',
-  '["/images/products/prod_magic_cleaner.jpg',
+  '/products/magic-cleaner.jpg',
+  '["/products/magic-cleaner.jpg"]',
   '["Concentrated Surface Formulation"]',
   'To be confirmed',
   '{"application": "Hard surfaces, counters, tiles, and fixtures"}',
   0,
   0,
-  0
+  1
 ),
 (
   'prod_hand_wash',
@@ -142,14 +142,14 @@ INSERT OR REPLACE INTO products (id, name, slug, description, category_id, image
   'hand-wash-5l',
   'Gentle moisturizing liquid hand wash refill formulated for high-traffic hotel and restaurant washroom dispensers.',
   'cat_soap',
-  '/images/products/prod_hand_wash.jpg',
-  '["/images/products/prod_hand_wash.jpg',
+  '/products/hand-wash.jpg',
+  '["/products/hand-wash.jpg"]',
   '["5 Litre Refill Can"]',
   '5 L',
   '{"volume": "5 L", "skin_feel": "Moisturizing lather, dispenser compatible"}',
   0,
   0,
-  0
+  1
 ),
 (
   'prod_toilet_cleaner',
@@ -157,14 +157,14 @@ INSERT OR REPLACE INTO products (id, name, slug, description, category_id, image
   'toilet-cleaner-5l',
   'Institutional-strength toilet and urinal bowl cleaner with a thick clinging formula that dissolves limescale and mineral deposits.',
   'cat_bathroom',
-  '/images/products/prod_toilet_cleaner.jpg',
-  '["/images/products/prod_toilet_cleaner.jpg',
+  '/products/toilet-cleaner.jpg',
+  '["/products/toilet-cleaner.jpg"]',
   '["5 Litre Institutional Can"]',
   '5 L',
   '{"volume": "5 L", "viscosity": "Thick clinging formula for angled rims"}',
   0,
   0,
-  0
+  1
 ),
 (
   'prod_sparkling_bathroom_cleaner',
@@ -172,14 +172,14 @@ INSERT OR REPLACE INTO products (id, name, slug, description, category_id, image
   'sparkling-bathroom-cleaner-5l',
   'Comprehensive bathroom and tile cleaner designed to remove soap scum, hard water stains, and grime from bathroom fixtures.',
   'cat_bathroom',
-  '/images/products/prod_sparkling_bathroom_cleaner.jpg',
-  '["/images/products/prod_sparkling_bathroom_cleaner.jpg',
+  '/products/sparkling-bathroom-cleaner.jpg',
+  '["/products/sparkling-bathroom-cleaner.jpg"]',
   '["5 Litre Container"]',
   '5 L',
   '{"volume": "5 L", "surfaces": "Glazed tiles, basins, tubs, taps, shower partitions"}',
   0,
   0,
-  0
+  1
 ),
 (
   'prod_floor_cleaner',
@@ -187,14 +187,14 @@ INSERT OR REPLACE INTO products (id, name, slug, description, category_id, image
   'floor-cleaner-5l',
   'Daily maintenance floor cleaner concentrate delivering a fresh scent and clean finish on guest room and lobby floors.',
   'cat_floor',
-  '/images/products/prod_floor_cleaner.jpg',
-  '["/images/products/prod_floor_cleaner.jpg',
+  '/products/floor-cleaner.jpg',
+  '["/products/floor-cleaner.jpg"]',
   '["5 Litre Can"]',
   '5 L',
   '{"volume": "5 L", "residue": "No sticky film, quick drying formula"}',
   0,
   0,
-  0
+  1
 ),
 (
   'prod_glass_cleaner',
@@ -202,14 +202,14 @@ INSERT OR REPLACE INTO products (id, name, slug, description, category_id, image
   'glass-cleaner-spray',
   'Fast-evaporating glass and window cleaner spray providing streak-free clarity on mirrors, glass partitions, and display cases.',
   'cat_glass',
-  '/images/products/prod_glass_cleaner.jpg',
-  '["/images/products/prod_glass_cleaner.jpg',
+  '/products/glass-cleaner-spray.jpg',
+  '["/products/glass-cleaner-spray.jpg"]',
   '["Trigger Spray Bottle"]',
   'To be confirmed',
   '{"finish": "Streak-free shine", "safe_on": "Mirrors, windshields, glass fixtures"}',
   0,
   0,
-  0
+  1
 ),
 (
   'prod_furniture_cleaner',
@@ -217,14 +217,14 @@ INSERT OR REPLACE INTO products (id, name, slug, description, category_id, image
   'furniture-cleaner-100ml',
   'Conditioning spray polish for treated wood, veneer, leatherette, and laminated furniture surfaces in hotel guest rooms.',
   'cat_glass',
-  '/images/products/prod_furniture_cleaner.jpg',
-  '["/images/products/prod_furniture_cleaner.jpg',
+  '/products/furniture-cleaner.jpg',
+  '["/products/furniture-cleaner.jpg"]',
   '["100 ml Bottle"]',
   '100 ml',
   '{"volume": "100 ml", "application": "Polished wood, veneer, laminate surfaces"}',
   0,
   0,
-  0
+  1
 ),
 (
   'prod_lemon_room_spray',
@@ -232,14 +232,14 @@ INSERT OR REPLACE INTO products (id, name, slug, description, category_id, image
   'lemon-room-spray',
   'Invigorating lemon citrus room spray for quick turnaround housekeeping and guest room atmosphere refreshment.',
   'cat_room',
-  '/images/products/prod_lemon_room_spray.jpg',
-  '["/images/products/prod_lemon_room_spray.jpg',
+  '/products/lemon-room-spray.jpg',
+  '["/products/lemon-room-spray.jpg"]',
   '["Aerosol / Trigger Room Mist"]',
   'To be confirmed',
   '{"scent": "Lemon Zest", "format": "Spray Mist"}',
   0,
   0,
-  0
+  1
 ),
 (
   'prod_dish_wash',
@@ -247,14 +247,14 @@ INSERT OR REPLACE INTO products (id, name, slug, description, category_id, image
   'dish-wash-plus-5l',
   'Institutional grease-cutting liquid dishwash concentrate for banquet kitchens, room service pantry, and restaurant cutlery.',
   'cat_kitchen',
-  '/images/products/prod_dish_wash.jpg',
-  '["/images/products/prod_dish_wash.jpg',
+  '/products/dish-wash-plus.jpg',
+  '["/products/dish-wash-plus.jpg"]',
   '["5 Litre Refill Can"]',
   '5 L',
   '{"volume": "5 L", "rinse_profile": "Fast grease-stripping with clean water rinse"}',
   0,
   0,
-  0
+  1
 ),
 (
   'prod_hotel_shampoo',
@@ -262,14 +262,14 @@ INSERT OR REPLACE INTO products (id, name, slug, description, category_id, image
   'hotel-shampoo-mini-bottle',
   'Refreshing hotel guest shampoo formulated for daily hair washing, packaged in a compact 20 ml travel amenity bottle.',
   'cat_shampoo',
-  '/images/products/prod_hotel_shampoo.jpeg',
-  '["/images/products/prod_hotel_shampoo.jpeg',
+  '/products/hotel-shampoo-mini-bottle.jpg',
+  '["/products/hotel-shampoo-mini-bottle.jpg"]',
   '["20 ml Mini Bottle"]',
   '20 ml',
   '{"volume": "20 ml", "cap": "Ribbed screw cap", "customizable_logo": false}',
   0,
   0,
-  0
+  1
 ),
 (
   'prod_hotel_conditioner',
@@ -277,14 +277,14 @@ INSERT OR REPLACE INTO products (id, name, slug, description, category_id, image
   'hotel-conditioner-mini-bottle',
   'Lightweight nourishing guest conditioner that softens and detangles hair, packaged in a minimalist hotel amenity bottle.',
   'cat_shampoo',
-  '/images/products/prod_hotel_conditioner.jpeg',
-  '["/images/products/prod_hotel_conditioner.jpeg',
+  '/products/hotel-conditioner-mini-bottle.jpg',
+  '["/products/hotel-conditioner-mini-bottle.jpg"]',
   '["Mini Hospitality Bottle"]',
   'To be confirmed',
   '{"packaging": "Squeeze amenity bottle", "customizable_logo": false}',
   0,
   0,
-  0
+  1
 ),
 (
   'prod_body_wash',
@@ -292,14 +292,14 @@ INSERT OR REPLACE INTO products (id, name, slug, description, category_id, image
   'body-wash-mini-bottle',
   'Invigorating aquatic body wash for guest bathrooms, packaged in a single-stay 20 ml hospitality bottle.',
   'cat_toiletries',
-  '/images/products/prod_body_wash.jpeg',
-  '["/images/products/prod_body_wash.jpeg',
+  '/products/body-wash-mini-bottle.jpg',
+  '["/products/body-wash-mini-bottle.jpg"]',
   '["20 ml Mini Bottle"]',
   '20 ml',
   '{"volume": "20 ml", "lather": "Rich cleansing foam", "customizable_logo": false}',
   0,
   0,
-  0
+  1
 ),
 (
   'prod_moisturizer',
@@ -307,14 +307,14 @@ INSERT OR REPLACE INTO products (id, name, slug, description, category_id, image
   'moisturizer-mini-bottle',
   'Smooth hydrating body moisturizer designed to restore skin balance after travel, packaged in a 20 ml guest bottle.',
   'cat_toiletries',
-  '/images/products/prod_moisturizer.jpeg',
-  '["/images/products/prod_moisturizer.jpeg',
+  '/products/moisturizer-mini-bottle.jpg',
+  '["/products/moisturizer-mini-bottle.jpg"]',
   '["20 ml Mini Bottle"]',
   '20 ml',
   '{"volume": "20 ml", "absorption": "Fast absorbing non-greasy lotion", "customizable_logo": false}',
   0,
   0,
-  0
+  1
 ),
 (
   'prod_fragrance_oil_tea_bloom',
@@ -322,14 +322,14 @@ INSERT OR REPLACE INTO products (id, name, slug, description, category_id, image
   'fragrance-oil-tea-bloom',
   'Concentrated tea bloom aroma diffuser oil in an amber bottle for hotel lobbies, elevator corridors, and guest suite diffusers.',
   'cat_room',
-  '/images/products/prod_fragrance_oil_tea_bloom.jpeg',
-  '["/images/products/prod_fragrance_oil_tea_bloom.jpeg',
+  '/products/fragrance-oil-tea-bloom.jpg',
+  '["/products/fragrance-oil-tea-bloom.jpg"]',
   '["10 ml Amber Dropper Bottle"]',
   '10 ml',
   '{"volume": "10 ml", "fragrance_profile": "Tea Bloom floral blend", "usage": "Ultrasonic & reed diffusers"}',
   0,
   0,
-  0
+  1
 ),
 (
   'prod_black_garbage_bags',
@@ -337,14 +337,14 @@ INSERT OR REPLACE INTO products (id, name, slug, description, category_id, image
   'black-garbage-bags',
   'Durable tear-resistant black waste bags for hotel guest room dustbins and housekeeping trolley collection.',
   'cat_housekeeping',
-  '/images/products/prod_black_garbage_bags.jpeg',
-  '["/images/products/prod_black_garbage_bags.jpeg',
+  '/products/black-garbage-bags.jpg',
+  '["/products/black-garbage-bags.jpg"]',
   '["Standard Housekeeping Roll"]',
   'To be confirmed',
   '{"material": "High density polyethylene", "color": "Black"}',
   0,
   0,
-  0
+  1
 ),
 (
   'prod_terry_slippers',
@@ -352,14 +352,14 @@ INSERT OR REPLACE INTO products (id, name, slug, description, category_id, image
   'disposable-terry-slippers-white',
   'Unisex closed-toe white terry cloth guest room slippers with a textured anti-slip sole for hotel bedrooms and spas.',
   'cat_essentials',
-  '/images/products/prod_terry_slippers.jpeg',
-  '["/images/products/prod_terry_slippers.jpeg',
+  '/products/disposable-terry-slippers.jpg',
+  '["/products/disposable-terry-slippers.jpg"]',
   '["Unisex Closed-Toe Terry Slipper"]',
   'To be confirmed',
   '{"upper": "Soft white terry cloth", "sole": "Textured anti-skid EVA", "style": "Closed toe"}',
   0,
   0,
-  0
+  1
 ),
 (
   'prod_printed_paper_coasters',
@@ -367,14 +367,14 @@ INSERT OR REPLACE INTO products (id, name, slug, description, category_id, image
   'printed-paper-coasters',
   'Absorbent multi-ply beverage coasters for hotel guest room bedside tables, banquet counters, and in-room dining.',
   'cat_essentials',
-  '/images/products/prod_printed_paper_coasters.jpeg',
-  '["/images/products/prod_printed_paper_coasters.jpeg',
+  '/products/printed-paper-coasters.jpg',
+  '["/products/printed-paper-coasters.jpg"]',
   '["Hospitality Beverage Coaster"]',
   'To be confirmed',
   '{"material": "Absorbent multi-ply coaster board", "customizable_logo": true}',
   0,
   1,
-  0
+  1
 ),
 (
   'prod_paper_wrapped_glass',
@@ -382,14 +382,14 @@ INSERT OR REPLACE INTO products (id, name, slug, description, category_id, image
   'hygienic-paper-wrapped-drinking-glass',
   'Sanitary paper sleeve-wrapped drinking glass offering visible hygiene reassurance for hotel vanity setups and minibars.',
   'cat_essentials',
-  '/images/products/prod_paper_wrapped_glass.jpeg',
-  '["/images/products/prod_paper_wrapped_glass.jpeg',
+  '/products/paper-wrapped-drinking-glass.jpg',
+  '["/products/paper-wrapped-drinking-glass.jpg"]',
   '["Sanitized Tumbler with Printed Paper Sleeve"]',
   'To be confirmed',
   '{"hygiene_seal": "Protective paper sleeve wrap", "customizable_logo": true}',
   0,
   1,
-  0
+  1
 ),
 (
   'prod_comb_kraft_box',
@@ -397,14 +397,14 @@ INSERT OR REPLACE INTO products (id, name, slug, description, category_id, image
   'comb-with-kraft-box',
   'Neutral white pocket grooming comb individually packaged in an earth-toned biodegradable kraft paper carton.',
   'cat_toiletries',
-  '/images/products/prod_comb_kraft_box.jpeg',
-  '["/images/products/prod_comb_kraft_box.jpeg',
+  '/products/comb-with-kraft-box.jpg',
+  '["/products/comb-with-kraft-box.jpg"]',
   '["Pocket Comb in Kraft Box"]',
   'To be confirmed',
   '{"color": "Neutral white", "packaging": "Biodegradable kraft carton"}',
   0,
   0,
-  0
+  1
 ),
 (
   'prod_embossed_tissue_roll',
@@ -412,14 +412,14 @@ INSERT OR REPLACE INTO products (id, name, slug, description, category_id, image
   'embossed-tissue-paper-roll-jumbo',
   'High-capacity embossed washroom paper roll designed for commercial high-traffic washroom dispensers.',
   'cat_paper',
-  '/images/products/prod_embossed_tissue_roll.jpeg',
-  '["/images/products/prod_embossed_tissue_roll.jpeg',
+  '/products/embossed-tissue-roll.jpg',
+  '["/products/embossed-tissue-roll.jpg"]',
   '["Jumbo Washroom Roll"]',
   'To be confirmed',
   '{"format": "Jumbo washroom dispenser roll", "texture": "Embossed absorbent pulp"}',
   0,
   0,
-  0
+  1
 );
 
 -- Seed Demo Access Codes for Testing & Verification

@@ -5,6 +5,8 @@ interface AuthContextType {
   adminUser: AdminUser | null;
   token: string | null;
   loading: boolean;
+  previewDrafts: boolean;
+  setPreviewDrafts: (val: boolean) => void;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
@@ -16,6 +18,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
   const [token, setToken] = useState<string | null>(() => localStorage.getItem('cc_token'));
   const [loading, setLoading] = useState(true);
+  const [previewDrafts, setPreviewDraftsState] = useState<boolean>(() => {
+    return localStorage.getItem('cc_preview_drafts') === 'true' || window.location.search.includes('preview=drafts');
+  });
+
+  const setPreviewDrafts = (val: boolean) => {
+    setPreviewDraftsState(val);
+    if (val) {
+      localStorage.setItem('cc_preview_drafts', 'true');
+    } else {
+      localStorage.removeItem('cc_preview_drafts');
+    }
+  };
 
   const checkAuth = async () => {
     try {
@@ -74,11 +88,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch {}
     setAdminUser(null);
     setToken(null);
+    setPreviewDrafts(false);
     localStorage.removeItem('cc_token');
   };
 
   return (
-    <AuthContext.Provider value={{ adminUser, token, loading, login, logout, checkAuth }}>
+    <AuthContext.Provider value={{ adminUser, token, loading, previewDrafts, setPreviewDrafts, login, logout, checkAuth }}>
       {children}
     </AuthContext.Provider>
   );

@@ -194,8 +194,8 @@ export const CartPage: React.FC = () => {
                   <img
                     src={item.imageUrl}
                     alt={item.productName}
-                    onError={(e) => { (e.target as HTMLImageElement).src = '/images/products/placeholder.svg'; }}
-                    className="w-16 h-16 rounded-xl object-cover border border-cream-200 flex-shrink-0"
+                    onError={(e) => { (e.target as HTMLImageElement).src = '/products/placeholder.svg'; }}
+                    className="w-16 h-16 rounded-xl object-contain bg-[#FAF8F5] p-1 border border-cream-200 flex-shrink-0"
                   />
 
                   {/* Info */}

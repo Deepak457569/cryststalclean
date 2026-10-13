@@ -10,7 +10,7 @@ function devApiPlugin(): Plugin {
       name: 'Shampoo and Conditioner',
       slug: 'shampoo-and-conditioner',
       description: 'Guest hair care amenities, conditioning blends, and refillable mini bottles for luxury hospitality.',
-      image_url: 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&w=800&q=80',
+      image_url: '/products/hotel-conditioner-mini-bottle.jpg',
       sort_order: 1,
       is_active: 1
     },
@@ -19,7 +19,7 @@ function devApiPlugin(): Plugin {
       name: 'Hotel Toiletries',
       slug: 'hotel-toiletries',
       description: 'Individual mini guest amenities including body washes, nourishing lotions, and vanity accessories.',
-      image_url: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=800&q=80',
+      image_url: '/products/comb-with-kraft-box.jpg',
       sort_order: 2,
       is_active: 1
     },
@@ -28,7 +28,7 @@ function devApiPlugin(): Plugin {
       name: 'Dental Kits',
       slug: 'dental-kits',
       description: 'Hygienic dental care travel sets in eco-friendly kraft packaging with soft-bristle brushes.',
-      image_url: 'https://images.unsplash.com/photo-1559591937-e62fb330bc1f?auto=format&fit=crop&w=800&q=80',
+      image_url: '/products/dental-kit.jpg',
       sort_order: 3,
       is_active: 1
     },
@@ -37,7 +37,7 @@ function devApiPlugin(): Plugin {
       name: 'Shaving and Grooming Kits',
       slug: 'shaving-and-grooming-kits',
       description: 'Single and twin blade guest razors paired with soothing shaving sachets in water-resistant sleeves.',
-      image_url: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=800&q=80',
+      image_url: '/products/shaving-kit.jpg',
       sort_order: 4,
       is_active: 1
     },
@@ -46,7 +46,7 @@ function devApiPlugin(): Plugin {
       name: 'Soap and Bath Products',
       slug: 'soap-and-bath-products',
       description: 'Gentle guest bath soaps, vegetable glycerin bars, and liquid hand wash bulk refills.',
-      image_url: 'https://images.unsplash.com/photo-1607006314644-8e3b1c8c50e2?auto=format&fit=crop&w=800&q=80',
+      image_url: '/products/hand-wash.jpg',
       sort_order: 5,
       is_active: 1
     },
@@ -55,7 +55,7 @@ function devApiPlugin(): Plugin {
       name: 'Bathroom Cleaners',
       slug: 'bathroom-cleaners',
       description: 'Institutional descalers, toilet bowl disinfectants, and sanitary ware surface cleaners.',
-      image_url: 'https://images.unsplash.com/photo-1585421514738-01798e348b17?auto=format&fit=crop&w=800&q=80',
+      image_url: '/products/toilet-cleaner.jpg',
       sort_order: 6,
       is_active: 1
     },
@@ -64,7 +64,7 @@ function devApiPlugin(): Plugin {
       name: 'Floor and Surface Cleaners',
       slug: 'floor-and-surface-cleaners',
       description: 'High-performance commercial floor disinfectants, phenolic cleaners, and black phenyl concentrates.',
-      image_url: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80',
+      image_url: '/products/floor-cleaner.jpg',
       sort_order: 7,
       is_active: 1
     },
@@ -73,7 +73,7 @@ function devApiPlugin(): Plugin {
       name: 'Glass and Furniture Care',
       slug: 'glass-and-furniture-care',
       description: 'Streak-free window and mirror sprays, wood polish, and laminate surface cleaners.',
-      image_url: 'https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=800&q=80',
+      image_url: '/products/glass-cleaner-spray.jpg',
       sort_order: 8,
       is_active: 1
     },
@@ -82,7 +82,7 @@ function devApiPlugin(): Plugin {
       name: 'Kitchen and Dishwash',
       slug: 'kitchen-and-dishwash',
       description: 'Commercial dishwashing concentrates and food-safe grease-cutting kitchen formulations.',
-      image_url: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80',
+      image_url: '/products/dish-wash-plus.jpg',
       sort_order: 9,
       is_active: 1
     },
@@ -91,7 +91,7 @@ function devApiPlugin(): Plugin {
       name: 'Room Fresheners',
       slug: 'room-fresheners',
       description: 'Ambient room freshener sprays, floral mists, and long-lasting diffuser fragrance oils.',
-      image_url: 'https://images.unsplash.com/photo-1602928321679-560bb453f190?auto=format&fit=crop&w=800&q=80',
+      image_url: '/products/lemon-room-spray.jpg',
       sort_order: 10,
       is_active: 1
     },
@@ -100,7 +100,7 @@ function devApiPlugin(): Plugin {
       name: 'Guest Essentials and Room Accessories',
       slug: 'guest-essentials-and-room-accessories',
       description: 'Disposable hotel slippers, absorbent paper coasters, and hygienic drinking glass wraps.',
-      image_url: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80',
+      image_url: '/products/disposable-terry-slippers.jpg',
       sort_order: 11,
       is_active: 1
     },
@@ -109,7 +109,7 @@ function devApiPlugin(): Plugin {
       name: 'Paper Products',
       slug: 'paper-products',
       description: 'Embossed washroom tissue jumbo rolls and interleaved folded paper hand towels.',
-      image_url: 'https://images.unsplash.com/photo-1584556812952-905ffd0c611a?auto=format&fit=crop&w=800&q=80',
+      image_url: '/products/folded-paper-hand-towels.jpg',
       sort_order: 12,
       is_active: 1
     },
@@ -118,7 +118,7 @@ function devApiPlugin(): Plugin {
       name: 'Packaging and Bags',
       slug: 'packaging-and-bags',
       description: 'Customizable non-woven carry bags and retail packaging for hospitality groups.',
-      image_url: 'https://images.unsplash.com/photo-1597484661643-2f5fef640dd1?auto=format&fit=crop&w=800&q=80',
+      image_url: '/products/non-woven-carry-bag.jpg',
       sort_order: 13,
       is_active: 1
     },
@@ -127,7 +127,7 @@ function devApiPlugin(): Plugin {
       name: 'Housekeeping Supplies',
       slug: 'housekeeping-supplies',
       description: 'Commercial garbage bags, heavy-duty bin liners, and housekeeping utility supplies.',
-      image_url: 'https://images.unsplash.com/photo-1610557892470-55d9e80c0bce?auto=format&fit=crop&w=800&q=80',
+      image_url: '/products/black-garbage-bags.jpg',
       sort_order: 14,
       is_active: 1
     },
@@ -136,7 +136,7 @@ function devApiPlugin(): Plugin {
       name: 'Bulk Hospitality Supplies',
       slug: 'bulk-hospitality-supplies',
       description: '5-Litre institutional gallon containers and bulk dispenser supply solutions.',
-      image_url: 'https://images.unsplash.com/photo-1608248597359-5f28f0942526?auto=format&fit=crop&w=800&q=80',
+      image_url: '/products/embossed-tissue-roll.jpg',
       sort_order: 15,
       is_active: 1
     }
@@ -150,14 +150,14 @@ function devApiPlugin(): Plugin {
       description: 'Compact guest shaving set featuring a razor paired with a soothing shaving gel sachet for single-use hospitality vanity kits.',
       category_id: 'cat_shaving',
       category_name: 'Shaving and Grooming Kits',
-      image_url: '/images/products/prod_shaving_kit.jpg',
-      gallery_json: JSON.stringify(['https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=800&q=80']),
+      image_url: '/products/shaving-kit.jpg',
+      gallery_json: JSON.stringify(['/products/shaving-kit.jpg']),
       variants_json: JSON.stringify(['Twin-Blade Razor & Shave Gel Sachet']),
       pack_size: 'To be confirmed',
       specs_json: JSON.stringify({ components: 'Razor with lubricating strip, Shaving gel sachet', packaging: 'Sealed moisture-resistant sleeve' }),
       is_featured: 0,
       is_customizable: 0,
-      is_active: 0,
+      is_active: 1,
       created_at: new Date().toISOString()
     },
     {
@@ -167,14 +167,14 @@ function devApiPlugin(): Plugin {
       description: 'Complete guest dental kit containing an individually sleeved toothbrush and travel-size mint toothpaste enclosed in an eco-friendly kraft carton.',
       category_id: 'cat_dental',
       category_name: 'Dental Kits',
-      image_url: '/images/products/prod_dental_kit.jpg',
-      gallery_json: JSON.stringify(['https://images.unsplash.com/photo-1559591937-e62fb330bc1f?auto=format&fit=crop&w=800&q=80']),
+      image_url: '/products/dental-kit.jpg',
+      gallery_json: JSON.stringify(['/products/dental-kit.jpg']),
       variants_json: JSON.stringify(['Toothbrush & Toothpaste in Kraft Box']),
       pack_size: 'To be confirmed',
       specs_json: JSON.stringify({ components: 'Soft bristle toothbrush, Toothpaste tube', packaging: 'Recycled kraft paper carton' }),
       is_featured: 0,
       is_customizable: 0,
-      is_active: 0,
+      is_active: 1,
       created_at: new Date().toISOString()
     },
     {
@@ -184,14 +184,14 @@ function devApiPlugin(): Plugin {
       description: 'Durable non-woven fabric shopping and laundry carry bag with reinforced handles, designed for hotel guest amenities and retail packaging.',
       category_id: 'cat_packaging',
       category_name: 'Packaging and Bags',
-      image_url: '/images/products/prod_non_woven_bag.jpg',
-      gallery_json: JSON.stringify(['https://images.unsplash.com/photo-1597484661643-2f5fef640dd1?auto=format&fit=crop&w=800&q=80']),
+      image_url: '/products/non-woven-carry-bag.jpg',
+      gallery_json: JSON.stringify(['/products/non-woven-carry-bag.jpg']),
       variants_json: JSON.stringify(['12" x 18" x 6" (D-Cut / Loop Handle)']),
       pack_size: 'To be confirmed',
       specs_json: JSON.stringify({ dimensions: '12" x 18" x 6"', material: 'Non-Woven Polypropylene', customizable_logo: true }),
       is_featured: 0,
       is_customizable: 1,
-      is_active: 0,
+      is_active: 1,
       created_at: new Date().toISOString()
     },
     {
@@ -201,14 +201,14 @@ function devApiPlugin(): Plugin {
       description: 'Absorbent interleaved folded paper towels for washroom and housekeeping dispensers, offering clean one-at-a-time towel dispensing.',
       category_id: 'cat_paper',
       category_name: 'Paper Products',
-      image_url: '/images/products/prod_folded_paper_towels.jpg',
-      gallery_json: JSON.stringify(['https://images.unsplash.com/photo-1584556812952-905ffd0c611a?auto=format&fit=crop&w=800&q=80']),
+      image_url: '/products/folded-paper-hand-towels.jpg',
+      gallery_json: JSON.stringify(['/products/folded-paper-hand-towels.jpg']),
       variants_json: JSON.stringify(['M-Fold / V-Fold Interleaved Paper Towels']),
       pack_size: 'To be confirmed',
       specs_json: JSON.stringify({ fold_type: 'Interleaved M-Fold', material: 'Virgin / recycled pulp blend' }),
       is_featured: 0,
       is_customizable: 0,
-      is_active: 0,
+      is_active: 1,
       created_at: new Date().toISOString()
     },
     {
@@ -218,14 +218,14 @@ function devApiPlugin(): Plugin {
       description: 'Heavy-duty institutional black disinfectant phenyl formulated for deep floor sanitization and odor control in commercial facilities.',
       category_id: 'cat_floor',
       category_name: 'Floor and Surface Cleaners',
-      image_url: '/images/products/prod_black_phenyl.jpg',
-      gallery_json: JSON.stringify(['https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80']),
+      image_url: '/products/black-phenyl.jpg',
+      gallery_json: JSON.stringify(['/products/black-phenyl.jpg']),
       variants_json: JSON.stringify(['5 Litre Can']),
       pack_size: '5 L',
       specs_json: JSON.stringify({ volume: '5 L', formulation: 'Commercial grade disinfectant fluid', dilution: 'Water soluble emulsion' }),
       is_featured: 0,
       is_customizable: 0,
-      is_active: 0,
+      is_active: 1,
       created_at: new Date().toISOString()
     },
     {
@@ -235,14 +235,14 @@ function devApiPlugin(): Plugin {
       description: 'Commercial-grade phenolic floor cleaner and surface deodorizer packaged in an institutional 5-litre container.',
       category_id: 'cat_floor',
       category_name: 'Floor and Surface Cleaners',
-      image_url: '/images/products/prod_phenolic_cleaner.jpg',
-      gallery_json: JSON.stringify(['https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80']),
+      image_url: '/products/phenolic-cleaner.jpg',
+      gallery_json: JSON.stringify(['/products/phenolic-cleaner.jpg']),
       variants_json: JSON.stringify(['5 Litre Can']),
       pack_size: '5 L',
       specs_json: JSON.stringify({ volume: '5 L', surface_application: 'Ceramic, mosaic, concrete and marble floors' }),
       is_featured: 0,
       is_customizable: 0,
-      is_active: 0,
+      is_active: 1,
       created_at: new Date().toISOString()
     },
     {
@@ -252,14 +252,14 @@ function devApiPlugin(): Plugin {
       description: 'Multi-purpose concentrated surface cleaning liquid engineered for tough stains and routine housekeeping maintenance.',
       category_id: 'cat_floor',
       category_name: 'Floor and Surface Cleaners',
-      image_url: '/images/products/prod_magic_cleaner.jpg',
-      gallery_json: JSON.stringify(['https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80']),
+      image_url: '/products/magic-cleaner.jpg',
+      gallery_json: JSON.stringify(['/products/magic-cleaner.jpg']),
       variants_json: JSON.stringify(['Concentrated Surface Formulation']),
       pack_size: 'To be confirmed',
       specs_json: JSON.stringify({ application: 'Hard surfaces, counters, tiles, and fixtures' }),
       is_featured: 0,
       is_customizable: 0,
-      is_active: 0,
+      is_active: 1,
       created_at: new Date().toISOString()
     },
     {
@@ -269,14 +269,14 @@ function devApiPlugin(): Plugin {
       description: 'Gentle moisturizing liquid hand wash refill formulated for high-traffic hotel and restaurant washroom dispensers.',
       category_id: 'cat_soap',
       category_name: 'Soap and Bath Products',
-      image_url: '/images/products/prod_hand_wash.jpg',
-      gallery_json: JSON.stringify(['https://images.unsplash.com/photo-1607006314644-8e3b1c8c50e2?auto=format&fit=crop&w=800&q=80']),
+      image_url: '/products/hand-wash.jpg',
+      gallery_json: JSON.stringify(['/products/hand-wash.jpg']),
       variants_json: JSON.stringify(['5 Litre Refill Can']),
       pack_size: '5 L',
       specs_json: JSON.stringify({ volume: '5 L', skin_feel: 'Moisturizing lather, dispenser compatible' }),
       is_featured: 0,
       is_customizable: 0,
-      is_active: 0,
+      is_active: 1,
       created_at: new Date().toISOString()
     },
     {
@@ -286,14 +286,14 @@ function devApiPlugin(): Plugin {
       description: 'Institutional-strength toilet and urinal bowl cleaner with a thick clinging formula that dissolves limescale and mineral deposits.',
       category_id: 'cat_bathroom',
       category_name: 'Bathroom Cleaners',
-      image_url: '/images/products/prod_toilet_cleaner.jpg',
-      gallery_json: JSON.stringify(['https://images.unsplash.com/photo-1585421514738-01798e348b17?auto=format&fit=crop&w=800&q=80']),
+      image_url: '/products/toilet-cleaner.jpg',
+      gallery_json: JSON.stringify(['/products/toilet-cleaner.jpg']),
       variants_json: JSON.stringify(['5 Litre Institutional Can']),
       pack_size: '5 L',
       specs_json: JSON.stringify({ volume: '5 L', viscosity: 'Thick clinging formula for angled rims' }),
       is_featured: 0,
       is_customizable: 0,
-      is_active: 0,
+      is_active: 1,
       created_at: new Date().toISOString()
     },
     {
@@ -303,14 +303,14 @@ function devApiPlugin(): Plugin {
       description: 'Comprehensive bathroom and tile cleaner designed to remove soap scum, hard water stains, and grime from bathroom fixtures.',
       category_id: 'cat_bathroom',
       category_name: 'Bathroom Cleaners',
-      image_url: '/images/products/prod_sparkling_bathroom_cleaner.jpg',
-      gallery_json: JSON.stringify(['https://images.unsplash.com/photo-1585421514738-01798e348b17?auto=format&fit=crop&w=800&q=80']),
+      image_url: '/products/sparkling-bathroom-cleaner.jpg',
+      gallery_json: JSON.stringify(['/products/sparkling-bathroom-cleaner.jpg']),
       variants_json: JSON.stringify(['5 Litre Container']),
       pack_size: '5 L',
       specs_json: JSON.stringify({ volume: '5 L', surfaces: 'Glazed tiles, basins, tubs, taps, shower partitions' }),
       is_featured: 0,
       is_customizable: 0,
-      is_active: 0,
+      is_active: 1,
       created_at: new Date().toISOString()
     },
     {
@@ -320,14 +320,14 @@ function devApiPlugin(): Plugin {
       description: 'Daily maintenance floor cleaner concentrate delivering a fresh scent and clean finish on guest room and lobby floors.',
       category_id: 'cat_floor',
       category_name: 'Floor and Surface Cleaners',
-      image_url: '/images/products/prod_floor_cleaner.jpg',
-      gallery_json: JSON.stringify(['https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80']),
+      image_url: '/products/floor-cleaner.jpg',
+      gallery_json: JSON.stringify(['/products/floor-cleaner.jpg']),
       variants_json: JSON.stringify(['5 Litre Can']),
       pack_size: '5 L',
       specs_json: JSON.stringify({ volume: '5 L', residue: 'No sticky film, quick drying formula' }),
       is_featured: 0,
       is_customizable: 0,
-      is_active: 0,
+      is_active: 1,
       created_at: new Date().toISOString()
     },
     {
@@ -337,14 +337,14 @@ function devApiPlugin(): Plugin {
       description: 'Fast-evaporating glass and window cleaner spray providing streak-free clarity on mirrors, glass partitions, and display cases.',
       category_id: 'cat_glass',
       category_name: 'Glass and Furniture Care',
-      image_url: '/images/products/prod_glass_cleaner.jpg',
-      gallery_json: JSON.stringify(['https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=800&q=80']),
+      image_url: '/products/glass-cleaner-spray.jpg',
+      gallery_json: JSON.stringify(['/products/glass-cleaner-spray.jpg']),
       variants_json: JSON.stringify(['Trigger Spray Bottle']),
       pack_size: 'To be confirmed',
       specs_json: JSON.stringify({ finish: 'Streak-free shine', safe_on: 'Mirrors, windshields, glass fixtures' }),
       is_featured: 0,
       is_customizable: 0,
-      is_active: 0,
+      is_active: 1,
       created_at: new Date().toISOString()
     },
     {
@@ -354,14 +354,14 @@ function devApiPlugin(): Plugin {
       description: 'Conditioning spray polish for treated wood, veneer, leatherette, and laminated furniture surfaces in hotel guest rooms.',
       category_id: 'cat_glass',
       category_name: 'Glass and Furniture Care',
-      image_url: '/images/products/prod_furniture_cleaner.jpg',
-      gallery_json: JSON.stringify(['https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=800&q=80']),
+      image_url: '/products/furniture-cleaner.jpg',
+      gallery_json: JSON.stringify(['/products/furniture-cleaner.jpg']),
       variants_json: JSON.stringify(['100 ml Bottle']),
       pack_size: '100 ml',
       specs_json: JSON.stringify({ volume: '100 ml', application: 'Polished wood, veneer, laminate surfaces' }),
       is_featured: 0,
       is_customizable: 0,
-      is_active: 0,
+      is_active: 1,
       created_at: new Date().toISOString()
     },
     {
@@ -371,14 +371,14 @@ function devApiPlugin(): Plugin {
       description: 'Invigorating lemon citrus room spray for quick turnaround housekeeping and guest room atmosphere refreshment.',
       category_id: 'cat_room',
       category_name: 'Room Fresheners',
-      image_url: '/images/products/prod_lemon_room_spray.jpg',
-      gallery_json: JSON.stringify(['https://images.unsplash.com/photo-1602928321679-560bb453f190?auto=format&fit=crop&w=800&q=80']),
+      image_url: '/products/lemon-room-spray.jpg',
+      gallery_json: JSON.stringify(['/products/lemon-room-spray.jpg']),
       variants_json: JSON.stringify(['Aerosol / Trigger Room Mist']),
       pack_size: 'To be confirmed',
       specs_json: JSON.stringify({ scent: 'Lemon Zest', format: 'Spray Mist' }),
       is_featured: 0,
       is_customizable: 0,
-      is_active: 0,
+      is_active: 1,
       created_at: new Date().toISOString()
     },
     {
@@ -388,14 +388,14 @@ function devApiPlugin(): Plugin {
       description: 'Institutional grease-cutting liquid dishwash concentrate for banquet kitchens, room service pantry, and restaurant cutlery.',
       category_id: 'cat_kitchen',
       category_name: 'Kitchen and Dishwash',
-      image_url: '/images/products/prod_dish_wash.jpg',
-      gallery_json: JSON.stringify(['https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80']),
+      image_url: '/products/dish-wash-plus.jpg',
+      gallery_json: JSON.stringify(['/products/dish-wash-plus.jpg']),
       variants_json: JSON.stringify(['5 Litre Refill Can']),
       pack_size: '5 L',
       specs_json: JSON.stringify({ volume: '5 L', rinse_profile: 'Fast grease-stripping with clean water rinse' }),
       is_featured: 0,
       is_customizable: 0,
-      is_active: 0,
+      is_active: 1,
       created_at: new Date().toISOString()
     },
     {
@@ -405,14 +405,14 @@ function devApiPlugin(): Plugin {
       description: 'Refreshing hotel guest shampoo formulated for daily hair washing, packaged in a compact 20 ml travel amenity bottle.',
       category_id: 'cat_shampoo',
       category_name: 'Shampoo and Conditioner',
-      image_url: '/images/products/prod_hotel_shampoo.jpeg',
-      gallery_json: JSON.stringify(['https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&w=800&q=80']),
+      image_url: '/products/hotel-shampoo-mini-bottle.jpg',
+      gallery_json: JSON.stringify(['/products/hotel-shampoo-mini-bottle.jpg']),
       variants_json: JSON.stringify(['20 ml Mini Bottle']),
       pack_size: '20 ml',
       specs_json: JSON.stringify({ volume: '20 ml', cap: 'Ribbed screw cap', customizable_logo: false }),
       is_featured: 0,
       is_customizable: 0,
-      is_active: 0,
+      is_active: 1,
       created_at: new Date().toISOString()
     },
     {
@@ -422,14 +422,14 @@ function devApiPlugin(): Plugin {
       description: 'Lightweight nourishing guest conditioner that softens and detangles hair, packaged in a minimalist hotel amenity bottle.',
       category_id: 'cat_shampoo',
       category_name: 'Shampoo and Conditioner',
-      image_url: '/images/products/prod_hotel_conditioner.jpeg',
-      gallery_json: JSON.stringify(['https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&w=800&q=80']),
+      image_url: '/products/hotel-conditioner-mini-bottle.jpg',
+      gallery_json: JSON.stringify(['/products/hotel-conditioner-mini-bottle.jpg']),
       variants_json: JSON.stringify(['Mini Hospitality Bottle']),
       pack_size: 'To be confirmed',
       specs_json: JSON.stringify({ packaging: 'Squeeze amenity bottle', customizable_logo: false }),
       is_featured: 0,
       is_customizable: 0,
-      is_active: 0,
+      is_active: 1,
       created_at: new Date().toISOString()
     },
     {
@@ -439,14 +439,14 @@ function devApiPlugin(): Plugin {
       description: 'Invigorating aquatic body wash for guest bathrooms, packaged in a single-stay 20 ml hospitality bottle.',
       category_id: 'cat_toiletries',
       category_name: 'Hotel Toiletries',
-      image_url: '/images/products/prod_body_wash.jpeg',
-      gallery_json: JSON.stringify(['https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=800&q=80']),
+      image_url: '/products/body-wash-mini-bottle.jpg',
+      gallery_json: JSON.stringify(['/products/body-wash-mini-bottle.jpg']),
       variants_json: JSON.stringify(['20 ml Mini Bottle']),
       pack_size: '20 ml',
       specs_json: JSON.stringify({ volume: '20 ml', lather: 'Rich cleansing foam', customizable_logo: false }),
       is_featured: 0,
       is_customizable: 0,
-      is_active: 0,
+      is_active: 1,
       created_at: new Date().toISOString()
     },
     {
@@ -456,14 +456,14 @@ function devApiPlugin(): Plugin {
       description: 'Smooth hydrating body moisturizer designed to restore skin balance after travel, packaged in a 20 ml guest bottle.',
       category_id: 'cat_toiletries',
       category_name: 'Hotel Toiletries',
-      image_url: '/images/products/prod_moisturizer.jpeg',
-      gallery_json: JSON.stringify(['https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=800&q=80']),
+      image_url: '/products/moisturizer-mini-bottle.jpg',
+      gallery_json: JSON.stringify(['/products/moisturizer-mini-bottle.jpg']),
       variants_json: JSON.stringify(['20 ml Mini Bottle']),
       pack_size: '20 ml',
       specs_json: JSON.stringify({ volume: '20 ml', absorption: 'Fast absorbing non-greasy lotion', customizable_logo: false }),
       is_featured: 0,
       is_customizable: 0,
-      is_active: 0,
+      is_active: 1,
       created_at: new Date().toISOString()
     },
     {
@@ -473,14 +473,14 @@ function devApiPlugin(): Plugin {
       description: 'Concentrated tea bloom aroma diffuser oil in an amber bottle for hotel lobbies, elevator corridors, and guest suite diffusers.',
       category_id: 'cat_room',
       category_name: 'Room Fresheners',
-      image_url: '/images/products/prod_fragrance_oil_tea_bloom.jpeg',
-      gallery_json: JSON.stringify(['https://images.unsplash.com/photo-1602928321679-560bb453f190?auto=format&fit=crop&w=800&q=80']),
+      image_url: '/products/fragrance-oil-tea-bloom.jpg',
+      gallery_json: JSON.stringify(['/products/fragrance-oil-tea-bloom.jpg']),
       variants_json: JSON.stringify(['10 ml Amber Dropper Bottle']),
       pack_size: '10 ml',
       specs_json: JSON.stringify({ volume: '10 ml', fragrance_profile: 'Tea Bloom floral blend', usage: 'Ultrasonic & reed diffusers' }),
       is_featured: 0,
       is_customizable: 0,
-      is_active: 0,
+      is_active: 1,
       created_at: new Date().toISOString()
     },
     {
@@ -490,14 +490,14 @@ function devApiPlugin(): Plugin {
       description: 'Durable tear-resistant black waste bags for hotel guest room dustbins and housekeeping trolley collection.',
       category_id: 'cat_housekeeping',
       category_name: 'Housekeeping Supplies',
-      image_url: '/images/products/prod_black_garbage_bags.jpeg',
-      gallery_json: JSON.stringify(['https://images.unsplash.com/photo-1610557892470-55d9e80c0bce?auto=format&fit=crop&w=800&q=80']),
+      image_url: '/products/black-garbage-bags.jpg',
+      gallery_json: JSON.stringify(['/products/black-garbage-bags.jpg']),
       variants_json: JSON.stringify(['Standard Housekeeping Roll']),
       pack_size: 'To be confirmed',
       specs_json: JSON.stringify({ material: 'High density polyethylene', color: 'Black' }),
       is_featured: 0,
       is_customizable: 0,
-      is_active: 0,
+      is_active: 1,
       created_at: new Date().toISOString()
     },
     {
@@ -507,14 +507,14 @@ function devApiPlugin(): Plugin {
       description: 'Unisex closed-toe white terry cloth guest room slippers with a textured anti-slip sole for hotel bedrooms and spas.',
       category_id: 'cat_essentials',
       category_name: 'Guest Essentials and Room Accessories',
-      image_url: '/images/products/prod_terry_slippers.jpeg',
-      gallery_json: JSON.stringify(['https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80']),
+      image_url: '/products/disposable-terry-slippers.jpg',
+      gallery_json: JSON.stringify(['/products/disposable-terry-slippers.jpg']),
       variants_json: JSON.stringify(['Unisex Closed-Toe Terry Slipper']),
       pack_size: 'To be confirmed',
       specs_json: JSON.stringify({ upper: 'Soft white terry cloth', sole: 'Textured anti-skid EVA', style: 'Closed toe' }),
       is_featured: 0,
       is_customizable: 0,
-      is_active: 0,
+      is_active: 1,
       created_at: new Date().toISOString()
     },
     {
@@ -524,14 +524,14 @@ function devApiPlugin(): Plugin {
       description: 'Absorbent multi-ply beverage coasters for hotel guest room bedside tables, banquet counters, and in-room dining.',
       category_id: 'cat_essentials',
       category_name: 'Guest Essentials and Room Accessories',
-      image_url: '/images/products/prod_printed_paper_coasters.jpeg',
-      gallery_json: JSON.stringify(['https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=800&q=80']),
+      image_url: '/products/printed-paper-coasters.jpg',
+      gallery_json: JSON.stringify(['/products/printed-paper-coasters.jpg']),
       variants_json: JSON.stringify(['Hospitality Beverage Coaster']),
       pack_size: 'To be confirmed',
       specs_json: JSON.stringify({ material: 'Absorbent multi-ply coaster board', customizable_logo: true }),
       is_featured: 0,
       is_customizable: 1,
-      is_active: 0,
+      is_active: 1,
       created_at: new Date().toISOString()
     },
     {
@@ -541,14 +541,14 @@ function devApiPlugin(): Plugin {
       description: 'Sanitary paper sleeve-wrapped drinking glass offering visible hygiene reassurance for hotel vanity setups and minibars.',
       category_id: 'cat_essentials',
       category_name: 'Guest Essentials and Room Accessories',
-      image_url: '/images/products/prod_paper_wrapped_glass.jpeg',
-      gallery_json: JSON.stringify(['https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=800&q=80']),
+      image_url: '/products/paper-wrapped-drinking-glass.jpg',
+      gallery_json: JSON.stringify(['/products/paper-wrapped-drinking-glass.jpg']),
       variants_json: JSON.stringify(['Sanitized Tumbler with Printed Paper Sleeve']),
       pack_size: 'To be confirmed',
       specs_json: JSON.stringify({ hygiene_seal: 'Protective paper sleeve wrap', customizable_logo: true }),
       is_featured: 0,
       is_customizable: 1,
-      is_active: 0,
+      is_active: 1,
       created_at: new Date().toISOString()
     },
     {
@@ -558,14 +558,14 @@ function devApiPlugin(): Plugin {
       description: 'Neutral white pocket grooming comb individually packaged in an earth-toned biodegradable kraft paper carton.',
       category_id: 'cat_toiletries',
       category_name: 'Hotel Toiletries',
-      image_url: '/images/products/prod_comb_kraft_box.jpeg',
-      gallery_json: JSON.stringify(['https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=800&q=80']),
+      image_url: '/products/comb-with-kraft-box.jpg',
+      gallery_json: JSON.stringify(['/products/comb-with-kraft-box.jpg']),
       variants_json: JSON.stringify(['Pocket Comb in Kraft Box']),
       pack_size: 'To be confirmed',
       specs_json: JSON.stringify({ color: 'Neutral white', packaging: 'Biodegradable kraft carton' }),
       is_featured: 0,
       is_customizable: 0,
-      is_active: 0,
+      is_active: 1,
       created_at: new Date().toISOString()
     },
     {
@@ -575,14 +575,14 @@ function devApiPlugin(): Plugin {
       description: 'High-capacity embossed washroom paper roll designed for commercial high-traffic washroom dispensers.',
       category_id: 'cat_paper',
       category_name: 'Paper Products',
-      image_url: '/images/products/prod_embossed_tissue_roll.jpeg',
-      gallery_json: JSON.stringify(['https://images.unsplash.com/photo-1584556812952-905ffd0c611a?auto=format&fit=crop&w=800&q=80']),
+      image_url: '/products/embossed-tissue-roll.jpg',
+      gallery_json: JSON.stringify(['/products/embossed-tissue-roll.jpg']),
       variants_json: JSON.stringify(['Jumbo Washroom Roll']),
       pack_size: 'To be confirmed',
       specs_json: JSON.stringify({ format: 'Jumbo washroom dispenser roll', texture: 'Embossed absorbent pulp' }),
       is_featured: 0,
       is_customizable: 0,
-      is_active: 0,
+      is_active: 1,
       created_at: new Date().toISOString()
     }
   ];
@@ -727,7 +727,11 @@ function devApiPlugin(): Plugin {
           const catId = url.searchParams.get('category');
           const search = url.searchParams.get('q')?.toLowerCase();
           const featured = url.searchParams.get('featured') === '1';
-          const activeOnly = url.searchParams.get('active_only') !== '0';
+          const preview = url.searchParams.get('preview') === 'drafts';
+          const auth = req.headers['authorization'];
+          const cookie = req.headers['cookie'];
+          const isAdmin = !!(auth?.includes('Bearer') || cookie?.includes('cc_admin_session'));
+          const activeOnly = (!isAdmin && !preview) && url.searchParams.get('active_only') !== '0';
 
           let list = [...products];
           if (activeOnly) list = list.filter(p => p.is_active === 1);
@@ -763,7 +767,7 @@ function devApiPlugin(): Plugin {
             specs_json: JSON.stringify(body.specs || {}),
             is_featured: body.is_featured ? 1 : 0,
             is_customizable: body.is_customizable ? 1 : 0,
-            is_active: body.is_active !== undefined ? (body.is_active ? 1 : 0) : 0,
+            is_active: body.is_active !== undefined ? (body.is_active ? 1 : 0) : 1,
             created_at: new Date().toISOString()
           };
           products.unshift(newProd);

@@ -172,9 +172,9 @@ test('Seed Data integrity: 15 categories, 26 products, all draft, deduplicated, 
   const productMatches = seedSql.match(/'prod_[a-z0-9_]+',/g) || [];
   assert.strictEqual(productMatches.length, 26, `Exactly 26 products must be seeded (got ${productMatches.length})`);
 
-  // Verify ALL 26 seeded products end with is_active = 0
-  const draftEndingMatches = seedSql.match(/,\s*0\s*\n\s*\)/g) || [];
-  assert.strictEqual(draftEndingMatches.length, 26, 'All 26 products must end with is_active = 0 (DRAFT)');
+  // Verify ALL 26 seeded products end with is_active = 1 (LIVE)
+  const liveEndingMatches = seedSql.match(/,\s*1\s*\n\s*\)/g) || [];
+  assert.strictEqual(liveEndingMatches.length, 26, 'All 26 products must end with is_active = 1 (LIVE)');
 
   // Verify Black Phenyl was imported only once
   const blackPhenylMatches = seedSql.match(/'prod_black_phenyl'/g) || [];
@@ -200,17 +200,17 @@ test('Seed Data integrity: 15 categories, 26 products, all draft, deduplicated, 
   // Verify customizable flag on bags, coasters, and paper-wrapped glass
   assert.match(
     seedSql,
-    /'prod_non_woven_bag'[^;]+1,\s*0\s*\n\s*\)/,
+    /'prod_non_woven_bag'[^;]+1,\s*1\s*\n\s*\)/,
     'Non-Woven Carry Bag must have is_customizable = 1'
   );
   assert.match(
     seedSql,
-    /'prod_printed_paper_coasters'[^;]+1,\s*0\s*\n\s*\)/,
+    /'prod_printed_paper_coasters'[^;]+1,\s*1\s*\n\s*\)/,
     'Printed Paper Coasters must have is_customizable = 1'
   );
   assert.match(
     seedSql,
-    /'prod_paper_wrapped_glass'[^;]+1,\s*0\s*\n\s*\)/,
+    /'prod_paper_wrapped_glass'[^;]+1,\s*1\s*\n\s*\)/,
     'Hygienic Paper-Wrapped Drinking Glass must have is_customizable = 1'
   );
 
@@ -245,5 +245,77 @@ test('Order status workflow contains all 10 required business states', () => {
   assert.strictEqual(expectedStatuses[0], 'New Inquiry');
   assert.strictEqual(expectedStatuses[4], 'Confirmed');
   assert.strictEqual(expectedStatuses[9], 'Cancelled');
+});
+
+// Test 8: Product Images Disk Verification, Non-remoteness & Unique Assignment
+test('Product images must exist on disk, never be remote URLs, and be uniquely assigned to products', () => {
+  const seedSql = fs.readFileSync(path.resolve('migrations/0002_seed_data.sql'), 'utf8');
+
+  // Extract products image_url values from seed SQL
+  const productBlocks = seedSql.split(/\n\s*\(\s*\n\s*'prod_/g).slice(1);
+  assert.strictEqual(productBlocks.length, 26, 'Must have exactly 26 seeded products');
+
+  const assignedImages = new Map();
+
+  for (const block of productBlocks) {
+    const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
+    const prodId = 'prod_' + lines[0].replace(/^'([^']+)',.*$/, '$1');
+
+    // Extract product name
+    const nameMatch = block.match(/'([^']{3,})',\s*'([a-z0-9-]+)'/);
+    const productName = nameMatch ? nameMatch[1] : prodId;
+
+    // Extract image URL (either /products/..., remote http, or /images/...)
+    const imgMatch = block.match(/'(\/products\/[^']+|https?:\/\/[^']+|\/images\/[^']+)'/);
+    assert.ok(imgMatch, `Could not parse image URL for product: ${productName}`);
+    const imgUrl = imgMatch[1];
+
+    // 1. Must NOT be a remote URL
+    assert.strictEqual(
+      imgUrl.startsWith('http://') || imgUrl.startsWith('https://'),
+      false,
+      `Product '${productName}' has remote image URL: ${imgUrl}`
+    );
+    assert.strictEqual(imgUrl.toLowerCase().includes('unsplash'), false);
+    assert.strictEqual(imgUrl.toLowerCase().includes('pexels'), false);
+
+    // 2. Must NEVER use logo-original.png as a product image
+    assert.strictEqual(
+      imgUrl.includes('logo-original.png'),
+      false,
+      `Product '${productName}' must never use logo-original.png`
+    );
+
+    // 3. Must exist on disk in public/ directory
+    const relativeDiskPath = imgUrl.startsWith('/') ? imgUrl.substring(1) : imgUrl;
+    const diskPath = path.resolve('public', relativeDiskPath);
+    assert.ok(
+      fs.existsSync(diskPath),
+      `Product image for '${productName}' does not exist on disk at: ${diskPath}`
+    );
+
+    // 4. Must NOT be shared by two different products
+    if (assignedImages.has(imgUrl)) {
+      assert.fail(
+        `Image '${imgUrl}' is shared by two products: '${assignedImages.get(imgUrl)}' and '${productName}'`
+      );
+    }
+    assignedImages.set(imgUrl, productName);
+  }
+
+  assert.strictEqual(assignedImages.size, 26, 'All 26 products must have uniquely assigned image files');
+
+  // Verify all 15 Category images exist on disk and are not remote
+  const categoryLines = seedSql.match(/\('cat_[a-z0-9_]+'[^;]+\);/s)?.[0] || '';
+  const catMatches = [...categoryLines.matchAll(/\('([^']+)',\s*'([^']+)',\s*'([^']+)',\s*'([^']+)',\s*'([^']+)'/g)];
+
+  for (const m of catMatches) {
+    const catName = m[2];
+    const catImg = m[5];
+
+    assert.strictEqual(catImg.startsWith('http'), false, `Category '${catName}' must not have a remote image URL: ${catImg}`);
+    const catDiskPath = path.resolve('public', catImg.startsWith('/') ? catImg.substring(1) : catImg);
+    assert.ok(fs.existsSync(catDiskPath), `Category image for '${catName}' does not exist at ${catDiskPath}`);
+  }
 });
 

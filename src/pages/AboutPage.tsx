@@ -50,16 +50,80 @@ export const AboutPage: React.FC = () => {
           </div>
 
           <div className="relative">
-            <div className="aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border-4 border-white">
-              <img
-                src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80"
-                alt="Hotel Suite Amenities"
-                className="w-full h-full object-cover"
-              />
+            <div className="rounded-3xl overflow-hidden shadow-luxury bg-[#FAF8F5] border border-cream-300 p-6 sm:p-7">
+              <div className="flex items-center justify-between pb-4 mb-4 border-b border-cream-200">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-champagne-600" />
+                  <span className="text-xs font-serif font-bold text-charcoal-900 tracking-wide">
+                    CrystalClean® Curated Hotel Collection
+                  </span>
+                </div>
+                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-champagne-100 text-champagne-700 border border-champagne-300">
+                  5-Star Standards
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-white rounded-2xl p-4 border border-cream-200 shadow-sm flex flex-col items-center text-center group hover:shadow-md transition-shadow">
+                  <div className="aspect-square w-full flex items-center justify-center p-2 mb-2 bg-[#FAF8F5] rounded-xl">
+                    <img
+                      src="/products/hotel-conditioner-mini-bottle.jpg"
+                      alt="Luxury Hotel Conditioner"
+                      className="w-full h-full object-contain group-hover:scale-105 transition-transform"
+                    />
+                  </div>
+                  <span className="text-xs font-bold text-charcoal-900">Hair &amp; Body Amenities</span>
+                  <span className="text-[10px] text-charcoal-800 mt-0.5">Paraben-free botanical mini bottles</span>
+                </div>
+
+                <div className="bg-white rounded-2xl p-4 border border-cream-200 shadow-sm flex flex-col items-center text-center group hover:shadow-md transition-shadow">
+                  <div className="aspect-square w-full flex items-center justify-center p-2 mb-2 bg-[#FAF8F5] rounded-xl">
+                    <img
+                      src="/products/dental-kit.jpg"
+                      alt="Eco-Friendly Dental Kit"
+                      className="w-full h-full object-contain group-hover:scale-105 transition-transform"
+                    />
+                  </div>
+                  <span className="text-xs font-bold text-charcoal-900">Eco Kraft Dental Sets</span>
+                  <span className="text-[10px] text-charcoal-800 mt-0.5">Biodegradable kraft paper carton</span>
+                </div>
+
+                <div className="bg-white rounded-2xl p-4 border border-cream-200 shadow-sm flex flex-col items-center text-center group hover:shadow-md transition-shadow">
+                  <div className="aspect-square w-full flex items-center justify-center p-2 mb-2 bg-[#FAF8F5] rounded-xl">
+                    <img
+                      src="/products/shaving-kit.jpg"
+                      alt="Guest Shaving Kit"
+                      className="w-full h-full object-contain group-hover:scale-105 transition-transform"
+                    />
+                  </div>
+                  <span className="text-xs font-bold text-charcoal-900">Guest Grooming Sets</span>
+                  <span className="text-[10px] text-charcoal-800 mt-0.5">Precision twin-blade &amp; shave gel</span>
+                </div>
+
+                <div className="bg-white rounded-2xl p-4 border border-cream-200 shadow-sm flex flex-col items-center text-center group hover:shadow-md transition-shadow">
+                  <div className="aspect-square w-full flex items-center justify-center p-2 mb-2 bg-[#FAF8F5] rounded-xl">
+                    <img
+                      src="/products/disposable-terry-slippers.jpg"
+                      alt="Luxury Terry Slippers"
+                      className="w-full h-full object-contain group-hover:scale-105 transition-transform"
+                    />
+                  </div>
+                  <span className="text-xs font-bold text-charcoal-900">Room Footwear &amp; Linens</span>
+                  <span className="text-[10px] text-charcoal-800 mt-0.5">Plush textured anti-slip terry</span>
+                </div>
+              </div>
             </div>
-            <div className="absolute -bottom-6 -left-6 bg-charcoal-900 text-white p-6 rounded-2xl shadow-xl max-w-xs border border-charcoal-800">
-              <p className="font-serif font-bold text-lg text-champagne-300">Dedicated B2B Desk</p>
-              <p className="text-xs text-cream-200 mt-1">Direct communication, tailored wholesale pricing, and guaranteed dispatch schedules.</p>
+
+            <div className="mt-4 bg-charcoal-900 text-white p-4 sm:p-5 rounded-2xl shadow-xl border border-charcoal-800 flex items-center justify-between gap-4">
+              <div>
+                <p className="font-serif font-bold text-sm sm:text-base text-champagne-300">Dedicated B2B Hospitality Desk</p>
+                <p className="text-xs text-cream-200 mt-0.5">Confidential wholesale pricing and guaranteed dispatch schedules across India.</p>
+              </div>
+              <div className="hidden sm:block flex-shrink-0">
+                <span className="px-3 py-1.5 rounded-lg bg-champagne-500/20 text-champagne-300 border border-champagne-400/30 text-xs font-semibold">
+                  Verified Supply
+                </span>
+              </div>
             </div>
           </div>
         </div>

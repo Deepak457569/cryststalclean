@@ -406,6 +406,69 @@ export async function deleteAccessCode(db: D1Database, id: string): Promise<bool
   return true;
 }
 
+// --- Sessions & Token Management ---
+export async function createSession(db: D1Database, adminId: string, tokenId: string, expiresAt: string): Promise<void> {
+  await db.prepare(`
+    INSERT INTO sessions (token_id, admin_id, expires_at, revoked, created_at)
+    VALUES (?, ?, ?, 0, datetime('now'))
+  `).bind(tokenId, adminId, expiresAt).run();
+}
+
+export async function revokeSession(db: D1Database, tokenId: string): Promise<void> {
+  await db.prepare('UPDATE sessions SET revoked = 1 WHERE token_id = ?').bind(tokenId).run();
+}
+
+export async function isSessionActive(db: D1Database, tokenId: string): Promise<boolean> {
+  const session = await db.prepare('SELECT revoked, expires_at FROM sessions WHERE token_id = ?').bind(tokenId).first<{ revoked: number; expires_at: string }>();
+  if (!session) return true;
+  if (session.revoked === 1) return false;
+  if (session.expires_at && new Date(session.expires_at).getTime() < Date.now()) return false;
+  return true;
+}
+
+export async function createPasswordResetToken(db: D1Database, adminId: string): Promise<string> {
+  const token = `rst_${Date.now()}_${crypto.randomUUID().replace(/-/g, '')}`;
+  const expiresAt = new Date(Date.now() + 3600 * 1000).toISOString(); // 1 hour validity
+  await db.prepare(`
+    INSERT INTO password_reset_tokens (token, admin_id, expires_at, used, created_at)
+    VALUES (?, ?, ?, 0, datetime('now'))
+  `).bind(token, adminId, expiresAt).run();
+  return token;
+}
+
+export async function verifyAndUsePasswordResetToken(
+  db: D1Database,
+  token: string,
+  newPasswordHash: string,
+  newSalt: string
+): Promise<{ success: boolean; error?: string }> {
+  const record = await db.prepare(`
+    SELECT * FROM password_reset_tokens WHERE token = ?
+  `).bind(token).first<{ token: string; admin_id: string; expires_at: string; used: number }>();
+
+  if (!record || record.used === 1) {
+    return { success: false, error: 'Password reset token is invalid or has already been used.' };
+  }
+
+  if (new Date(record.expires_at).getTime() < Date.now()) {
+    return { success: false, error: 'Password reset token has expired.' };
+  }
+
+  // Update administrator password
+  await db.prepare(`
+    UPDATE administrators SET password_hash = ?, salt = ?, updated_at = datetime('now')
+    WHERE id = ?
+  `).bind(newPasswordHash, newSalt, record.admin_id).run();
+
+  // Mark token used
+  await db.prepare('UPDATE password_reset_tokens SET used = 1 WHERE token = ?').bind(token).run();
+
+  // Invalidate all existing active sessions for this admin
+  await db.prepare('UPDATE sessions SET revoked = 1 WHERE admin_id = ?').bind(record.admin_id).run();
+
+  return { success: true };
+}
+
 // Atomically check and verify access code for customer inquiry submission
 export async function verifyAndConsumeAccessCode(
   db: D1Database,
@@ -414,39 +477,42 @@ export async function verifyAndConsumeAccessCode(
 ): Promise<{ valid: boolean; accessCode?: AccessCode; error?: string }> {
   const cleanCode = rawCode.trim().toUpperCase();
 
-  const record = await db.prepare(`
-    SELECT * FROM access_codes WHERE code = ?
-  `).bind(cleanCode).first<AccessCode>();
+  // 1. Single atomic conditional UPDATE preventing race conditions
+  const updateRes = await db.prepare(`
+    UPDATE access_codes
+    SET used_count = used_count + 1,
+        status = CASE WHEN used_count + 1 >= max_uses THEN 'exhausted' ELSE status END,
+        updated_at = datetime('now')
+    WHERE code = ?
+      AND status = 'active'
+      AND used_count < max_uses
+      AND (expires_at IS NULL OR datetime(expires_at) > datetime('now'))
+  `).bind(cleanCode).run();
 
+  const changes = updateRes.meta?.changes ?? (updateRes as any).changes ?? 0;
+
+  if (changes > 0) {
+    const updated = await db.prepare('SELECT * FROM access_codes WHERE code = ?').bind(cleanCode).first<AccessCode>();
+    return { valid: true, accessCode: updated! };
+  }
+
+  // If changes === 0, fetch record to identify specific rejection reason
+  const record = await db.prepare('SELECT * FROM access_codes WHERE code = ?').bind(cleanCode).first<AccessCode>();
   if (!record) {
     return { valid: false, error: 'Invalid access code. Please request an authorized access code from CrystalClean.' };
   }
-
   if (record.status === 'revoked') {
     return { valid: false, error: 'This access code has been revoked. Please contact CrystalClean support.' };
   }
-
   if (record.expires_at && new Date(record.expires_at).getTime() < Date.now()) {
     await db.prepare('UPDATE access_codes SET status = "expired" WHERE id = ?').bind(record.id).run();
     return { valid: false, error: 'This access code has expired. Please contact CrystalClean to renew.' };
   }
-
-  if (record.used_count >= record.max_uses) {
+  if (record.used_count >= record.max_uses || record.status === 'exhausted') {
     await db.prepare('UPDATE access_codes SET status = "exhausted" WHERE id = ?').bind(record.id).run();
     return { valid: false, error: 'Inquiry limit reached for this access code. Please request an extension.' };
   }
-
-  // Atomically increment used count
-  const newUsedCount = record.used_count + 1;
-  const newStatus = newUsedCount >= record.max_uses ? 'exhausted' : record.status;
-
-  await db.prepare(`
-    UPDATE access_codes 
-    SET used_count = ?, status = ?, updated_at = datetime('now')
-    WHERE id = ? AND used_count = ?
-  `).bind(newUsedCount, newStatus, record.id, record.used_count).run();
-
-  return { valid: true, accessCode: { ...record, used_count: newUsedCount, status: newStatus } };
+  return { valid: false, error: 'Access code is not currently active.' };
 }
 
 // Quick check without consuming (for frontend validation indicator)
@@ -497,6 +563,25 @@ export async function createInquiry(
   }>,
   ipHash?: string
 ): Promise<Inquiry> {
+  // Prevent duplicate submissions within 60 seconds
+  const existing = await db.prepare(`
+    SELECT id FROM inquiries
+    WHERE customer_name = ? AND company_name = ? AND delivery_city = ? AND access_code_id = ?
+      AND datetime(created_at) > datetime('now', '-60 seconds')
+    ORDER BY created_at DESC
+    LIMIT 1
+  `).bind(
+    data.customer_name,
+    data.company_name,
+    data.delivery_city,
+    data.access_code_id || null
+  ).first<{ id: string }>();
+
+  if (existing) {
+    const existingInquiry = await getInquiryById(db, existing.id);
+    if (existingInquiry) return existingInquiry;
+  }
+
   const id = `inq_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
   const reference = generateInquiryReference();
 

@@ -35,13 +35,13 @@ export const CategoriesPage: React.FC = () => {
               to={`/products?category=${cat.id}`}
               className="group bg-white rounded-2xl overflow-hidden border border-cream-200 shadow-sm hover:shadow-luxury-hover transition-all duration-300 flex flex-col"
             >
-              <div className="aspect-[4/3] overflow-hidden bg-cream-100 relative">
+              <div className="aspect-[4/3] overflow-hidden bg-[#FAF8F5] relative p-4 flex items-center justify-center border-b border-cream-200">
                 <img
-                  src={cat.image_url || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=800&q=80'}
+                  src={cat.image_url || '/products/placeholder.svg'}
                   alt={cat.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  onError={(e) => { (e.target as HTMLImageElement).src = '/products/placeholder.svg'; }}
+                  className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                 />
-                <div className="absolute inset-0 bg-charcoal-950/20 group-hover:bg-charcoal-950/10 transition-colors"></div>
               </div>
               <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                 <div>

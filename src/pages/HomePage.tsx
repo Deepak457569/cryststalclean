@@ -235,13 +235,13 @@ export const HomePage: React.FC = () => {
               to={`/products?category=${cat.id}`}
               className="group relative bg-white rounded-2xl overflow-hidden border border-cream-200 shadow-sm hover:shadow-luxury-hover transition-all duration-300 flex flex-col"
             >
-              <div className="aspect-[4/3] overflow-hidden bg-cream-100 relative">
+              <div className="aspect-[4/3] overflow-hidden bg-[#FAF8F5] relative p-4 flex items-center justify-center border-b border-cream-200">
                 <img
-                  src={cat.image_url || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80'}
+                  src={cat.image_url || '/products/placeholder.svg'}
                   alt={cat.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  onError={(e) => { (e.target as HTMLImageElement).src = '/products/placeholder.svg'; }}
+                  className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                 />
-                <div className="absolute inset-0 bg-charcoal-950/20 group-hover:bg-charcoal-950/10 transition-colors"></div>
               </div>
               <div className="p-5 flex-1 flex flex-col justify-between">
                 <div>
@@ -300,26 +300,24 @@ export const HomePage: React.FC = () => {
                   className="bg-white rounded-2xl border border-cream-200 shadow-luxury hover:shadow-luxury-hover transition-all duration-300 flex flex-col overflow-hidden"
                 >
                   {/* Product Image */}
-                  <Link to={`/product/${product.id}`} className="aspect-[4/3] overflow-hidden bg-[#FAF8F5] relative group block border-b border-cream-200">
+                  <Link to={`/product/${product.id}`} className="aspect-[4/3] overflow-hidden bg-[#FAF8F5] relative group block border-b border-cream-200 p-4 flex items-center justify-center">
                     <img
                       src={product.image_url}
                       alt={product.name}
-                      onError={(e) => { (e.target as HTMLImageElement).src = '/images/products/placeholder.svg'; }}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      onError={(e) => { (e.target as HTMLImageElement).src = '/products/placeholder.svg'; }}
+                      className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                     />
-                    {product.pack_size && (
-                      <span className="absolute top-3 right-3 bg-charcoal-900/90 text-white text-[11px] font-medium px-2.5 py-1 rounded-md backdrop-blur-sm">
-                        {product.pack_size}
-                      </span>
-                    )}
+                    <span className="absolute top-3 right-3 bg-charcoal-900/90 text-white text-[11px] font-medium px-2.5 py-1 rounded-md backdrop-blur-sm">
+                      {product.pack_size || 'To be confirmed'}
+                    </span>
                     {product.is_customizable === 1 && (
                       <span className="absolute top-3 left-3 bg-white/95 text-champagne-800 border border-champagne-400 text-[10px] font-bold px-2 py-0.5 rounded-md shadow-sm flex items-center gap-1">
                         <Sparkles className="w-3 h-3 text-champagne-600" />
                         Custom Logo
                       </span>
                     )}
-                    <span className="absolute bottom-3 left-3 bg-white/95 text-charcoal-900 text-[10px] font-semibold tracking-wider uppercase px-2.5 py-1 rounded-md shadow-sm">
-                      {product.category_name || 'Amenity'}
+                    <span className="absolute bottom-3 left-3 bg-white/95 text-charcoal-900 text-[10px] font-semibold tracking-wider uppercase px-2.5 py-1 rounded-md shadow-sm border border-cream-200">
+                      {product.category_name || categories.find((c) => c.id === product.category_id)?.name || 'Amenity'}
                     </span>
                   </Link>
 

@@ -24,11 +24,16 @@ import {
   updateInquiryAdminNotes,
   getInquiryHistory,
   getAdminStats,
+  createSession,
+  revokeSession,
+  createPasswordResetToken,
+  verifyAndUsePasswordResetToken,
 } from './db';
 import {
   hashPassword,
   verifyPassword,
   createJWT,
+  verifyJWT,
   authenticateAdmin,
   isEmailAllowed,
 } from './auth';
@@ -137,11 +142,17 @@ export default {
             return errorResponse('Invalid email or password', 401);
           }
 
+          const jti = crypto.randomUUID();
           const secret = env.JWT_SECRET || 'crystalclean-jwt-secret-default-key';
-          const token = await createJWT({ sub: admin.id, email: admin.email, name: admin.name, role: admin.role }, secret);
+          const token = await createJWT({ sub: admin.id, email: admin.email, name: admin.name, role: admin.role, jti }, secret);
+
+          if (env.DB) {
+            await createSession(env.DB, admin.id, jti, new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString());
+          }
 
           // Return token in response & Set-Cookie
-          const cookie = `cc_admin_session=${token}; HttpOnly; SameSite=Lax; Path=/; Max-Age=604800${env.ENVIRONMENT === 'production' ? '; Secure' : ''}`;
+          const isSecure = env.ENVIRONMENT === 'production' || request.url.startsWith('https://');
+          const cookie = `cc_admin_session=${token}; HttpOnly; SameSite=Lax; Path=/; Max-Age=604800${isSecure ? '; Secure' : ''}`;
           return jsonResponse({
             success: true,
             token,
@@ -237,9 +248,16 @@ export default {
           }
 
           // Issue session JWT
+          const jti = crypto.randomUUID();
           const secret = env.JWT_SECRET || 'crystalclean-jwt-secret-default-key';
-          const sessionToken = await createJWT({ sub: admin.id, email: admin.email, name: admin.name, role: admin.role }, secret);
-          const cookie = `cc_admin_session=${sessionToken}; HttpOnly; SameSite=Lax; Path=/; Max-Age=604800${env.ENVIRONMENT === 'production' ? '; Secure' : ''}`;
+          const sessionToken = await createJWT({ sub: admin.id, email: admin.email, name: admin.name, role: admin.role, jti }, secret);
+
+          if (env.DB) {
+            await createSession(env.DB, admin.id, jti, new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString());
+          }
+
+          const isSecure = env.ENVIRONMENT === 'production' || request.url.startsWith('https://');
+          const cookie = `cc_admin_session=${sessionToken}; HttpOnly; SameSite=Lax; Path=/; Max-Age=604800${isSecure ? '; Secure' : ''}`;
 
           return new Response(null, {
             status: 302,
@@ -261,8 +279,74 @@ export default {
 
         // POST /api/auth/logout
         if (url.pathname === '/api/auth/logout' && request.method === 'POST') {
-          const cookie = `cc_admin_session=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0`;
-          return jsonResponse({ success: true }, 200, { 'Set-Cookie': cookie });
+          let token: string | null = null;
+          const authHeader = request.headers.get('Authorization');
+          if (authHeader && authHeader.startsWith('Bearer ')) {
+            token = authHeader.substring(7).trim();
+          }
+          if (!token) {
+            const cookieHeader = request.headers.get('Cookie');
+            token = cookieHeader?.match(/cc_admin_session=([^;]+)/)?.[1] || null;
+          }
+
+          if (token) {
+            const secret = env.JWT_SECRET || 'crystalclean-jwt-secret-default-key';
+            const payload = await verifyJWT(token, secret);
+            if (payload?.jti && env.DB) {
+              await revokeSession(env.DB, String(payload.jti));
+            }
+          }
+
+          const isSecure = env.ENVIRONMENT === 'production' || request.url.startsWith('https://');
+          const cookie = `cc_admin_session=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0${isSecure ? '; Secure' : ''}`;
+          return jsonResponse({ success: true, message: 'Logged out successfully' }, 200, { 'Set-Cookie': cookie });
+        }
+
+        // POST /api/auth/forgot-password
+        if (url.pathname === '/api/auth/forgot-password' && request.method === 'POST') {
+          const body = await request.json() as { email?: string };
+          if (!body.email) return errorResponse('Email is required', 400);
+
+          const cleanEmail = body.email.trim().toLowerCase();
+          if (!isEmailAllowed(cleanEmail, env)) {
+            return errorResponse('Access denied. This email is not authorized as an administrator.', 403);
+          }
+
+          const admin = await env.DB.prepare('SELECT id, email FROM administrators WHERE LOWER(email) = ?').bind(cleanEmail).first<any>();
+          if (!admin) {
+            return errorResponse('Administrator account not found', 404);
+          }
+
+          const resetToken = await createPasswordResetToken(env.DB, admin.id);
+          return jsonResponse({
+            success: true,
+            message: 'Password reset token generated successfully. Use this token with /api/auth/reset-password to set a new password.',
+            reset_token: resetToken,
+            expires_in: '1 hour',
+          });
+        }
+
+        // POST /api/auth/reset-password
+        if (url.pathname === '/api/auth/reset-password' && request.method === 'POST') {
+          const body = await request.json() as { token?: string; new_password?: string };
+          if (!body.token || !body.new_password) {
+            return errorResponse('Reset token and new password are required', 400);
+          }
+          if (body.new_password.length < 8) {
+            return errorResponse('New password must be at least 8 characters long', 400);
+          }
+
+          const { hash, salt } = await hashPassword(body.new_password);
+          const result = await verifyAndUsePasswordResetToken(env.DB, body.token, hash, salt);
+
+          if (!result.success) {
+            return errorResponse(result.error || 'Password reset failed', 400);
+          }
+
+          return jsonResponse({
+            success: true,
+            message: 'Password has been securely reset. You can now log in with your new credentials.'
+          });
         }
 
         // --- PUBLIC & ADMIN CATEGORIES ---
