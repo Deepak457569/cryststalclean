@@ -11,7 +11,7 @@ binding = "ASSETS"
 [[d1_databases]]
 binding = "DB"
 database_name = "crystalclean-db"
-database_id = "crystalclean-db-binding"
+database_id = "2acab671-cf07-429f-bb04-dbf3f2ad7ae9"
 
 # Environment variables
 [vars]
