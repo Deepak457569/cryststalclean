@@ -156,17 +156,24 @@ export async function bootstrapDatabase(db: D1Database, env: Env): Promise<void>
       );
     `);
 
-    // Ensure Initial Admin exists
-    const initialEmail = (env.INITIAL_ADMIN_EMAIL || 'admin@crystalclean.in').toLowerCase().trim();
-    const adminCheck = await db.prepare('SELECT id FROM administrators WHERE LOWER(email) = ?').bind(initialEmail).first();
-    
-    if (!adminCheck) {
-      const defaultPassword = env.INITIAL_ADMIN_PASSWORD || 'CrystalCleanAdmin2026!';
-      const { hash, salt } = await hashPassword(defaultPassword);
-      await db.prepare(`
-        INSERT INTO administrators (id, email, password_hash, salt, role, name)
-        VALUES (?, ?, ?, ?, 'admin', 'CrystalClean Executive')
-      `).bind(`admin_${Date.now()}`, initialEmail, hash, salt).run();
+    // Ensure Initial Admin accounts exist
+    const emailsToSeed = Array.from(new Set([
+      (env.INITIAL_ADMIN_EMAIL || 'crystalclean457@gmail.com').toLowerCase().trim(),
+      'crystalclean457@gmail.com',
+      'admin@crystalclean.in'
+    ])).filter(Boolean);
+
+    for (const adminEmail of emailsToSeed) {
+      const adminCheck = await db.prepare('SELECT id FROM administrators WHERE LOWER(email) = ?').bind(adminEmail).first();
+      if (!adminCheck) {
+        const defaultPassword = env.INITIAL_ADMIN_PASSWORD || 'CrystalCleanAdmin2026!';
+        const { hash, salt } = await hashPassword(defaultPassword);
+        const adminId = `admin_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+        await db.prepare(`
+          INSERT INTO administrators (id, email, password_hash, salt, role, name)
+          VALUES (?, ?, ?, ?, 'admin', 'CrystalClean Administrator')
+        `).bind(adminId, adminEmail, hash, salt).run();
+      }
     }
   } catch (err) {
     console.error('Bootstrap error:', err);

@@ -111,6 +111,10 @@ export default {
 
         // POST /api/auth/login (Admin Email & Password)
         if (url.pathname === '/api/auth/login' && request.method === 'POST') {
+          if (env.DB) {
+            await bootstrapDatabase(env.DB, env);
+          }
+
           const body = await request.json() as { email?: string; password?: string };
           if (!body.email || !body.password) {
             return errorResponse('Email and password are required', 400);
@@ -123,14 +127,15 @@ export default {
 
           let admin = await env.DB.prepare('SELECT * FROM administrators WHERE LOWER(email) = ?').bind(cleanEmail).first<any>();
           
-          // Bootstrap initial admin if DB is newly initialized
-          if (!admin && cleanEmail === (env.INITIAL_ADMIN_EMAIL || 'admin@crystalclean.in').toLowerCase().trim()) {
+          // Bootstrap admin if DB is newly initialized or admin not yet created
+          if (!admin && isEmailAllowed(cleanEmail, env)) {
             const { hash, salt } = await hashPassword(body.password);
+            const newAdminId = `admin_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
             await env.DB.prepare(`
               INSERT INTO administrators (id, email, password_hash, salt, role, name)
-              VALUES (?, ?, ?, ?, 'admin', 'CrystalClean Executive')
-            `).bind(`admin_${Date.now()}`, cleanEmail, hash, salt).run();
-            admin = await env.DB.prepare('SELECT * FROM administrators WHERE LOWER(email) = ?').bind(cleanEmail).first<any>();
+              VALUES (?, ?, ?, ?, 'admin', 'CrystalClean Administrator')
+            `).bind(newAdminId, cleanEmail, hash, salt).run();
+            admin = await env.DB.prepare('SELECT * FROM administrators WHERE id = ?').bind(newAdminId).first<any>();
           }
 
           if (!admin || !admin.password_hash || !admin.salt) {
@@ -304,6 +309,9 @@ export default {
 
         // POST /api/auth/forgot-password
         if (url.pathname === '/api/auth/forgot-password' && request.method === 'POST') {
+          if (env.DB) {
+            await bootstrapDatabase(env.DB, env);
+          }
           const body = await request.json() as { email?: string };
           if (!body.email) return errorResponse('Email is required', 400);
 
