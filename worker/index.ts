@@ -1,4 +1,4 @@
-// CrystalClean Hardened Cloudflare Worker API & Static Asset Handler
+// CryststalClean Hardened Cloudflare Worker API & Static Asset Handler
 import { Env, ORDER_STATUSES, OrderStatus } from './types';
 import {
   getCategories,
@@ -183,7 +183,7 @@ export default {
 
             const primaryAdminEmail = env.ADMIN_EMAILS ? env.ADMIN_EMAILS.split(',')[0].trim().toLowerCase() : 'crystalclean457@gmail.com';
             const adminId = 'admin_' + primaryAdminEmail.replace(/[^a-zA-Z0-9]/g, '_');
-            const adminName = 'CrystalClean Administrator';
+            const adminName = 'CryststalClean Administrator';
 
             // Issue session JWT pinned to HS256, 8-hour maximum expiration
             const jti = crypto.randomUUID();

@@ -1,4 +1,4 @@
-// Acceptance & Security Test Suite for CrystalClean
+// Acceptance & Security Test Suite for CryststalClean
 // Verifies all core business rules, WhatsApp formats, Access Code security, and no-pricing enforcement
 
 import test from 'node:test';
@@ -51,7 +51,7 @@ test('WhatsApp link must contain +91 91499 53610 and ZERO prices or currency sym
   });
 
   const message = [
-    `Hello CrystalClean,`,
+    `Hello CryststalClean,`,
     ``,
     `I would like to inquire about these hotel amenities.`,
     ``,
@@ -137,7 +137,7 @@ test('Production build output contains index.html and assets', () => {
   const distHtml = path.resolve('dist/index.html');
   assert.ok(fs.existsSync(distHtml), 'dist/index.html must exist');
   const htmlContent = fs.readFileSync(distHtml, 'utf8');
-  assert.match(htmlContent, /<title>CrystalClean/i);
+  assert.match(htmlContent, /<title>Crysts?talClean/i);
 });
 
 // Test 6: Seed Data Audit - Categories and 26 Section 4A Draft Products

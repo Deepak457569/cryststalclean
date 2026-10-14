@@ -38,13 +38,13 @@ export const Footer: React.FC = () => {
               <div className="w-12 h-12 rounded-full overflow-hidden bg-white flex items-center justify-center border border-champagne-500/50 p-0.5 shadow-sm group-hover:scale-105 transition-transform">
                 <img
                   src="/logo.png"
-                  alt="CrystalClean Official Logo"
+                  alt="CryststalClean Official Logo"
                   className="w-full h-full object-contain"
                 />
               </div>
               <div>
                 <span className="font-serif text-xl font-bold tracking-widest text-white block">
-                  CRYSTALCLEAN
+                  CRYSTSTALCLEAN
                 </span>
                 <span className="text-[9px] tracking-[0.25em] font-semibold text-champagne-300 block uppercase">
                   Hotel Amenities &amp; Hospitality
@@ -85,7 +85,7 @@ export const Footer: React.FC = () => {
               <li><Link to="/products" className="hover:text-white transition-colors">Explore All Products</Link></li>
               <li><Link to="/quote" className="hover:text-white transition-colors">Request Bulk Quotation</Link></li>
               <li><Link to="/cart" className="hover:text-white transition-colors">Requirements Cart</Link></li>
-              <li><Link to="/about" className="hover:text-white transition-colors">About CrystalClean</Link></li>
+              <li><Link to="/about" className="hover:text-white transition-colors">About CryststalClean</Link></li>
               <li><Link to="/contact" className="hover:text-white transition-colors">Contact Order Desk</Link></li>
               <li><Link to="/admin" className="hover:text-white transition-colors flex items-center gap-1.5"><Key className="w-3 h-3 text-champagne-500" /> Authorized Admin</Link></li>
             </ul>
@@ -122,7 +122,7 @@ export const Footer: React.FC = () => {
         <div className="mt-12 pt-8 border-t border-charcoal-900">
           <div className="bg-charcoal-900/60 border border-charcoal-800/80 rounded-xl p-4 text-xs text-cream-300/70 flex flex-col md:flex-row items-center justify-between gap-4">
             <p>
-              <strong className="text-white">Confidential B2B Wholesale Policy:</strong> CrystalClean does not display public prices, discounts, or consumer checkouts. Tailored commercial quotations and bulk quantity discounts are shared directly with verified hotel partners upon access-code validation.
+              <strong className="text-white">Confidential B2B Wholesale Policy:</strong> CryststalClean does not display public prices, discounts, or consumer checkouts. Tailored commercial quotations and bulk quantity discounts are shared directly with verified hotel partners upon access-code validation.
             </p>
             <div className="flex items-center gap-6 flex-shrink-0 text-xs">
               <Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
@@ -133,7 +133,7 @@ export const Footer: React.FC = () => {
 
         {/* Copyright */}
         <div className="mt-8 text-center text-xs text-cream-300/50">
-          &copy; {new Date().getFullYear()} CrystalClean Hotel Amenities &amp; Hospitality Supply. All rights reserved.
+          &copy; {new Date().getFullYear()} CryststalClean Hotel Amenities &amp; Hospitality Supply. All rights reserved.
         </div>
       </div>
     </footer>

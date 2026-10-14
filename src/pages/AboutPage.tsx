@@ -13,7 +13,7 @@ export const AboutPage: React.FC = () => {
             Elevating Hotel Guest Experiences Across India
           </h1>
           <p className="text-base text-charcoal-800 leading-relaxed">
-            CrystalClean is a specialized hospitality amenities manufacturer and wholesale supplier, partnering with luxury hotels, resorts, boutique properties, and hospitality chains nationwide.
+            CryststalClean is a specialized hospitality amenities manufacturer and wholesale supplier, partnering with luxury hotels, resorts, boutique properties, and hospitality chains nationwide.
           </p>
         </div>
       </section>
@@ -55,7 +55,7 @@ export const AboutPage: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-champagne-600" />
                   <span className="text-xs font-serif font-bold text-charcoal-900 tracking-wide">
-                    CrystalClean® Curated Hotel Collection
+                    CryststalClean® Curated Hotel Collection
                   </span>
                 </div>
                 <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-champagne-100 text-champagne-700 border border-champagne-300">
@@ -133,7 +133,7 @@ export const AboutPage: React.FC = () => {
       <section className="bg-white py-16 border-y border-cream-200 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="text-xs uppercase tracking-widest font-semibold text-champagne-700">Why CrystalClean</span>
+            <span className="text-xs uppercase tracking-widest font-semibold text-champagne-700">Why CryststalClean</span>
             <h2 className="font-serif text-3xl font-bold text-charcoal-900 mt-1">Our Core Commitments</h2>
           </div>
 
@@ -173,7 +173,7 @@ export const AboutPage: React.FC = () => {
 
       {/* CTA */}
       <section className="max-w-4xl mx-auto px-4 text-center space-y-6">
-        <h2 className="font-serif text-3xl font-bold text-charcoal-900">Ready to Partner with CrystalClean?</h2>
+        <h2 className="font-serif text-3xl font-bold text-charcoal-900">Ready to Partner with CryststalClean?</h2>
         <p className="text-sm text-charcoal-800 max-w-lg mx-auto">
           Contact our hospitality procurement desk to request an authorized access code and customized quotations for your property.
         </p>

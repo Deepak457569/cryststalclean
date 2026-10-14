@@ -1,4 +1,4 @@
-// CrystalClean Administrator Google SSO Allowlist Provisioning Tool
+// CryststalClean Administrator Google SSO Allowlist Provisioning Tool
 // Usage: node scripts/provision-admin.mjs [email] [--remote]
 
 import { execSync } from 'node:child_process';
@@ -16,14 +16,14 @@ async function main() {
   }
 
   console.log(`====================================================`);
-  console.log(` CrystalClean Google SSO Admin Provisioning`);
+  console.log(` CryststalClean Google SSO Admin Provisioning`);
   console.log(` Target Environment: ${isRemote ? 'Cloudflare Remote D1' : 'Local D1 Database'}`);
   console.log(` Administrator Email: ${email}`);
   console.log(`====================================================\n`);
 
   const adminId = `admin_${Date.now()}`;
   const sqlStatements = [
-    `INSERT INTO administrators (id, email, role, name, updated_at) VALUES ('${adminId}', '${email}', 'admin', 'CrystalClean Executive', datetime('now')) ON CONFLICT(email) DO UPDATE SET updated_at=datetime('now');`,
+    `INSERT INTO administrators (id, email, role, name, updated_at) VALUES ('${adminId}', '${email}', 'admin', 'CryststalClean Executive', datetime('now')) ON CONFLICT(email) DO UPDATE SET updated_at=datetime('now');`,
     `INSERT INTO business_settings (key, value, updated_at) VALUES ('admin_allowlist', '${email}', datetime('now')) ON CONFLICT(key) DO UPDATE SET value=value || ',' || '${email}', updated_at=datetime('now');`
   ].join(' ');
 

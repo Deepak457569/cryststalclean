@@ -9,7 +9,7 @@ export const ConfirmationPage: React.FC = () => {
 
   const displayRef = reference || state.reference || 'CC-ORD-CONFIRMED';
   const whatsappUrl = state.whatsappUrl || `https://wa.me/919149953610?text=${encodeURIComponent(
-    `Hello CrystalClean, following up on inquiry reference: ${displayRef}`
+    `Hello CryststalClean, following up on inquiry reference: ${displayRef}`
   )}`;
 
   const [copied, setCopied] = useState(false);
@@ -35,7 +35,7 @@ export const ConfirmationPage: React.FC = () => {
           Thank You for Your Requirements
         </h1>
         <p className="text-sm text-charcoal-800 max-w-lg mx-auto leading-relaxed">
-          Your product requirements have been saved to the CrystalClean procurement system. Please connect with our order desk via WhatsApp to finalize pricing, bulk tiers, and shipping schedules.
+          Your product requirements have been saved to the CryststalClean procurement system. Please connect with our order desk via WhatsApp to finalize pricing, bulk tiers, and shipping schedules.
         </p>
       </div>
 

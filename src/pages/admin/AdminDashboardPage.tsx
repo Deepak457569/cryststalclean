@@ -399,13 +399,13 @@ export const AdminDashboardPage: React.FC = () => {
             <div className="w-9 h-9 rounded-full overflow-hidden bg-white flex items-center justify-center border border-champagne-500/50 p-0.5 shadow-sm">
               <img
                 src="/logo.png"
-                alt="CrystalClean Logo"
+                alt="CryststalClean Logo"
                 className="w-full h-full object-contain"
               />
             </div>
             <div>
               <span className="font-serif font-bold tracking-wider text-base block leading-none">
-                CRYSTALCLEAN
+                CRYSTSTALCLEAN
               </span>
               <span className="text-[9px] tracking-widest text-champagne-400 uppercase font-semibold">
                 Executive Admin Portal
@@ -1235,7 +1235,7 @@ export const AdminDashboardPage: React.FC = () => {
             <div>
               <a
                 href={`https://wa.me/${selectedInquiry.contact_phone.replace(/\D/g, '')}?text=${encodeURIComponent(
-                  `Hello ${selectedInquiry.customer_name}, following up regarding your CrystalClean hotel amenities inquiry (${selectedInquiry.reference}).`
+                  `Hello ${selectedInquiry.customer_name}, following up regarding your CryststalClean hotel amenities inquiry (${selectedInquiry.reference}).`
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"

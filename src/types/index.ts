@@ -1,4 +1,4 @@
-// Frontend Types for CrystalClean
+// Frontend Types for CryststalClean
 
 export type OrderStatus =
   | 'New Inquiry'

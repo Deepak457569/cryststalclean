@@ -14,7 +14,7 @@ export const PrivacyPage: React.FC = () => {
         <section className="space-y-2">
           <h2 className="font-serif text-xl font-bold text-charcoal-900">1. Overview and Business Context</h2>
           <p>
-            CrystalClean operates as a B2B hospitality amenities supplier. This Privacy Policy outlines our standards regarding data collection, confidentiality, and data handling when clients access our website, configure requirement carts, and submit trade inquiries.
+            CryststalClean operates as a B2B hospitality amenities supplier. This Privacy Policy outlines our standards regarding data collection, confidentiality, and data handling when clients access our website, configure requirement carts, and submit trade inquiries.
           </p>
         </section>
 

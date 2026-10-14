@@ -85,13 +85,13 @@ export const Navbar: React.FC = () => {
               <div className="w-12 h-12 rounded-full overflow-hidden bg-white flex items-center justify-center border border-cream-300 shadow-sm group-hover:scale-105 transition-transform p-0.5">
                 <img
                   src="/logo.png"
-                  alt="CrystalClean Official Logo"
+                  alt="CryststalClean Official Logo"
                   className="w-full h-full object-contain"
                 />
               </div>
               <div>
                 <span className="font-serif text-xl sm:text-2xl font-bold tracking-widest text-charcoal-900 block leading-tight">
-                  CRYSTALCLEAN
+                  CRYSTSTALCLEAN
                 </span>
                 <span className="text-[9px] sm:text-[10px] tracking-[0.25em] font-semibold text-champagne-600 block uppercase">
                   Hotel Amenities &amp; Hospitality

@@ -9,7 +9,7 @@ const placeholderSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400
     <circle r="36" fill="#F2ECE4"/>
     <path d="M-14 -6 L0 -20 L14 -6 L14 16 L-14 16 Z" fill="none" stroke="#8C7A6B" stroke-width="2" stroke-linejoin="round"/>
     <circle cx="0" cy="2" r="4" fill="#8C7A6B"/>
-    <text y="54" font-family="serif" font-size="14" font-weight="600" fill="#4A423B" letter-spacing="1">CRYSTALCLEAN</text>
+    <text y="54" font-family="serif" font-size="14" font-weight="600" fill="#4A423B" letter-spacing="1">CRYSTSTALCLEAN</text>
     <text y="72" font-family="sans-serif" font-size="11" fill="#8C7A6B">Hospitality Amenity Image</text>
   </g>
 </svg>`;

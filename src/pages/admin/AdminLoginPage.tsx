@@ -29,7 +29,7 @@ export const AdminLoginPage: React.FC = () => {
     const oauthError = searchParams.get('error');
     const deniedEmail = searchParams.get('email');
     if (oauthError === 'unauthorized_email') {
-      setError(`Access Denied: The Google account (${deniedEmail || 'unknown'}) is not on the authorized CrystalClean administrator allowlist.`);
+      setError(`Access Denied: The Google account (${deniedEmail || 'unknown'}) is not on the authorized CryststalClean administrator allowlist.`);
     } else if (oauthError === 'oauth_denied') {
       setError('Google Sign-In was cancelled or denied.');
     } else if (oauthError === 'oauth_not_configured') {
@@ -82,7 +82,7 @@ export const AdminLoginPage: React.FC = () => {
           <div className="w-16 h-16 rounded-full overflow-hidden bg-white border border-cream-300 flex items-center justify-center p-1 mx-auto shadow-md">
             <img
               src="/logo.png"
-              alt="CrystalClean Official Logo"
+              alt="CryststalClean Official Logo"
               className="w-full h-full object-contain"
             />
           </div>
@@ -90,7 +90,7 @@ export const AdminLoginPage: React.FC = () => {
             Admin Authentication
           </h1>
           <p className="text-xs text-charcoal-800">
-            CrystalClean Hotel Amenities Executive Portal
+            CryststalClean Hotel Amenities Executive Portal
           </p>
         </div>
 

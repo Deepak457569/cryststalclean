@@ -675,7 +675,7 @@ function devApiPlugin(): Plugin {
           if (auth?.includes('Bearer') || cookie?.includes('cc_admin_session')) {
             return json({
               authenticated: true,
-              user: { id: 'admin_1', email: 'admin@crystalclean.in', name: 'CrystalClean Executive', role: 'admin' }
+              user: { id: 'admin_1', email: 'admin@crystalclean.in', name: 'CryststalClean Executive', role: 'admin' }
             });
           }
           return json({ error: 'Unauthorized' }, 401);
@@ -930,7 +930,7 @@ function devApiPlugin(): Plugin {
 
           const notesPart = body.notes ? `\nAdditional Notes: ${body.notes.trim()}` : '';
           const msg = [
-            `Hello CrystalClean,`,
+            `Hello CryststalClean,`,
             ``,
             `I would like to inquire about these hotel amenities.`,
             ``,

@@ -93,7 +93,7 @@ export const HomePage: React.FC = () => {
           <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-cream-300/80 bg-[#FAF8F5] mb-8 group">
             <img
               src="/crystalclean-banner.png"
-              alt="CrystalClean - Quality Hospitality Supplies. Exceptional Guest Experiences."
+              alt="CryststalClean - Quality Hospitality Supplies. Exceptional Guest Experiences."
               className="w-full h-auto object-contain block mx-auto transition-transform duration-700 group-hover:scale-[1.008]"
             />
             {/* Overlay badge on larger screens */}
@@ -104,10 +104,10 @@ export const HomePage: React.FC = () => {
             
             {/* Brand crest badge on bottom-left */}
             <div className="hidden md:flex absolute bottom-4 left-4 bg-white/95 backdrop-blur-md border border-champagne-300/70 py-1.5 px-3 rounded-xl items-center gap-2 shadow-lg">
-              <img src="/logo.png" alt="CrystalClean Crest" className="w-8 h-8 object-contain" />
+              <img src="/logo.png" alt="CryststalClean Crest" className="w-8 h-8 object-contain" />
               <div className="text-left">
                 <span className="text-[9px] uppercase font-bold tracking-wider text-champagne-700 block leading-none">Bespoke Amenities</span>
-                <span className="text-xs font-serif font-bold text-charcoal-900 block leading-tight">CrystalClean® Trade Supply</span>
+                <span className="text-xs font-serif font-bold text-charcoal-900 block leading-tight">CryststalClean® Trade Supply</span>
               </div>
             </div>
           </div>

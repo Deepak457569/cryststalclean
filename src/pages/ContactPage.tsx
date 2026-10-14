@@ -13,7 +13,7 @@ export const ContactPage: React.FC = () => {
   const handleQuickWhatsApp = (e: React.FormEvent) => {
     e.preventDefault();
     const msg = [
-      `Hello CrystalClean,`,
+      `Hello CryststalClean,`,
       ``,
       `I am reaching out regarding hotel amenities procurement.`,
       `Name: ${formData.name}`,

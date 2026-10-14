@@ -1,4 +1,4 @@
-// WhatsApp Click-to-Chat URL Generator for CrystalClean
+// WhatsApp Click-to-Chat URL Generator for CryststalClean
 // STRICT COMPLIANCE: NEVER includes prices, currency, subtotals, or plaintext access codes.
 
 export interface WhatsAppMessagePayload {
@@ -32,7 +32,7 @@ export function generateWhatsAppLink(
   const notesPart = payload.notes ? `\nAdditional Notes: ${payload.notes.trim()}` : '';
 
   const message = [
-    `Hello CrystalClean,`,
+    `Hello CryststalClean,`,
     ``,
     `I would like to inquire about these hotel amenities.`,
     ``,

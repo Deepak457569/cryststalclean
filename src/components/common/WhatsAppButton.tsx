@@ -3,7 +3,7 @@ import { MessageCircle } from 'lucide-react';
 
 export const WhatsAppFloatingButton: React.FC = () => {
   const defaultMessage = encodeURIComponent(
-    'Hello CrystalClean,\n\nI would like to inquire about hotel amenities and wholesale supply options for our property.\n\nThank you.'
+    'Hello CryststalClean,\n\nI would like to inquire about hotel amenities and wholesale supply options for our property.\n\nThank you.'
   );
   const waUrl = `https://wa.me/919149953610?text=${defaultMessage}`;
 

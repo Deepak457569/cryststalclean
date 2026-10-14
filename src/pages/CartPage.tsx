@@ -453,7 +453,7 @@ export const CartPage: React.FC = () => {
                       <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" />
                       <div>
                         <p className="font-semibold">Invalid Code</p>
-                        <p>{codeVerification.message || 'Please contact CrystalClean for an active access code.'}</p>
+                        <p>{codeVerification.message || 'Please contact CryststalClean for an active access code.'}</p>
                       </div>
                     </>
                   )}

@@ -41,7 +41,7 @@ export const AccessCodeModal: React.FC<AccessCodeModalProps> = ({ isOpen, onClos
   };
 
   const whatsappRequestUrl = `https://wa.me/919149953610?text=${encodeURIComponent(
-    'Hello CrystalClean,\n\nI represent a hotel/hospitality establishment and would like to request an authorized Customer Access Code to submit product requirements and receive wholesale pricing.\n\nHotel/Establishment Name: \nContact Person: \nCity: \n\nThank you.'
+    'Hello CryststalClean,\n\nI represent a hotel/hospitality establishment and would like to request an authorized Customer Access Code to submit product requirements and receive wholesale pricing.\n\nHotel/Establishment Name: \nContact Person: \nCity: \n\nThank you.'
   )}`;
 
   return (
@@ -70,7 +70,7 @@ export const AccessCodeModal: React.FC<AccessCodeModalProps> = ({ isOpen, onClos
         {/* Explanation */}
         <div className="text-sm text-charcoal-800 space-y-3 mb-6 bg-cream-50 p-4 rounded-xl border border-cream-200">
           <p>
-            CrystalClean operates strictly as an exclusive B2B supplier for hotels, luxury resorts, boutique villas, and bulk hospitality buyers.
+            CryststalClean operates strictly as an exclusive B2B supplier for hotels, luxury resorts, boutique villas, and bulk hospitality buyers.
           </p>
           <p>
             To prevent automated spam and preserve wholesale price confidentiality, <strong>a valid Access Code is required</strong> before submitting any product inquiry or bulk quotation.

@@ -13,7 +13,7 @@ export const TermsPage: React.FC = () => {
         <section className="space-y-2">
           <h2 className="font-serif text-xl font-bold text-charcoal-900">1. Commercial Trade Basis</h2>
           <p>
-            CrystalClean supplies commercial hotel amenities, guest personal care items, and room accessories exclusively for trade and business purchasers (Hotels, Resorts, Guest Houses, Homestays, Serviced Apartments, and Institutions). We do not operate a direct-to-consumer retail shop.
+            CryststalClean supplies commercial hotel amenities, guest personal care items, and room accessories exclusively for trade and business purchasers (Hotels, Resorts, Guest Houses, Homestays, Serviced Apartments, and Institutions). We do not operate a direct-to-consumer retail shop.
           </p>
         </section>
 
@@ -34,7 +34,7 @@ export const TermsPage: React.FC = () => {
         <section className="space-y-2">
           <h2 className="font-serif text-xl font-bold text-charcoal-900">4. Customer Access Code Terms</h2>
           <p>
-            Access codes are non-transferable and issued solely to designated client representatives. CrystalClean reserves the right to suspend, revoke, or regenerate access codes upon evidence of unauthorized sharing, automated bot activity, or commercial misuse.
+            Access codes are non-transferable and issued solely to designated client representatives. CryststalClean reserves the right to suspend, revoke, or regenerate access codes upon evidence of unauthorized sharing, automated bot activity, or commercial misuse.
           </p>
         </section>
 

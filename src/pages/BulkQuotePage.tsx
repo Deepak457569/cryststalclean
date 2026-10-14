@@ -418,7 +418,7 @@ export const BulkQuotePage: React.FC = () => {
                   <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" />
                   <div>
                     <p className="font-semibold">Code Not Recognized</p>
-                    <p>{codeVerification.message || 'Please contact CrystalClean on WhatsApp for an active code.'}</p>
+                    <p>{codeVerification.message || 'Please contact CryststalClean on WhatsApp for an active code.'}</p>
                   </div>
                 </>
               )}
