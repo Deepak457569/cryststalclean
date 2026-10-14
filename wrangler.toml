@@ -1,8 +1,8 @@
-name = "crystalclean"
+name = "cryststalclean"
 main = "worker/index.ts"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
-account_id = "a6009ab187f587a735ba91e57a27086f"
+account_id = "a6009ab187f587a736ba91e67a27086f"
 
 [assets]
 directory = "./dist"
