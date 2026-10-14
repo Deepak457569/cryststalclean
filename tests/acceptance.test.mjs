@@ -1013,7 +1013,38 @@ test('Task 4: GET /api/admin/config-check returns 401 without session and boolea
   assert.strictEqual(rawText.includes('secret-google-secret'), false);
   assert.strictEqual(rawText.includes(secret), false);
   assert.strictEqual(rawText.includes('turnstile-secret-test'), false);
+});// Test 25: Cloudflare Zero Trust (Access) authentication
+test('Cloudflare Zero Trust (Access): Authenticates via Cf-Access-Authenticated-User-Email and enforces ADMIN_EMAILS allowlist', async () => {
+  const workerModule = await import('./worker.bundle.mjs');
+  const worker = workerModule.default;
+
+  const env = {
+    ADMIN_EMAILS: 'admin@crystalclean.in,crystalclean457@gmail.com',
+    APP_BASE_URL: 'https://crystalclean.in',
+    JWT_SECRET: 'mock_jwt_secret_for_tests',
+  };
+
+  // Case 1: Authorized Cloudflare Access user -> 200 OK
+  const authorizedReq = new Request('https://crystalclean.in/api/auth/me', {
+    method: 'GET',
+    headers: {
+      'Cf-Access-Authenticated-User-Email': 'crystalclean457@gmail.com',
+    },
+  });
+  const authRes = await worker.fetch(authorizedReq, env, {});
+  assert.strictEqual(authRes.status, 200);
+  const authBody = await authRes.json();
+  assert.strictEqual(authBody.authenticated, true);
+  assert.strictEqual(authBody.user.email, 'crystalclean457@gmail.com');
+
+  // Case 2: Unauthorized Cloudflare Access user -> 401 Unauthorized
+  const unauthorizedReq = new Request('https://crystalclean.in/api/auth/me', {
+    method: 'GET',
+    headers: {
+      'Cf-Access-Authenticated-User-Email': 'attacker@gmail.com',
+    },
+  });
+  const unauthRes = await worker.fetch(unauthorizedReq, env, {});
+  assert.strictEqual(unauthRes.status, 401);
 });
-
-
 

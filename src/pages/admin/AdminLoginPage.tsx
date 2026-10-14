@@ -69,8 +69,25 @@ export const AdminLoginPage: React.FC = () => {
           </div>
         )}
 
-        {/* Google OAuth Only Section */}
+        {/* Authentication Options */}
         <div className="space-y-4 pt-2">
+          {/* Cloudflare Zero Trust OTP (Recommended) */}
+          <button
+            type="button"
+            onClick={() => navigate('/admin')}
+            className="w-full py-3.5 px-4 bg-champagne-600 hover:bg-champagne-700 text-charcoal-950 font-semibold rounded-xl text-sm transition-all shadow-md flex items-center justify-center gap-3 cursor-pointer"
+          >
+            <ShieldCheck className="w-5 h-5 text-charcoal-950" />
+            <span>Login with Cloudflare Zero Trust (OTP)</span>
+          </button>
+
+          <div className="relative flex py-1 items-center">
+            <div className="flex-grow border-t border-cream-300"></div>
+            <span className="flex-shrink mx-4 text-xs font-semibold text-charcoal-600 uppercase tracking-wider">or</span>
+            <div className="flex-grow border-t border-cream-300"></div>
+          </div>
+
+          {/* Google OAuth Section */}
           <button
             type="button"
             onClick={handleGoogleLogin}
@@ -100,7 +117,7 @@ export const AdminLoginPage: React.FC = () => {
           
           <div className="bg-cream-100 rounded-xl p-3.5 text-center">
             <p className="text-xs text-charcoal-700 leading-relaxed font-medium">
-              Access is restricted to authorized corporate Gmail and Google Workspace accounts configured in the server allowlist.
+              Access is strictly restricted to authorized emails configured in Cloudflare Zero Trust and the server administrator allowlist (<span className="font-mono text-[11px] text-charcoal-900">ADMIN_EMAILS</span>).
             </p>
           </div>
         </div>

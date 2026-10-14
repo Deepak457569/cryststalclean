@@ -123,12 +123,44 @@ export function isEmailAllowed(email: string, env: Env): boolean {
 
 // Extract current authenticated admin user from request
 export async function authenticateAdmin(request: Request, env: Env): Promise<AdminUser | null> {
+  // 1. Cloudflare Zero Trust (Access) verification
+  // When an admin passes Cloudflare Access at the edge, Cloudflare injects the verified email header
+  const cfEmail = request.headers.get('Cf-Access-Authenticated-User-Email');
+  if (cfEmail) {
+    const cleanEmail = cfEmail.trim().toLowerCase();
+    if (isEmailAllowed(cleanEmail, env)) {
+      if (env.DB) {
+        try {
+          const existing = await env.DB
+            .prepare('SELECT id, email, name, role FROM administrators WHERE LOWER(email) = ?')
+            .bind(cleanEmail)
+            .first<AdminUser>();
+          if (existing) {
+            return existing;
+          }
+        } catch {
+          // Fall through if D1 query encounters an issue
+        }
+      }
+      return {
+        id: 'cf_' + cleanEmail,
+        email: cleanEmail,
+        name: cleanEmail.split('@')[0],
+        role: 'super_admin',
+      };
+    } else {
+      console.error(`[Cloudflare Access] Authenticated user email not in allowlist: ${cleanEmail}`);
+      return null;
+    }
+  }
+
+  // 2. Fallback to application JWT session (Cookie / Bearer token)
   if (!env.JWT_SECRET || !env.JWT_SECRET.trim()) {
     return null;
   }
   const secret = env.JWT_SECRET.trim();
   
-  // 1. Check Authorization Bearer header
+  // Check Authorization Bearer header
   const authHeader = request.headers.get('Authorization');
   let token: string | null = null;
   if (authHeader && authHeader.startsWith('Bearer ')) {
