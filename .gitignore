@@ -14,8 +14,11 @@ dist-ssr
 .env
 .env.*
 !.env.example
+.dev.vars
+.dev.vars.*
 .wrangler
 *.tsbuildinfo
+tests/worker.bundle.mjs
 
 # Editor directories and files
 .vscode/*

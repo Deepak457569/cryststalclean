@@ -82,6 +82,14 @@ export const AdminDashboardPage: React.FC = () => {
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
+    let metaTag = document.querySelector('meta[name="robots"]') as HTMLMetaElement | null;
+    if (!metaTag) {
+      metaTag = document.createElement('meta');
+      metaTag.name = 'robots';
+      document.head.appendChild(metaTag);
+    }
+    metaTag.content = 'noindex, nofollow';
+
     if (!authLoading && !adminUser) {
       navigate('/admin/login');
     }

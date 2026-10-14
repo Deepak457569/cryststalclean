@@ -27,10 +27,8 @@ npm run dev
 
 Visit `http://localhost:5173`:
 - **Public Website**: Browse amenities, filter by category, configure quantity units.
-- **Requirements Cart**: Test cart persistence, access code verification (`CC-HOTEL-2026`), and prepared WhatsApp handoff to `+91 91499 53610`.
-- **Admin Panel**: Visit `http://localhost:5173/admin/login`
-  - Default Admin Email: `admin@crystalclean.in`
-  - Default Admin Password: `CrystalCleanAdmin2026!`
+- **Requirements Cart**: Test cart persistence, access code verification, and prepared WhatsApp handoff to `+91 91499 53610`.
+- **Admin Panel**: Visit `http://localhost:5173/admin/login` (Google SSO Authentication via configured `ADMIN_EMAILS`)
 
 Run acceptance test suite:
 ```bash

@@ -41,10 +41,8 @@ npm run dev
 http://localhost:5173
 ```
 
-- **Demo Customer Access Codes**: `CC-HOTEL-2026` or `CRYSTAL-VIP`
-- **Admin Portal**: `http://localhost:5173/admin/login`
-  - Email: `admin@crystalclean.in`
-  - Password: `CrystalCleanAdmin2026!`
+- **Admin Portal**: `http://localhost:5173/admin/login` (Google SSO Authentication via configured `ADMIN_EMAILS`)
+- **Customer Access Codes**: Generated dynamically via Admin Portal using 16-character cryptographic Base32 keys.
 
 ---
 

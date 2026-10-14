@@ -7,7 +7,6 @@ interface AuthContextType {
   loading: boolean;
   previewDrafts: boolean;
   setPreviewDrafts: (val: boolean) => void;
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
 }
@@ -58,30 +57,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     checkAuth();
   }, [token]);
 
-  const login = async (email: string, password: string) => {
-    try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        return { success: false, error: data.error || 'Login failed' };
-      }
-
-      if (data.token) {
-        setToken(data.token);
-        localStorage.setItem('cc_token', data.token);
-      }
-      setAdminUser(data.user);
-      return { success: true };
-    } catch (err: any) {
-      return { success: false, error: err.message || 'Network error' };
-    }
-  };
-
   const logout = async () => {
     try {
       await fetch('/api/auth/logout', { method: 'POST' });
@@ -93,7 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ adminUser, token, loading, previewDrafts, setPreviewDrafts, login, logout, checkAuth }}>
+    <AuthContext.Provider value={{ adminUser, token, loading, previewDrafts, setPreviewDrafts, logout, checkAuth }}>
       {children}
     </AuthContext.Provider>
   );

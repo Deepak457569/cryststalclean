@@ -1,46 +1,23 @@
-// WebCrypto Security and Authentication Utilities for Cloudflare Workers
+// WebCrypto Security and Authentication Utilities for Cloudflare Workers (Google-Only Auth)
 import { Env, AdminUser } from './types';
 
-// Password hashing using WebCrypto PBKDF2 with SHA-256
-export async function hashPassword(password: string): Promise<{ hash: string; salt: string }> {
-  const saltBytes = crypto.getRandomValues(new Uint8Array(16));
-  const salt = Array.from(saltBytes).map(b => b.toString(16).padStart(2, '0')).join('');
-  const hash = await pbkdf2(password, salt);
-  return { hash, salt };
+// Constant-time string comparison to prevent timing attacks
+export function constantTimeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) {
+    return false;
+  }
+  let result = 0;
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return result === 0;
 }
 
-export async function verifyPassword(password: string, hash: string, salt: string): Promise<boolean> {
-  const computedHash = await pbkdf2(password, salt);
-  return computedHash === hash;
-}
-
-async function pbkdf2(password: string, saltHex: string): Promise<string> {
+// Compute SHA-256 hash formatted as hex string
+export async function sha256Hex(input: string): Promise<string> {
   const enc = new TextEncoder();
-  const passwordKey = await crypto.subtle.importKey(
-    'raw',
-    enc.encode(password),
-    { name: 'PBKDF2' },
-    false,
-    ['deriveBits', 'deriveKey']
-  );
-
-  const saltBytes = new Uint8Array(saltHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
-
-  const derivedKey = await crypto.subtle.deriveKey(
-    {
-      name: 'PBKDF2',
-      salt: saltBytes,
-      iterations: 100000,
-      hash: 'SHA-256',
-    },
-    passwordKey,
-    { name: 'HMAC', hash: 'SHA-256', length: 256 },
-    true,
-    ['sign']
-  );
-
-  const exported = await crypto.subtle.exportKey('raw', derivedKey);
-  return Array.from(new Uint8Array(exported)).map(b => b.toString(16).padStart(2, '0')).join('');
+  const digest = await crypto.subtle.digest('SHA-256', enc.encode(input));
+  return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 // HMAC-SHA256 JWT Implementation (No external NPM package needed)
@@ -57,13 +34,14 @@ function base64UrlDecode(str: string): string {
   return atob(b64);
 }
 
+// Create 8-hour Max JWT Token pinned to HS256
 export async function createJWT(payload: Record<string, unknown>, secret: string): Promise<string> {
   const header = { alg: 'HS256', typ: 'JWT' };
   const encodedHeader = base64UrlEncode(JSON.stringify(header));
   const encodedPayload = base64UrlEncode(JSON.stringify({
     ...payload,
     iat: Math.floor(Date.now() / 1000),
-    exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60) // 7 days expiration
+    exp: Math.floor(Date.now() / 1000) + (8 * 60 * 60) // Maximum 8 hours expiration
   }));
 
   const data = `${encodedHeader}.${encodedPayload}`;
@@ -87,9 +65,10 @@ export async function verifyJWT(token: string, secret: string): Promise<Record<s
     if (parts.length !== 3) return null;
     const [encodedHeader, encodedPayload, encodedSig] = parts;
 
+    // Pin algorithm strictly to HS256
     const header = JSON.parse(base64UrlDecode(encodedHeader));
     if (header.alg !== 'HS256' || header.typ !== 'JWT') {
-      return null; // Reject unexpected or 'none' algorithms
+      return null;
     }
 
     const data = `${encodedHeader}.${encodedPayload}`;
@@ -109,6 +88,7 @@ export async function verifyJWT(token: string, secret: string): Promise<Record<s
       sigBytes[i] = sigStr.charCodeAt(i);
     }
 
+    // WebCrypto crypto.subtle.verify executes constant-time comparison
     const isValid = await crypto.subtle.verify('HMAC', key, sigBytes, enc.encode(data));
     if (!isValid) return null;
 
@@ -118,23 +98,25 @@ export async function verifyJWT(token: string, secret: string): Promise<Record<s
     }
 
     return payload;
-  } catch (err) {
+  } catch {
     return null;
   }
 }
 
-// Check admin allowlist
+// Check admin allowlist from environment variables (No hardcoded emails)
 export function isEmailAllowed(email: string, env: Env): boolean {
+  if (!email) return false;
   const cleanEmail = email.trim().toLowerCase();
-  const allowlistStr = env.ADMIN_ALLOWLIST || env.INITIAL_ADMIN_EMAIL || '';
+  
+  // Accept ADMIN_EMAILS or fallback to ADMIN_ALLOWLIST / INITIAL_ADMIN_EMAIL
+  const allowlistStr = env.ADMIN_EMAILS || env.ADMIN_ALLOWLIST || env.INITIAL_ADMIN_EMAIL || '';
   const allowedEmails = allowlistStr
     .split(',')
     .map(e => e.trim().toLowerCase())
     .filter(Boolean);
 
-  // If no allowlist is configured, fallback to initial admin email
-  if (allowedEmails.length === 0 && env.INITIAL_ADMIN_EMAIL) {
-    return cleanEmail === env.INITIAL_ADMIN_EMAIL.trim().toLowerCase();
+  if (allowedEmails.length === 0) {
+    return false; // Deny by default if no allowlist is configured
   }
 
   return allowedEmails.includes(cleanEmail);
@@ -181,7 +163,7 @@ export async function authenticateAdmin(request: Request, env: Env): Promise<Adm
         if (session.expires_at && new Date(session.expires_at).getTime() < Date.now()) return null;
       }
     } catch {
-      // Fallback if table is not yet initialized
+      // In case session table is momentarily unreachable
     }
   }
 

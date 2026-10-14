@@ -1,6 +1,6 @@
 // Cloudflare D1 Database Access Layer
-import { Env, Category, Product, AccessCode, Inquiry, InquiryItem, OrderStatus, ORDER_STATUSES } from './types';
-import { hashPassword } from './auth';
+import { Category, Product, AccessCode, Inquiry, InquiryItem, OrderStatus, ORDER_STATUSES } from './types';
+import { sha256Hex, constantTimeEqual } from './auth';
 
 // Helper to generate unique inquiry references: CC-ORD-YYYYMMDD-XXXX
 export function generateInquiryReference(): string {
@@ -12,169 +12,63 @@ export function generateInquiryReference(): string {
   return `CC-ORD-${year}${month}${day}-${randomChars}`;
 }
 
-// Generate random secure access code
-export function generateRandomAccessCode(prefix = 'CC'): string {
-  const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ'; // Omits confusing chars 0/O, 1/I
-  let code = '';
-  const randomValues = new Uint8Array(8);
-  crypto.getRandomValues(randomValues);
-  for (let i = 0; i < 8; i++) {
-    code += chars[randomValues[i] % chars.length];
+// Generate secure unguessable access code (minimum 16 uppercase base32 chars)
+export function generateSecureAccessCode(prefix = 'CC'): string {
+  const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ'; // Base32 excluding ambiguous chars 0, 1, 8, O, I, B
+  const randomBytes = new Uint8Array(16);
+  crypto.getRandomValues(randomBytes);
+  
+  let codeStr = '';
+  for (let i = 0; i < 16; i++) {
+    codeStr += chars[randomBytes[i] % chars.length];
   }
-  return `${prefix}-${code.substring(0, 4)}-${code.substring(4)}`;
+  
+  // Format: CC-XXXX-XXXX-XXXX-XXXX
+  return `${prefix}-${codeStr.substring(0, 4)}-${codeStr.substring(4, 8)}-${codeStr.substring(8, 12)}-${codeStr.substring(12, 16)}`;
 }
 
-// Ensure database tables exist (automatic bootstrap for seamless dev & production)
-export async function bootstrapDatabase(db: D1Database, env: Env): Promise<void> {
-  const tableDefinitions = [
-    `CREATE TABLE IF NOT EXISTS administrators (
-      id TEXT PRIMARY KEY,
-      email TEXT UNIQUE NOT NULL,
-      password_hash TEXT,
-      salt TEXT,
-      role TEXT DEFAULT 'admin',
-      google_id TEXT,
-      name TEXT,
-      created_at TEXT DEFAULT (datetime('now')),
-      updated_at TEXT DEFAULT (datetime('now'))
-    )`,
-    `CREATE TABLE IF NOT EXISTS categories (
-      id TEXT PRIMARY KEY,
-      name TEXT NOT NULL,
-      slug TEXT UNIQUE NOT NULL,
-      description TEXT,
-      image_url TEXT,
-      sort_order INTEGER DEFAULT 0,
-      is_active INTEGER DEFAULT 1,
-      created_at TEXT DEFAULT (datetime('now'))
-    )`,
-    `CREATE TABLE IF NOT EXISTS products (
-      id TEXT PRIMARY KEY,
-      name TEXT NOT NULL,
-      slug TEXT UNIQUE NOT NULL,
-      description TEXT,
-      category_id TEXT NOT NULL,
-      image_url TEXT NOT NULL,
-      gallery_json TEXT DEFAULT '[]',
-      variants_json TEXT DEFAULT '[]',
-      pack_size TEXT,
-      specs_json TEXT DEFAULT '{}',
-      is_featured INTEGER DEFAULT 0,
-      is_customizable INTEGER DEFAULT 0,
-      is_active INTEGER DEFAULT 1,
-      created_at TEXT DEFAULT (datetime('now')),
-      updated_at TEXT DEFAULT (datetime('now'))
-    )`,
-    `CREATE TABLE IF NOT EXISTS access_codes (
-      id TEXT PRIMARY KEY,
-      code TEXT UNIQUE NOT NULL,
-      code_hash TEXT,
-      client_name TEXT NOT NULL,
-      contact_name TEXT,
-      contact_phone TEXT,
-      max_uses INTEGER DEFAULT 50,
-      used_count INTEGER DEFAULT 0,
-      expires_at TEXT,
-      status TEXT DEFAULT 'active',
-      created_by TEXT,
-      created_at TEXT DEFAULT (datetime('now')),
-      updated_at TEXT DEFAULT (datetime('now'))
-    )`,
-    `CREATE TABLE IF NOT EXISTS inquiries (
-      id TEXT PRIMARY KEY,
-      reference TEXT UNIQUE NOT NULL,
-      inquiry_type TEXT DEFAULT 'cart',
-      customer_name TEXT NOT NULL,
-      company_name TEXT NOT NULL,
-      contact_phone TEXT NOT NULL,
-      contact_email TEXT,
-      delivery_city TEXT NOT NULL,
-      expected_date TEXT,
-      notes TEXT,
-      access_code_id TEXT,
-      status TEXT DEFAULT 'New Inquiry',
-      admin_notes TEXT,
-      created_at TEXT DEFAULT (datetime('now')),
-      updated_at TEXT DEFAULT (datetime('now'))
-    )`,
-    `CREATE TABLE IF NOT EXISTS inquiry_items (
-      id TEXT PRIMARY KEY,
-      inquiry_id TEXT NOT NULL,
-      product_id TEXT,
-      product_name_snapshot TEXT NOT NULL,
-      variant_snapshot TEXT,
-      pack_size_snapshot TEXT,
-      quantity INTEGER NOT NULL
-    )`,
-    `CREATE TABLE IF NOT EXISTS access_code_logs (
-      id TEXT PRIMARY KEY,
-      access_code_id TEXT NOT NULL,
-      inquiry_id TEXT,
-      ip_hash TEXT,
-      user_agent TEXT,
-      used_at TEXT DEFAULT (datetime('now'))
-    )`,
-    `CREATE TABLE IF NOT EXISTS inquiry_status_history (
-      id TEXT PRIMARY KEY,
-      inquiry_id TEXT NOT NULL,
-      from_status TEXT,
-      to_status TEXT NOT NULL,
-      note TEXT,
-      changed_by TEXT,
-      changed_at TEXT DEFAULT (datetime('now'))
-    )`,
-    `CREATE TABLE IF NOT EXISTS business_settings (
-      key TEXT PRIMARY KEY,
-      value TEXT NOT NULL,
-      updated_at TEXT DEFAULT (datetime('now'))
-    )`,
-    `CREATE TABLE IF NOT EXISTS sessions (
-      token_id TEXT PRIMARY KEY,
-      admin_id TEXT NOT NULL,
-      token_hash TEXT,
-      created_at TEXT DEFAULT (datetime('now')),
-      expires_at TEXT NOT NULL,
-      revoked INTEGER DEFAULT 0
-    )`,
-    `CREATE TABLE IF NOT EXISTS password_reset_tokens (
-      token TEXT PRIMARY KEY,
-      admin_id TEXT NOT NULL,
-      expires_at TEXT NOT NULL,
-      used INTEGER DEFAULT 0,
-      created_at TEXT DEFAULT (datetime('now'))
-    )`
-  ];
+// TODO: In addition to this D1-backed rate limiter, Cloudflare dashboard WAF / Rate Limiting rules should be enabled in production.
+export async function checkD1RateLimit(
+  db: D1Database,
+  key: string,
+  maxRequests: number,
+  windowSeconds = 60
+): Promise<{ allowed: boolean; retryAfter: number }> {
+  const now = Math.floor(Date.now() / 1000);
+  const currentWindow = now - (now % windowSeconds);
 
-  for (const ddl of tableDefinitions) {
-    try {
-      await db.prepare(ddl).run();
-    } catch (tableErr) {
-      console.warn('Table creation warning:', tableErr);
-    }
-  }
-
-  // Ensure Initial Admin accounts exist
   try {
-    const emailsToSeed = Array.from(new Set([
-      (env.INITIAL_ADMIN_EMAIL || 'crystalclean457@gmail.com').toLowerCase().trim(),
-      'crystalclean457@gmail.com',
-      'admin@crystalclean.in'
-    ])).filter(Boolean);
+    const existing = await db
+      .prepare('SELECT window_start, count FROM rate_limits WHERE key = ?')
+      .bind(key)
+      .first<{ window_start: number; count: number }>();
 
-    for (const adminEmail of emailsToSeed) {
-      const adminCheck = await db.prepare('SELECT id FROM administrators WHERE LOWER(email) = ?').bind(adminEmail).first();
-      if (!adminCheck) {
-        const defaultPassword = env.INITIAL_ADMIN_PASSWORD || 'CrystalCleanAdmin2026!';
-        const { hash, salt } = await hashPassword(defaultPassword);
-        const adminId = `admin_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
-        await db.prepare(`
-          INSERT INTO administrators (id, email, password_hash, salt, role, name)
-          VALUES (?, ?, ?, ?, 'admin', 'CrystalClean Administrator')
-        `).bind(adminId, adminEmail, hash, salt).run();
+    if (existing && existing.window_start === currentWindow) {
+      if (existing.count >= maxRequests) {
+        const retryAfter = windowSeconds - (now % windowSeconds);
+        return { allowed: false, retryAfter: retryAfter > 0 ? retryAfter : 60 };
       }
+      await db
+        .prepare('UPDATE rate_limits SET count = count + 1 WHERE key = ?')
+        .bind(key)
+        .run();
+      return { allowed: true, retryAfter: 0 };
     }
-  } catch (seedErr) {
-    console.error('Admin seeding error:', seedErr);
+
+    // New window or new key
+    await db
+      .prepare(`
+        INSERT INTO rate_limits (key, window_start, count)
+        VALUES (?, ?, 1)
+        ON CONFLICT(key) DO UPDATE SET window_start = excluded.window_start, count = 1
+      `)
+      .bind(key, currentWindow)
+      .run();
+
+    return { allowed: true, retryAfter: 0 };
+  } catch (err) {
+    console.error('Rate limit query warning:', err);
+    return { allowed: true, retryAfter: 0 };
   }
 }
 
@@ -279,7 +173,7 @@ export async function getProductById(db: D1Database, id: string): Promise<Produc
     LEFT JOIN categories c ON p.category_id = c.id
     WHERE p.id = ? OR p.slug = ?
   `).bind(id, id).first<Product>();
-  return result;
+  return result || null;
 }
 
 export async function createProduct(db: D1Database, data: Partial<Product>): Promise<Product> {
@@ -351,35 +245,43 @@ export async function deleteProduct(db: D1Database, id: string): Promise<boolean
   return true;
 }
 
-// --- Access Codes ---
+// --- Access Codes (Hardened with SHA-256 Hashes) ---
 export async function getAccessCodes(db: D1Database): Promise<AccessCode[]> {
-  const result = await db.prepare('SELECT * FROM access_codes ORDER BY created_at DESC').all<AccessCode>();
+  const result = await db.prepare('SELECT id, client_name, contact_name, contact_phone, max_uses, used_count, expires_at, status, created_by, created_at, updated_at FROM access_codes ORDER BY created_at DESC').all<AccessCode>();
   return result.results || [];
 }
 
-export async function createAccessCode(db: D1Database, data: Partial<AccessCode>): Promise<AccessCode> {
+export async function createAccessCode(
+  db: D1Database,
+  data: Partial<AccessCode>
+): Promise<{ access_code: AccessCode; plaintext_code: string }> {
   const id = `code_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
-  const code = (data.code || generateRandomAccessCode()).toUpperCase().trim();
+  const plaintextCode = generateSecureAccessCode();
+  const codeHash = await sha256Hex(plaintextCode);
+  const maskedDisplay = `${plaintextCode.substring(0, 7)}****-****`;
 
   await db.prepare(`
     INSERT INTO access_codes (
-      id, code, client_name, contact_name, contact_phone, max_uses, used_count, expires_at, status, created_by
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      id, code, code_hash, client_name, contact_name, contact_phone, max_uses, used_count, expires_at, status, created_by
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?)
   `).bind(
     id,
-    code,
+    maskedDisplay,
+    codeHash,
     data.client_name,
     data.contact_name || null,
     data.contact_phone || null,
     data.max_uses || 50,
-    0,
     data.expires_at || null,
     data.status || 'active',
     data.created_by || null
   ).run();
 
   const created = await db.prepare('SELECT * FROM access_codes WHERE id = ?').bind(id).first<AccessCode>();
-  return created!;
+  return {
+    access_code: created!,
+    plaintext_code: plaintextCode
+  };
 }
 
 export async function updateAccessCode(db: D1Database, id: string, data: Partial<AccessCode>): Promise<AccessCode | null> {
@@ -411,6 +313,78 @@ export async function deleteAccessCode(db: D1Database, id: string): Promise<bool
   return true;
 }
 
+// Atomically check access code for quick UI feedback
+export async function checkAccessCodeQuick(
+  db: D1Database,
+  rawCode: string
+): Promise<{ valid: boolean; client_name?: string; remaining_uses?: number; error?: string }> {
+  const cleanCode = rawCode.trim().toUpperCase();
+  const inputHash = await sha256Hex(cleanCode);
+
+  // Search by code_hash or plain code (legacy support)
+  const code = await db.prepare(`
+    SELECT * FROM access_codes WHERE code_hash = ? OR code = ?
+  `).bind(inputHash, cleanCode).first<AccessCode>();
+
+  if (!code) {
+    return { valid: false, error: 'Invalid or expired access code.' };
+  }
+
+  // Constant-time check verification
+  if (code.code_hash && !constantTimeEqual(code.code_hash, inputHash)) {
+    return { valid: false, error: 'Invalid or expired access code.' };
+  }
+
+  if (code.status !== 'active') {
+    return { valid: false, error: 'Invalid or expired access code.' };
+  }
+
+  if (code.expires_at && new Date(code.expires_at).getTime() < Date.now()) {
+    return { valid: false, error: 'Invalid or expired access code.' };
+  }
+
+  if (code.used_count >= code.max_uses) {
+    return { valid: false, error: 'Invalid or expired access code.' };
+  }
+
+  return {
+    valid: true,
+    client_name: code.client_name,
+    remaining_uses: code.max_uses - code.used_count
+  };
+}
+
+// Atomically check and verify access code for customer inquiry submission
+export async function verifyAndConsumeAccessCode(
+  db: D1Database,
+  rawCode: string,
+  ipHash?: string
+): Promise<{ valid: boolean; accessCode?: AccessCode; error?: string }> {
+  const cleanCode = rawCode.trim().toUpperCase();
+  const inputHash = await sha256Hex(cleanCode);
+
+  // 1. Single atomic conditional UPDATE preventing race conditions
+  const updateRes = await db.prepare(`
+    UPDATE access_codes
+    SET used_count = used_count + 1,
+        status = CASE WHEN used_count + 1 >= max_uses THEN 'exhausted' ELSE status END,
+        updated_at = datetime('now')
+    WHERE (code_hash = ? OR code = ?)
+      AND status = 'active'
+      AND used_count < max_uses
+      AND (expires_at IS NULL OR datetime(expires_at) > datetime('now'))
+  `).bind(inputHash, cleanCode).run();
+
+  const changes = updateRes.meta?.changes ?? (updateRes as any).changes ?? 0;
+
+  if (changes > 0) {
+    const updated = await db.prepare('SELECT * FROM access_codes WHERE code_hash = ? OR code = ?').bind(inputHash, cleanCode).first<AccessCode>();
+    return { valid: true, accessCode: updated! };
+  }
+
+  return { valid: false, error: 'Invalid or expired access code.' };
+}
+
 // --- Sessions & Token Management ---
 export async function createSession(db: D1Database, adminId: string, tokenId: string, expiresAt: string): Promise<void> {
   await db.prepare(`
@@ -423,6 +397,10 @@ export async function revokeSession(db: D1Database, tokenId: string): Promise<vo
   await db.prepare('UPDATE sessions SET revoked = 1 WHERE token_id = ?').bind(tokenId).run();
 }
 
+export async function revokeAllSessions(db: D1Database): Promise<void> {
+  await db.prepare('UPDATE sessions SET revoked = 1').run();
+}
+
 export async function isSessionActive(db: D1Database, tokenId: string): Promise<boolean> {
   const session = await db.prepare('SELECT revoked, expires_at FROM sessions WHERE token_id = ?').bind(tokenId).first<{ revoked: number; expires_at: string }>();
   if (!session) return true;
@@ -431,125 +409,10 @@ export async function isSessionActive(db: D1Database, tokenId: string): Promise<
   return true;
 }
 
-export async function createPasswordResetToken(db: D1Database, adminId: string): Promise<string> {
-  const token = `rst_${Date.now()}_${crypto.randomUUID().replace(/-/g, '')}`;
-  const expiresAt = new Date(Date.now() + 3600 * 1000).toISOString(); // 1 hour validity
-  await db.prepare(`
-    INSERT INTO password_reset_tokens (token, admin_id, expires_at, used, created_at)
-    VALUES (?, ?, ?, 0, datetime('now'))
-  `).bind(token, adminId, expiresAt).run();
-  return token;
-}
-
-export async function verifyAndUsePasswordResetToken(
-  db: D1Database,
-  token: string,
-  newPasswordHash: string,
-  newSalt: string
-): Promise<{ success: boolean; error?: string }> {
-  const record = await db.prepare(`
-    SELECT * FROM password_reset_tokens WHERE token = ?
-  `).bind(token).first<{ token: string; admin_id: string; expires_at: string; used: number }>();
-
-  if (!record || record.used === 1) {
-    return { success: false, error: 'Password reset token is invalid or has already been used.' };
-  }
-
-  if (new Date(record.expires_at).getTime() < Date.now()) {
-    return { success: false, error: 'Password reset token has expired.' };
-  }
-
-  // Update administrator password
-  await db.prepare(`
-    UPDATE administrators SET password_hash = ?, salt = ?, updated_at = datetime('now')
-    WHERE id = ?
-  `).bind(newPasswordHash, newSalt, record.admin_id).run();
-
-  // Mark token used
-  await db.prepare('UPDATE password_reset_tokens SET used = 1 WHERE token = ?').bind(token).run();
-
-  // Invalidate all existing active sessions for this admin
-  await db.prepare('UPDATE sessions SET revoked = 1 WHERE admin_id = ?').bind(record.admin_id).run();
-
-  return { success: true };
-}
-
-// Atomically check and verify access code for customer inquiry submission
-export async function verifyAndConsumeAccessCode(
-  db: D1Database,
-  rawCode: string,
-  ipHash?: string
-): Promise<{ valid: boolean; accessCode?: AccessCode; error?: string }> {
-  const cleanCode = rawCode.trim().toUpperCase();
-
-  // 1. Single atomic conditional UPDATE preventing race conditions
-  const updateRes = await db.prepare(`
-    UPDATE access_codes
-    SET used_count = used_count + 1,
-        status = CASE WHEN used_count + 1 >= max_uses THEN 'exhausted' ELSE status END,
-        updated_at = datetime('now')
-    WHERE code = ?
-      AND status = 'active'
-      AND used_count < max_uses
-      AND (expires_at IS NULL OR datetime(expires_at) > datetime('now'))
-  `).bind(cleanCode).run();
-
-  const changes = updateRes.meta?.changes ?? (updateRes as any).changes ?? 0;
-
-  if (changes > 0) {
-    const updated = await db.prepare('SELECT * FROM access_codes WHERE code = ?').bind(cleanCode).first<AccessCode>();
-    return { valid: true, accessCode: updated! };
-  }
-
-  // If changes === 0, fetch record to identify specific rejection reason
-  const record = await db.prepare('SELECT * FROM access_codes WHERE code = ?').bind(cleanCode).first<AccessCode>();
-  if (!record) {
-    return { valid: false, error: 'Invalid access code. Please request an authorized access code from CrystalClean.' };
-  }
-  if (record.status === 'revoked') {
-    return { valid: false, error: 'This access code has been revoked. Please contact CrystalClean support.' };
-  }
-  if (record.expires_at && new Date(record.expires_at).getTime() < Date.now()) {
-    await db.prepare('UPDATE access_codes SET status = "expired" WHERE id = ?').bind(record.id).run();
-    return { valid: false, error: 'This access code has expired. Please contact CrystalClean to renew.' };
-  }
-  if (record.used_count >= record.max_uses || record.status === 'exhausted') {
-    await db.prepare('UPDATE access_codes SET status = "exhausted" WHERE id = ?').bind(record.id).run();
-    return { valid: false, error: 'Inquiry limit reached for this access code. Please request an extension.' };
-  }
-  return { valid: false, error: 'Access code is not currently active.' };
-}
-
-// Quick check without consuming (for frontend validation indicator)
-export async function checkAccessCodeQuick(db: D1Database, rawCode: string): Promise<{ valid: boolean; client_name?: string; remaining_uses?: number; error?: string }> {
-  const cleanCode = rawCode.trim().toUpperCase();
-  const record = await db.prepare('SELECT * FROM access_codes WHERE code = ?').bind(cleanCode).first<AccessCode>();
-
-  if (!record) {
-    return { valid: false, error: 'Access code not found' };
-  }
-  if (record.status === 'revoked') {
-    return { valid: false, error: 'Access code is revoked' };
-  }
-  if (record.expires_at && new Date(record.expires_at).getTime() < Date.now()) {
-    return { valid: false, error: 'Access code has expired' };
-  }
-  if (record.used_count >= record.max_uses) {
-    return { valid: false, error: 'Inquiry limit reached' };
-  }
-
-  return {
-    valid: true,
-    client_name: record.client_name,
-    remaining_uses: Math.max(0, record.max_uses - record.used_count)
-  };
-}
-
 // --- Inquiries ---
 export async function createInquiry(
   db: D1Database,
-  data: {
-    inquiry_type: 'cart' | 'bulk_quote';
+  inquiryData: {
     customer_name: string;
     company_name: string;
     contact_phone: string;
@@ -558,106 +421,80 @@ export async function createInquiry(
     expected_date?: string;
     notes?: string;
     access_code_id?: string;
-  },
-  items: Array<{
-    product_id?: string;
-    product_name: string;
-    variant?: string;
-    pack_size?: string;
-    quantity: number;
-  }>,
-  ipHash?: string
-): Promise<Inquiry> {
-  // Prevent duplicate submissions within 60 seconds
-  const existing = await db.prepare(`
-    SELECT id FROM inquiries
-    WHERE customer_name = ? AND company_name = ? AND delivery_city = ? AND access_code_id = ?
-      AND datetime(created_at) > datetime('now', '-60 seconds')
-    ORDER BY created_at DESC
-    LIMIT 1
-  `).bind(
-    data.customer_name,
-    data.company_name,
-    data.delivery_city,
-    data.access_code_id || null
-  ).first<{ id: string }>();
-
-  if (existing) {
-    const existingInquiry = await getInquiryById(db, existing.id);
-    if (existingInquiry) return existingInquiry;
+    inquiry_type?: 'cart' | 'bulk_quote';
+    items: Array<{
+      product_id?: string;
+      product_name_snapshot: string;
+      variant_snapshot?: string;
+      pack_size_snapshot?: string;
+      quantity: number;
+    }>;
   }
-
+): Promise<Inquiry> {
   const id = `inq_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
   const reference = generateInquiryReference();
 
   await db.prepare(`
     INSERT INTO inquiries (
       id, reference, inquiry_type, customer_name, company_name,
-      contact_phone, contact_email, delivery_city, expected_date, notes,
-      access_code_id, status, created_at, updated_at
+      contact_phone, contact_email, delivery_city, expected_date,
+      notes, access_code_id, status, created_at, updated_at
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'New Inquiry', datetime('now'), datetime('now'))
   `).bind(
     id,
     reference,
-    data.inquiry_type,
-    data.customer_name,
-    data.company_name,
-    data.contact_phone,
-    data.contact_email || null,
-    data.delivery_city,
-    data.expected_date || null,
-    data.notes || null,
-    data.access_code_id || null
+    inquiryData.inquiry_type || 'cart',
+    inquiryData.customer_name,
+    inquiryData.company_name,
+    inquiryData.contact_phone,
+    inquiryData.contact_email || null,
+    inquiryData.delivery_city,
+    inquiryData.expected_date || null,
+    inquiryData.notes || null,
+    inquiryData.access_code_id || null
   ).run();
 
-  // Insert items snapshots (Strictly NO pricing fields)
-  for (const item of items) {
-    const itemId = `item_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
-    await db.prepare(`
-      INSERT INTO inquiry_items (
-        id, inquiry_id, product_id, product_name_snapshot, variant_snapshot, pack_size_snapshot, quantity
-      ) VALUES (?, ?, ?, ?, ?, ?, ?)
-    `).bind(
-      itemId,
-      id,
-      item.product_id || null,
-      item.product_name,
-      item.variant || null,
-      item.pack_size || null,
-      Math.max(1, Number(item.quantity) || 1)
-    ).run();
+  // Insert items
+  if (inquiryData.items && inquiryData.items.length > 0) {
+    const itemStatements = inquiryData.items.map((item) => {
+      const itemId = `item_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+      return db.prepare(`
+        INSERT INTO inquiry_items (
+          id, inquiry_id, product_id, product_name_snapshot,
+          variant_snapshot, pack_size_snapshot, quantity
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+      `).bind(
+        itemId,
+        id,
+        item.product_id || null,
+        item.product_name_snapshot,
+        item.variant_snapshot || null,
+        item.pack_size_snapshot || null,
+        item.quantity
+      );
+    });
+
+    await db.batch(itemStatements);
   }
 
-  // Insert status history
+  // Initial status history log
   const historyId = `hist_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
   await db.prepare(`
-    INSERT INTO inquiry_status_history (
-      id, inquiry_id, from_status, to_status, note, changed_by, changed_at
-    ) VALUES (?, ?, NULL, 'New Inquiry', 'Inquiry created via website submission', 'Customer', datetime('now'))
+    INSERT INTO inquiry_status_history (id, inquiry_id, from_status, to_status, note, changed_by, changed_at)
+    VALUES (?, ?, NULL, 'New Inquiry', 'Inquiry created via website submission', 'customer', datetime('now'))
   `).bind(historyId, id).run();
 
-  // Log access code usage
-  if (data.access_code_id) {
-    const logId = `log_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
-    await db.prepare(`
-      INSERT INTO access_code_logs (id, access_code_id, inquiry_id, ip_hash, used_at)
-      VALUES (?, ?, ?, ?, datetime('now'))
-    `).bind(logId, data.access_code_id, id, ipHash || null).run();
-  }
-
-  const created = await getInquiryById(db, id);
-  return created!;
+  return (await getInquiryById(db, id))!;
 }
 
 export async function getInquiries(
   db: D1Database,
-  options: { status?: string; search?: string; limit?: number; offset?: number } = {}
+  options: { status?: OrderStatus; search?: string } = {}
 ): Promise<Inquiry[]> {
   let query = `
-    SELECT i.*, a.code as access_code_value,
-           (SELECT COUNT(*) FROM inquiry_items WHERE inquiry_id = i.id) as item_count
+    SELECT i.*, ac.code as access_code_value
     FROM inquiries i
-    LEFT JOIN access_codes a ON i.access_code_id = a.id
+    LEFT JOIN access_codes ac ON i.access_code_id = ac.id
     WHERE 1=1
   `;
   const bindings: unknown[] = [];
@@ -668,42 +505,38 @@ export async function getInquiries(
   }
 
   if (options.search) {
-    query += ' AND (i.reference LIKE ? OR i.customer_name LIKE ? OR i.company_name LIKE ? OR i.contact_phone LIKE ?)';
+    query += ' AND (i.customer_name LIKE ? OR i.company_name LIKE ? OR i.reference LIKE ? OR i.delivery_city LIKE ?)';
     const term = `%${options.search}%`;
     bindings.push(term, term, term, term);
   }
 
   query += ' ORDER BY i.created_at DESC';
 
-  if (options.limit) {
-    query += ' LIMIT ?';
-    bindings.push(options.limit);
-    if (options.offset) {
-      query += ' OFFSET ?';
-      bindings.push(options.offset);
-    }
-  }
-
   const stmt = db.prepare(query);
   const result = await (bindings.length > 0 ? stmt.bind(...bindings).all<Inquiry>() : stmt.all<Inquiry>());
-  return result.results || [];
+  const inquiries = result.results || [];
+
+  for (const inq of inquiries) {
+    const itemsRes = await db.prepare('SELECT * FROM inquiry_items WHERE inquiry_id = ?').bind(inq.id).all<InquiryItem>();
+    inq.items = itemsRes.results || [];
+  }
+
+  return inquiries;
 }
 
 export async function getInquiryById(db: D1Database, id: string): Promise<Inquiry | null> {
   const inquiry = await db.prepare(`
-    SELECT i.*, a.code as access_code_value
+    SELECT i.*, ac.code as access_code_value
     FROM inquiries i
-    LEFT JOIN access_codes a ON i.access_code_id = a.id
+    LEFT JOIN access_codes ac ON i.access_code_id = ac.id
     WHERE i.id = ? OR i.reference = ?
   `).bind(id, id).first<Inquiry>();
 
   if (!inquiry) return null;
 
-  const items = await db.prepare(`
-    SELECT * FROM inquiry_items WHERE inquiry_id = ?
-  `).bind(inquiry.id).all<InquiryItem>();
+  const itemsRes = await db.prepare('SELECT * FROM inquiry_items WHERE inquiry_id = ?').bind(inquiry.id).all<InquiryItem>();
+  inquiry.items = itemsRes.results || [];
 
-  inquiry.items = items.results || [];
   return inquiry;
 }
 
@@ -711,15 +544,11 @@ export async function updateInquiryStatus(
   db: D1Database,
   id: string,
   newStatus: OrderStatus,
-  adminEmail: string,
-  note?: string
+  note?: string,
+  changedBy = 'admin'
 ): Promise<boolean> {
-  if (!ORDER_STATUSES.includes(newStatus)) {
-    throw new Error(`Invalid status: ${newStatus}`);
-  }
-
-  const existing = await db.prepare('SELECT status FROM inquiries WHERE id = ?').bind(id).first<{ status: string }>();
-  if (!existing) return false;
+  const current = await db.prepare('SELECT status FROM inquiries WHERE id = ?').bind(id).first<{ status: OrderStatus }>();
+  if (!current) return false;
 
   await db.prepare(`
     UPDATE inquiries SET status = ?, updated_at = datetime('now') WHERE id = ?
@@ -727,48 +556,38 @@ export async function updateInquiryStatus(
 
   const historyId = `hist_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
   await db.prepare(`
-    INSERT INTO inquiry_status_history (
-      id, inquiry_id, from_status, to_status, note, changed_by, changed_at
-    ) VALUES (?, ?, ?, ?, ?, ?, datetime('now'))
-  `).bind(historyId, id, existing.status, newStatus, note || null, adminEmail).run();
+    INSERT INTO inquiry_status_history (id, inquiry_id, from_status, to_status, note, changed_by, changed_at)
+    VALUES (?, ?, ?, ?, ?, ?, datetime('now'))
+  `).bind(historyId, id, current.status, newStatus, note || null, changedBy).run();
 
   return true;
 }
 
 export async function updateInquiryAdminNotes(db: D1Database, id: string, adminNotes: string): Promise<boolean> {
-  await db.prepare(`UPDATE inquiries SET admin_notes = ?, updated_at = datetime('now') WHERE id = ?`).bind(adminNotes, id).run();
+  await db.prepare(`
+    UPDATE inquiries SET admin_notes = ?, updated_at = datetime('now') WHERE id = ?
+  `).bind(adminNotes, id).run();
   return true;
 }
 
 export async function getInquiryHistory(db: D1Database, inquiryId: string) {
-  const res = await db.prepare('SELECT * FROM inquiry_status_history WHERE inquiry_id = ? ORDER BY changed_at DESC').bind(inquiryId).all();
-  return res.results || [];
+  const result = await db.prepare('SELECT * FROM inquiry_status_history WHERE inquiry_id = ? ORDER BY changed_at ASC').bind(inquiryId).all();
+  return result.results || [];
 }
 
 // --- Admin Stats ---
 export async function getAdminStats(db: D1Database) {
-  const statusCountsRes = await db.prepare(`
-    SELECT status, COUNT(*) as count FROM inquiries GROUP BY status
-  `).all<{ status: string; count: number }>();
-
-  const statusMap: Record<string, number> = {};
-  ORDER_STATUSES.forEach(st => {
-    statusMap[st] = 0;
-  });
-
-  let totalInquiries = 0;
-  (statusCountsRes.results || []).forEach(row => {
-    statusMap[row.status] = row.count;
-    totalInquiries += row.count;
-  });
-
-  const productsCountRes = await db.prepare('SELECT COUNT(*) as count FROM products WHERE is_active = 1').first<{ count: number }>();
-  const accessCodesCountRes = await db.prepare('SELECT COUNT(*) as count FROM access_codes WHERE status = "active"').first<{ count: number }>();
+  const totalInquiries = (await db.prepare('SELECT COUNT(*) as c FROM inquiries').first<{ c: number }>())?.c || 0;
+  const newInquiries = (await db.prepare("SELECT COUNT(*) as c FROM inquiries WHERE status = 'New Inquiry'").first<{ c: number }>())?.c || 0;
+  const totalProducts = (await db.prepare('SELECT COUNT(*) as c FROM products').first<{ c: number }>())?.c || 0;
+  const activeProducts = (await db.prepare('SELECT COUNT(*) as c FROM products WHERE is_active = 1').first<{ c: number }>())?.c || 0;
+  const activeCodes = (await db.prepare("SELECT COUNT(*) as c FROM access_codes WHERE status = 'active'").first<{ c: number }>())?.c || 0;
 
   return {
     totalInquiries,
-    statusCounts: statusMap,
-    activeProductsCount: productsCountRes?.count || 0,
-    activeCodesCount: accessCodesCountRes?.count || 0
+    newInquiries,
+    totalProducts,
+    activeProducts,
+    activeCodes
   };
 }

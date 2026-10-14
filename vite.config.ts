@@ -653,22 +653,19 @@ function devApiPlugin(): Plugin {
         };
 
         // --- AUTH ---
-        if (pathname === '/api/auth/login' && method === 'POST') {
-          const body = await readBody();
-          const email = (body.email || '').trim().toLowerCase();
-          const password = body.password || '';
-
-          // Allow default admin
-          if (email === 'admin@crystalclean.in' && (password === 'CrystalCleanAdmin2026!' || password.length >= 6)) {
-            const token = 'dev_mock_token_' + Date.now();
-            res.setHeader('Set-Cookie', `cc_admin_session=${token}; Path=/; HttpOnly`);
-            return json({
-              success: true,
-              token,
-              user: { id: 'admin_1', email, name: 'CrystalClean Executive', role: 'admin' }
-            });
-          }
-          return json({ error: 'Invalid email or password' }, 401);
+        // --- AUTH (Google-only) ---
+        if (pathname === '/api/auth/google/url' && method === 'GET') {
+          return json({
+            url: '/api/auth/google/callback?code=mock_code_dev&state=mock_state'
+          });
+        }
+        if (pathname === '/api/auth/google/callback' && method === 'GET') {
+          const token = 'dev_mock_token_' + Date.now();
+          res.setHeader('Set-Cookie', `cc_admin_session=${token}; Path=/; HttpOnly; SameSite=Lax`);
+          res.statusCode = 302;
+          res.setHeader('Location', '/admin');
+          res.end();
+          return;
         }
 
         if (pathname === '/api/auth/me' && method === 'GET') {

@@ -6,12 +6,14 @@ export interface Env {
   BUCKET?: R2Bucket;
   ENVIRONMENT?: string;
   BUSINESS_WHATSAPP?: string;
-  INITIAL_ADMIN_EMAIL?: string;
-  INITIAL_ADMIN_PASSWORD?: string;
+  ADMIN_EMAILS?: string;
   ADMIN_ALLOWLIST?: string;
+  INITIAL_ADMIN_EMAIL?: string;
   JWT_SECRET?: string;
   GOOGLE_CLIENT_ID?: string;
   GOOGLE_CLIENT_SECRET?: string;
+  TURNSTILE_SECRET?: string;
+  APP_BASE_URL?: string;
 }
 
 export type OrderStatus =
