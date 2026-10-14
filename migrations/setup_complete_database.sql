@@ -142,13 +142,13 @@ CREATE INDEX IF NOT EXISTS idx_password_reset_tokens ON password_reset_tokens(to
 -- Contains 15 Admin-Editable Categories and all 26 Seeded Products from Section 4A.
 -- All 26 products are seeded as DRAFT (is_active = 0) for owner review prior to publishing.
 
-INSERT OR IGNORE INTO business_settings (key, value) VALUES 
+INSERT OR REPLACE INTO business_settings (key, value) VALUES 
 ('whatsapp_number', '919149953610'),
 ('business_name', 'CrystalClean Hospitality Supplies'),
 ('contact_email', 'orders@crystalclean.in'),
 ('contact_phone', '+91 91499 53610'),
 ('address', 'Hospitality Business District, Sector 18, Gurugram, HR & New Delhi'),
-('admin_allowlist', 'admin@crystalclean.in,owner@crystalclean.in');
+('admin_allowlist', 'crystalclean457@gmail.com,admin@crystalclean.in,owner@crystalclean.in');
 
 -- 15 Searchable and Filterable Categories (Admin-Editable)
 INSERT OR REPLACE INTO categories (id, name, slug, description, image_url, sort_order, is_active) VALUES

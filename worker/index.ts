@@ -39,7 +39,15 @@ import {
 } from './auth';
 import { generateWhatsAppLink } from './whatsapp';
 
-// JSON response helper with CORS
+// Security headers added to all API responses
+const SECURITY_HEADERS: Record<string, string> = {
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+};
+
+// JSON response helper with CORS and Security Headers
 function jsonResponse(data: unknown, status = 200, headers: Record<string, string> = {}): Response {
   return new Response(JSON.stringify(data), {
     status,
@@ -48,6 +56,7 @@ function jsonResponse(data: unknown, status = 200, headers: Record<string, strin
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      ...SECURITY_HEADERS,
       ...headers,
     },
   });
@@ -60,11 +69,11 @@ function errorResponse(message: string, status = 400): Response {
 // In-memory rate limiting map for basic protection
 const ipRateMap = new Map<string, { count: number; resetAt: number }>();
 
-function checkRateLimit(ip: string, maxRequests = 25, windowMs = 60000): boolean {
+function checkRateLimit(key: string, maxRequests = 25, windowMs = 60000): boolean {
   const now = Date.now();
-  const record = ipRateMap.get(ip);
+  const record = ipRateMap.get(key);
   if (!record || record.resetAt < now) {
-    ipRateMap.set(ip, { count: 1, resetAt: now + windowMs });
+    ipRateMap.set(key, { count: 1, resetAt: now + windowMs });
     return true;
   }
   if (record.count >= maxRequests) {
@@ -86,6 +95,7 @@ export default {
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
           'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          ...SECURITY_HEADERS,
         },
       });
     }
@@ -94,10 +104,32 @@ export default {
     if (url.pathname.startsWith('/api/')) {
       const clientIp = request.headers.get('CF-Connecting-IP') || '127.0.0.1';
 
-      // Basic rate limiting on sensitive API endpoints
-      if (['/api/auth/login', '/api/inquiries', '/api/access-codes/verify'].includes(url.pathname)) {
-        if (!checkRateLimit(clientIp, 30, 60000)) {
-          return errorResponse('Too many requests. Please try again in a moment.', 429);
+      // Granular Rate Limiting on Sensitive API Endpoints
+      if (url.pathname === '/api/auth/login' && !checkRateLimit(`login:${clientIp}`, 5, 60000)) {
+        return errorResponse('Too many login attempts. Please wait 1 minute before trying again.', 429);
+      }
+      if (url.pathname === '/api/auth/forgot-password' && !checkRateLimit(`reset:${clientIp}`, 3, 60000)) {
+        return errorResponse('Too many password reset requests. Please wait a moment.', 429);
+      }
+      if (url.pathname === '/api/access-codes/verify' && !checkRateLimit(`code:${clientIp}`, 10, 60000)) {
+        return errorResponse('Too many access code verification attempts. Please wait a moment.', 429);
+      }
+      if (url.pathname === '/api/inquiries' && request.method === 'POST' && !checkRateLimit(`inq:${clientIp}`, 10, 60000)) {
+        return errorResponse('Inquiry rate limit exceeded. Please wait a moment.', 429);
+      }
+
+      // CSRF protection: verify Origin header for state-modifying requests
+      if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method) && !['/api/inquiries', '/api/access-codes/verify'].includes(url.pathname)) {
+        const origin = request.headers.get('Origin');
+        if (origin) {
+          try {
+            const originHost = new URL(origin).host;
+            if (originHost !== url.host && !origin.includes('localhost')) {
+              return errorResponse('Cross-origin request forbidden', 403);
+            }
+          } catch {
+            return errorResponse('Invalid origin header', 403);
+          }
         }
       }
 
@@ -165,7 +197,7 @@ export default {
           }, 200, { 'Set-Cookie': cookie });
         }
 
-        // GET /api/auth/google (Initiates Google OAuth)
+        // GET /api/auth/google (Initiates Google OAuth with State parameter)
         if (url.pathname === '/api/auth/google' && request.method === 'GET') {
           const clientId = env.GOOGLE_CLIENT_ID;
           if (!clientId) {
@@ -183,13 +215,30 @@ export default {
           googleAuthUrl.searchParams.set('access_type', 'online');
           googleAuthUrl.searchParams.set('prompt', 'select_account');
 
-          return Response.redirect(googleAuthUrl.toString(), 302);
+          const isSecure = env.ENVIRONMENT === 'production' || request.url.startsWith('https://');
+          const stateCookie = `cc_oauth_state=${state}; HttpOnly; SameSite=Lax; Path=/api/auth/google/callback; Max-Age=300${isSecure ? '; Secure' : ''}`;
+
+          return new Response(null, {
+            status: 302,
+            headers: {
+              'Location': googleAuthUrl.toString(),
+              'Set-Cookie': stateCookie,
+            },
+          });
         }
 
-        // GET /api/auth/google/callback (Google OAuth Callback & Strict Allowlist Verification)
+        // GET /api/auth/google/callback (Google OAuth Callback & Strict Allowlist & State Verification)
         if (url.pathname === '/api/auth/google/callback' && request.method === 'GET') {
           const code = url.searchParams.get('code');
           const error = url.searchParams.get('error');
+          const returnedState = url.searchParams.get('state');
+
+          // Validate CSRF state parameter
+          const cookieHeader = request.headers.get('Cookie') || '';
+          const expectedState = cookieHeader.match(/cc_oauth_state=([^;]+)/)?.[1];
+          if (!returnedState || !expectedState || returnedState !== expectedState) {
+            return Response.redirect(`${url.origin}/admin/login?error=invalid_oauth_state`, 302);
+          }
 
           if (error || !code) {
             return Response.redirect(`${url.origin}/admin/login?error=oauth_denied`, 302);
@@ -307,30 +356,23 @@ export default {
           return jsonResponse({ success: true, message: 'Logged out successfully' }, 200, { 'Set-Cookie': cookie });
         }
 
-        // POST /api/auth/forgot-password
+        // POST /api/auth/forgot-password (Secure handling: never leak reset tokens over public API)
         if (url.pathname === '/api/auth/forgot-password' && request.method === 'POST') {
-          if (env.DB) {
-            await bootstrapDatabase(env.DB, env);
-          }
           const body = await request.json() as { email?: string };
           if (!body.email) return errorResponse('Email is required', 400);
 
           const cleanEmail = body.email.trim().toLowerCase();
-          if (!isEmailAllowed(cleanEmail, env)) {
-            return errorResponse('Access denied. This email is not authorized as an administrator.', 403);
+          if (isEmailAllowed(cleanEmail, env) && env.DB) {
+            const admin = await env.DB.prepare('SELECT id, email FROM administrators WHERE LOWER(email) = ?').bind(cleanEmail).first<any>();
+            if (admin) {
+              await createPasswordResetToken(env.DB, admin.id);
+            }
           }
 
-          const admin = await env.DB.prepare('SELECT id, email FROM administrators WHERE LOWER(email) = ?').bind(cleanEmail).first<any>();
-          if (!admin) {
-            return errorResponse('Administrator account not found', 404);
-          }
-
-          const resetToken = await createPasswordResetToken(env.DB, admin.id);
+          // Uniform response regardless of whether email exists (prevents account enumeration and never leaks tokens)
           return jsonResponse({
             success: true,
-            message: 'Password reset token generated successfully. Use this token with /api/auth/reset-password to set a new password.',
-            reset_token: resetToken,
-            expires_in: '1 hour',
+            message: 'If the provided address is an authorized administrator, password recovery instructions have been recorded.'
           });
         }
 
@@ -354,6 +396,38 @@ export default {
           return jsonResponse({
             success: true,
             message: 'Password has been securely reset. You can now log in with your new credentials.'
+          });
+        }
+
+        // POST /api/admin/change-password (Authenticated Administrator password update)
+        if (url.pathname === '/api/admin/change-password' && request.method === 'POST') {
+          const admin = await authenticateAdmin(request, env);
+          if (!admin) return errorResponse('Unauthorized', 401);
+
+          const body = await request.json() as { current_password?: string; new_password?: string };
+          if (!body.current_password || !body.new_password) {
+            return errorResponse('Current password and new password are required', 400);
+          }
+          if (body.new_password.length < 8) {
+            return errorResponse('New password must be at least 8 characters long', 400);
+          }
+
+          const adminRecord = await env.DB.prepare('SELECT * FROM administrators WHERE id = ?').bind(admin.id).first<any>();
+          if (!adminRecord || !adminRecord.password_hash || !adminRecord.salt) {
+            return errorResponse('This administrator account cannot be updated via password', 400);
+          }
+
+          const valid = await verifyPassword(body.current_password, adminRecord.password_hash, adminRecord.salt);
+          if (!valid) {
+            return errorResponse('Current password does not match', 400);
+          }
+
+          const { hash, salt } = await hashPassword(body.new_password);
+          await env.DB.prepare('UPDATE administrators SET password_hash = ?, salt = ?, updated_at = datetime(\'now\') WHERE id = ?').bind(hash, salt, admin.id).run();
+
+          return jsonResponse({
+            success: true,
+            message: 'Password successfully updated'
           });
         }
 
@@ -671,7 +745,7 @@ export default {
           return jsonResponse({ stats });
         }
 
-        // POST /api/upload (Admin upload product image to R2 or data URL)
+        // POST /api/upload (Admin upload product image to R2 or data URL with strict validation)
         if (url.pathname === '/api/upload' && request.method === 'POST') {
           const admin = await authenticateAdmin(request, env);
           if (!admin) return errorResponse('Unauthorized', 401);
@@ -681,6 +755,15 @@ export default {
             const formData = await request.formData();
             const file = formData.get('file') as File;
             if (!file) return errorResponse('No file provided', 400);
+
+            // Strictly restrict to JPG, PNG, WebP — reject SVG to prevent SVG XSS
+            const allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+            if (!allowedMimes.includes(file.type)) {
+              return errorResponse('Invalid file type. Only JPG, PNG, and WebP images are allowed.', 400);
+            }
+            if (file.size > 5 * 1024 * 1024) {
+              return errorResponse('File size exceeds the 5MB maximum limit.', 400);
+            }
 
             // If Cloudflare R2 bucket is bound
             if (env.BUCKET) {
@@ -710,15 +793,25 @@ export default {
         return errorResponse('API endpoint not found', 404);
       } catch (err: any) {
         console.error('API Error:', err);
-        return errorResponse(err.message || 'Internal Server Error', 500);
+        // Never leak SQL or internal stack traces to clients
+        return errorResponse('An unexpected internal server error occurred.', 500);
       }
     }
 
     // Static Assets fallback for Cloudflare Workers with Static Assets
     if (env.ASSETS) {
-      return await env.ASSETS.fetch(request);
+      const assetRes = await env.ASSETS.fetch(request);
+      const newHeaders = new Headers(assetRes.headers);
+      for (const [k, v] of Object.entries(SECURITY_HEADERS)) {
+        newHeaders.set(k, v);
+      }
+      return new Response(assetRes.body, {
+        status: assetRes.status,
+        statusText: assetRes.statusText,
+        headers: newHeaders,
+      });
     }
 
-    return new Response('Not Found', { status: 404 });
+    return new Response('Not Found', { status: 404, headers: SECURITY_HEADERS });
   },
 };

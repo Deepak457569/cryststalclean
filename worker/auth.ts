@@ -87,6 +87,11 @@ export async function verifyJWT(token: string, secret: string): Promise<Record<s
     if (parts.length !== 3) return null;
     const [encodedHeader, encodedPayload, encodedSig] = parts;
 
+    const header = JSON.parse(base64UrlDecode(encodedHeader));
+    if (header.alg !== 'HS256' || header.typ !== 'JWT') {
+      return null; // Reject unexpected or 'none' algorithms
+    }
+
     const data = `${encodedHeader}.${encodedPayload}`;
     const enc = new TextEncoder();
     const key = await crypto.subtle.importKey(
