@@ -13,8 +13,18 @@ import {
 import { useAuth } from '../../context/AuthContext';
 
 export const AdminDashboardPage: React.FC = () => {
-  const { adminUser, logout, loading: authLoading, setPreviewDrafts } = useAuth();
+  const { adminUser, token, logout, loading: authLoading, setPreviewDrafts } = useAuth();
   const navigate = useNavigate();
+
+  // Helper for authenticated requests
+  const authFetch = (url: string, init: RequestInit = {}) => {
+    const currentToken = token || localStorage.getItem('cc_token');
+    const headers = new Headers(init.headers || {});
+    if (currentToken && !headers.has('Authorization')) {
+      headers.set('Authorization', `Bearer ${currentToken}`);
+    }
+    return fetch(url, { ...init, headers });
+  };
 
   const [activeTab, setActiveTab] = useState<'overview' | 'inquiries' | 'products' | 'categories' | 'codes' | 'settings'>('overview');
 
@@ -99,11 +109,11 @@ export const AdminDashboardPage: React.FC = () => {
     setRefreshing(true);
     try {
       const [statsRes, inqRes, prodRes, catRes, codeRes] = await Promise.all([
-        fetch('/api/admin/stats'),
-        fetch('/api/inquiries'),
-        fetch('/api/products?active_only=0'),
-        fetch('/api/categories'),
-        fetch('/api/access-codes'),
+        authFetch('/api/admin/stats'),
+        authFetch('/api/inquiries'),
+        authFetch('/api/products?active_only=0'),
+        authFetch('/api/categories'),
+        authFetch('/api/access-codes'),
       ]);
 
       if (statsRes.ok) {
@@ -142,7 +152,7 @@ export const AdminDashboardPage: React.FC = () => {
   // Open Inquiry Details Modal
   const openInquiryDetails = async (inq: Inquiry) => {
     try {
-      const res = await fetch(`/api/inquiries/${inq.id}`);
+      const res = await authFetch(`/api/inquiries/${inq.id}`);
       if (res.ok) {
         const data = await res.json();
         setSelectedInquiry(data.inquiry);
@@ -161,7 +171,7 @@ export const AdminDashboardPage: React.FC = () => {
   const handleUpdateStatus = async (newStatus: OrderStatus) => {
     if (!selectedInquiry) return;
     try {
-      const res = await fetch(`/api/inquiries/${selectedInquiry.id}/status`, {
+      const res = await authFetch(`/api/inquiries/${selectedInquiry.id}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus, note: newStatusNote.trim() || undefined }),
@@ -171,7 +181,7 @@ export const AdminDashboardPage: React.FC = () => {
         setNewStatusNote('');
         loadAllData();
         // refresh history
-        const hRes = await fetch(`/api/inquiries/${selectedInquiry.id}`);
+        const hRes = await authFetch(`/api/inquiries/${selectedInquiry.id}`);
         if (hRes.ok) {
           const d = await hRes.json();
           setInquiryHistory(d.history || []);
@@ -186,7 +196,7 @@ export const AdminDashboardPage: React.FC = () => {
   const handleSaveAdminNotes = async () => {
     if (!selectedInquiry) return;
     try {
-      await fetch(`/api/inquiries/${selectedInquiry.id}/notes`, {
+      await authFetch(`/api/inquiries/${selectedInquiry.id}/notes`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ admin_notes: editingAdminNotes }),
@@ -218,7 +228,7 @@ export const AdminDashboardPage: React.FC = () => {
       const url = isEdit ? `/api/products/${editingProduct.id}` : '/api/products';
       const method = isEdit ? 'PUT' : 'POST';
 
-      const res = await fetch(url, {
+      const res = await authFetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -238,7 +248,7 @@ export const AdminDashboardPage: React.FC = () => {
   const handleDeleteProduct = async (id: string) => {
     if (!confirm('Are you sure you want to delete this product?')) return;
     try {
-      await fetch(`/api/products/${id}`, { method: 'DELETE' });
+      await authFetch(`/api/products/${id}`, { method: 'DELETE' });
       loadAllData();
     } catch (err) {
       console.error(err);
@@ -249,7 +259,7 @@ export const AdminDashboardPage: React.FC = () => {
   const handleTogglePublishProduct = async (product: Product) => {
     const nextStatus = product.is_active ? 0 : 1;
     try {
-      const res = await fetch(`/api/products/${product.id}`, {
+      const res = await authFetch(`/api/products/${product.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ is_active: nextStatus }),
@@ -270,7 +280,7 @@ export const AdminDashboardPage: React.FC = () => {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      const res = await fetch('/api/upload', {
+      const res = await authFetch('/api/upload', {
         method: 'POST',
         body: formData,
       });
@@ -292,7 +302,7 @@ export const AdminDashboardPage: React.FC = () => {
   const handleSaveAccessCode = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch('/api/access-codes', {
+      const res = await authFetch('/api/access-codes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newCodeData),
@@ -318,7 +328,7 @@ export const AdminDashboardPage: React.FC = () => {
   const handleRevokeCode = async (id: string, currentStatus: string) => {
     const nextStatus = currentStatus === 'revoked' ? 'active' : 'revoked';
     try {
-      await fetch(`/api/access-codes/${id}`, {
+      await authFetch(`/api/access-codes/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: nextStatus }),

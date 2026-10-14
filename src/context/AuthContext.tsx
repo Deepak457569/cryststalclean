@@ -23,6 +23,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('cc_token', newToken);
     setToken(newToken);
     setAdminUser(user);
+    setLoading(false);
   };
   const [previewDrafts, setPreviewDraftsState] = useState<boolean>(() => {
     return localStorage.getItem('cc_preview_drafts') === 'true' || window.location.search.includes('preview=drafts');
@@ -38,23 +39,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const checkAuth = async () => {
+    const currentToken = token || localStorage.getItem('cc_token');
     try {
       const headers: Record<string, string> = {};
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
+      if (currentToken) {
+        headers['Authorization'] = `Bearer ${currentToken}`;
       }
 
       const res = await fetch('/api/auth/me', { headers });
       if (res.ok) {
         const data = await res.json();
         setAdminUser(data.user);
-      } else {
+        if (currentToken && !token) {
+          setToken(currentToken);
+        }
+      } else if (res.status === 401 || res.status === 403) {
         setAdminUser(null);
         setToken(null);
         localStorage.removeItem('cc_token');
       }
-    } catch {
-      setAdminUser(null);
+    } catch (err) {
+      console.warn('Network error during auth verification:', err);
     } finally {
       setLoading(false);
     }
