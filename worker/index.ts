@@ -156,64 +156,72 @@ export default {
 
         // POST /api/auth/login (Secure Direct Admin Passcode Authentication - 100% Free & Standalone)
         if (url.pathname === '/api/auth/login' && request.method === 'POST') {
-          // Rate limit: max 5 login attempts per 15 minutes per IP
-          if (env.DB) {
-            const limit = await checkD1RateLimit(env.DB, `admin_login:${clientIp}`, 5, 900);
-            if (!limit.allowed) {
-              return errorResponse('Too many failed login attempts. Please wait 15 minutes before retrying.', 429, {
-                'Retry-After': String(limit.retryAfter),
-              });
-            }
-          }
-
-          let body: { passcode?: string } = {};
           try {
-            body = await request.json();
-          } catch {
-            return errorResponse('Invalid JSON payload', 400);
-          }
-
-          const submittedPasscode = (body.passcode || '').trim();
-          const configuredPasscode = (env.ADMIN_PASSCODE || '').trim();
-
-          if (!configuredPasscode || !submittedPasscode || !constantTimeEqual(submittedPasscode, configuredPasscode)) {
-            return errorResponse('Invalid administrative passcode.', 401);
-          }
-
-          const primaryAdminEmail = env.ADMIN_EMAILS ? env.ADMIN_EMAILS.split(',')[0].trim().toLowerCase() : 'crystalclean457@gmail.com';
-          const adminId = 'admin_' + primaryAdminEmail.replace(/[^a-zA-Z0-9]/g, '_');
-          const adminName = 'CrystalClean Administrator';
-
-          // Issue session JWT pinned to HS256, 8-hour maximum expiration
-          const jti = crypto.randomUUID();
-          const secret = (env.JWT_SECRET && env.JWT_SECRET.trim()) ? env.JWT_SECRET.trim() : 'crystalclean-secure-admin-passcode-session-jwt';
-          const sessionToken = await createJWT({ sub: adminId, email: primaryAdminEmail, name: adminName, role: 'super_admin', jti }, secret);
-
-          // Record session in D1
-          if (env.DB) {
-            try {
-              const expiresAt = new Date(Date.now() + 8 * 3600 * 1000).toISOString();
-              await createSession(env.DB, adminId, jti, expiresAt);
-            } catch (sessionErr) {
-              console.warn('[Session Warning]:', sessionErr);
+            // Rate limit: max 5 login attempts per 15 minutes per IP
+            if (env.DB) {
+              const limit = await checkD1RateLimit(env.DB, `admin_login:${clientIp}`, 5, 900);
+              if (!limit.allowed) {
+                return errorResponse('Too many failed login attempts. Please wait 15 minutes before retrying.', 429, {
+                  'Retry-After': String(limit.retryAfter),
+                });
+              }
             }
+
+            let body: { passcode?: string } = {};
+            try {
+              body = await request.json();
+            } catch {
+              return errorResponse('Invalid JSON payload', 400);
+            }
+
+            const submittedPasscode = (body.passcode || '').trim();
+            const configuredPasscode = (env.ADMIN_PASSCODE || '').trim();
+
+            if (!configuredPasscode || !submittedPasscode || !constantTimeEqual(submittedPasscode, configuredPasscode)) {
+              return errorResponse('Invalid administrative passcode.', 401);
+            }
+
+            const primaryAdminEmail = env.ADMIN_EMAILS ? env.ADMIN_EMAILS.split(',')[0].trim().toLowerCase() : 'crystalclean457@gmail.com';
+            const adminId = 'admin_' + primaryAdminEmail.replace(/[^a-zA-Z0-9]/g, '_');
+            const adminName = 'CrystalClean Administrator';
+
+            // Issue session JWT pinned to HS256, 8-hour maximum expiration
+            const jti = crypto.randomUUID();
+            const secret = (env.JWT_SECRET && env.JWT_SECRET.trim()) ? env.JWT_SECRET.trim() : 'crystalclean-secure-admin-passcode-session-jwt';
+            const sessionToken = await createJWT({ sub: adminId, email: primaryAdminEmail, name: adminName, role: 'super_admin', jti }, secret);
+
+            // Record session in D1
+            if (env.DB) {
+              try {
+                const expiresAt = new Date(Date.now() + 8 * 3600 * 1000).toISOString();
+                await createSession(env.DB, adminId, jti, expiresAt);
+              } catch (sessionErr) {
+                console.warn('[Session Warning]:', sessionErr);
+              }
+            }
+
+            const isSecure = env.ENVIRONMENT === 'production' || request.url.startsWith('https://');
+            const cookie = `cc_admin_session=${sessionToken}; HttpOnly; SameSite=Lax; Path=/; Max-Age=28800${isSecure ? '; Secure' : ''}`;
+
+            return jsonResponse({
+              success: true,
+              user: {
+                id: adminId,
+                email: primaryAdminEmail,
+                name: adminName,
+                role: 'super_admin',
+              },
+              token: sessionToken,
+            }, 200, {
+              'Set-Cookie': cookie,
+            });
+          } catch (loginErr: any) {
+            console.error('[Admin Passcode Login Error]:', loginErr);
+            return jsonResponse({
+              success: false,
+              error: 'Authentication processing failed: ' + (loginErr?.message || String(loginErr))
+            }, 500);
           }
-
-          const isSecure = env.ENVIRONMENT === 'production' || request.url.startsWith('https://');
-          const cookie = `cc_admin_session=${sessionToken}; HttpOnly; SameSite=Lax; Path=/; Max-Age=28800${isSecure ? '; Secure' : ''}`;
-
-          return jsonResponse({
-            success: true,
-            user: {
-              id: adminId,
-              email: primaryAdminEmail,
-              name: adminName,
-              role: 'super_admin',
-            },
-            token: sessionToken,
-          }, 200, {
-            'Set-Cookie': cookie,
-          });
         }
 
         // GET /api/auth/google (Initiates Google OAuth with secure State cookie; alias: /api/auth/google/url)
