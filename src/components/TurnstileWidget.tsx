@@ -41,12 +41,6 @@ export const TurnstileWidget: React.FC<TurnstileWidgetProps> = ({
 
   useEffect(() => {
     if (!siteKey) {
-      setLoadError(
-        'Cloudflare Turnstile site key (VITE_TURNSTILE_SITE_KEY) is missing. Human verification cannot be loaded.'
-      );
-      if (onError) {
-        onError('VITE_TURNSTILE_SITE_KEY is missing');
-      }
       return;
     }
 
@@ -134,17 +128,7 @@ export const TurnstileWidget: React.FC<TurnstileWidgetProps> = ({
   }, [siteKey]);
 
   if (!siteKey || loadError) {
-    return (
-      <div className="p-3 bg-red-50/80 border border-red-200 rounded-lg text-xs text-red-700 flex items-start gap-2">
-        <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
-        <div>
-          <span className="font-semibold">Security Verification Configuration Required:</span>
-          <p className="mt-0.5">
-            {loadError || 'VITE_TURNSTILE_SITE_KEY is not configured in the environment.'}
-          </p>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (

@@ -421,15 +421,17 @@ export const BulkQuotePage: React.FC = () => {
           )}
         </div>
 
-        {/* Cloudflare Turnstile Human Verification */}
-        <TurnstileWidget
-          onVerify={(token) => {
-            setTurnstileToken(token);
-            setErrorMsg(null);
-          }}
-          onExpire={() => setTurnstileToken('')}
-          onError={(err) => setErrorMsg(err)}
-        />
+        {/* Cloudflare Turnstile Human Verification (only if configured) */}
+        {Boolean(import.meta.env.VITE_TURNSTILE_SITE_KEY) && (
+          <TurnstileWidget
+            onVerify={(token) => {
+              setTurnstileToken(token);
+              setErrorMsg(null);
+            }}
+            onExpire={() => setTurnstileToken('')}
+            onError={(err) => setErrorMsg(err)}
+          />
+        )}
 
         {/* Submit */}
         <div>
