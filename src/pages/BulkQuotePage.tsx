@@ -102,14 +102,6 @@ export const BulkQuotePage: React.FC = () => {
     setSubmitting(true);
 
     try {
-      const combinedNotes = [
-        `Requested Categories: ${selectedCategories.join(', ')}`,
-        `Estimated Volume: ${estimatedQuantity}`,
-        customLogoRequired ? `Logo Customization Required: Yes (Bags/Packaging/Amenities)` : '',
-        customBrandingNotes.trim() ? `Branding Details: ${customBrandingNotes.trim()}` : '',
-        notes.trim() ? `Specifications: ${notes.trim()}` : '',
-      ].filter(Boolean).join('\n');
-
       const payload = {
         inquiry_type: 'bulk_quote',
         access_code: accessCode.trim().toUpperCase(),
@@ -119,13 +111,15 @@ export const BulkQuotePage: React.FC = () => {
         contact_email: contactEmail.trim() || undefined,
         delivery_city: deliveryCity.trim(),
         expected_date: expectedDate || undefined,
-        notes: combinedNotes,
+        notes: [
+          `Estimated Monthly Volume: ${estimatedQuantity}`,
+          `Categories Requested: ${selectedCategories.join(', ')}`,
+          customLogoRequired ? `Custom Logo: YES (${customBrandingNotes})` : 'Custom Logo: No',
+          notes ? `Additional Specs: ${notes}` : '',
+        ]
+          .filter(Boolean)
+          .join('\n'),
         turnstile_token: turnstileToken || undefined,
-        items: selectedCategories.map((catName) => ({
-          product_name: `Bulk Category Request: ${catName}${customLogoRequired ? ' (Logo Customization Required)' : ''}`,
-          pack_size: estimatedQuantity,
-          quantity: 1,
-        })),
       };
 
       const res = await fetch('/api/inquiries', {
@@ -135,8 +129,9 @@ export const BulkQuotePage: React.FC = () => {
       });
 
       const data = await res.json();
+
       if (!res.ok) {
-        setErrorMsg(data.error || 'Failed to submit quotation request. Please verify your access code.');
+        setErrorMsg(data.error || 'Failed to submit quote request. Please verify your access code.');
         setSubmitting(false);
         return;
       }
@@ -158,37 +153,37 @@ export const BulkQuotePage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
+    <div className="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 sm:space-y-10">
       {/* Header */}
       <div className="text-center space-y-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-champagne-100 border border-champagne-300 text-champagne-700 text-xs font-semibold uppercase tracking-wider">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-champagne-100 border border-champagne-300 text-champagne-800 text-xs font-semibold uppercase tracking-wider">
           <Building2 className="w-3.5 h-3.5 text-champagne-600" />
           Trade Procurement Desk
         </div>
-        <h1 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal-900">
+        <h1 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-charcoal-900 leading-tight">
           Request Bulk Hospitality Quotation
         </h1>
-        <p className="text-sm text-charcoal-800 max-w-xl mx-auto leading-relaxed">
+        <p className="text-xs sm:text-sm text-charcoal-800 max-w-xl mx-auto leading-relaxed">
           For chain hotels, luxury resorts, boutique villas, and large-scale hospitality contracts. Customized logo printing, custom fragrance development, and scheduled monthly dispatches.
         </p>
       </div>
 
       {/* Main Form */}
-      <form onSubmit={handleSubmit} className="bg-white rounded-3xl border border-cream-200 p-8 sm:p-12 shadow-luxury space-y-8">
+      <form onSubmit={handleSubmit} className="bg-white rounded-2xl sm:rounded-3xl border border-cream-200 p-5 sm:p-10 lg:p-12 shadow-luxury space-y-6 sm:space-y-8">
         {errorMsg && (
-          <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 text-xs flex items-start gap-3">
+          <div className="p-3.5 sm:p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 text-xs flex items-start gap-2.5 sm:gap-3">
             <AlertCircle className="w-5 h-5 text-rose-600 flex-shrink-0 mt-0.5" />
             <span>{errorMsg}</span>
           </div>
         )}
 
         {/* Section 1: Property & Contact Info */}
-        <div className="space-y-5">
-          <h2 className="font-serif font-bold text-lg text-charcoal-900 border-b border-cream-200 pb-2">
+        <div className="space-y-4 sm:space-y-5">
+          <h2 className="font-serif font-bold text-base sm:text-lg text-charcoal-900 border-b border-cream-200 pb-2">
             1. Property &amp; Procurement Officer Details
           </h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
             <div>
               <label className="block text-xs font-semibold text-charcoal-800 uppercase tracking-wider mb-1.5">
                 Hotel / Resort / Company Name *
@@ -199,7 +194,7 @@ export const BulkQuotePage: React.FC = () => {
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
                 placeholder="e.g. Radisson Blu Resort &amp; Spa"
-                className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
+                className="w-full px-3.5 sm:px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium transition-colors"
               />
             </div>
 
@@ -213,7 +208,7 @@ export const BulkQuotePage: React.FC = () => {
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
                 placeholder="e.g. Rahul Verma (General Manager)"
-                className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
+                className="w-full px-3.5 sm:px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium transition-colors"
               />
             </div>
 
@@ -227,7 +222,7 @@ export const BulkQuotePage: React.FC = () => {
                 value={contactPhone}
                 onChange={(e) => setContactPhone(e.target.value)}
                 placeholder="e.g. +91 98765 43210"
-                className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
+                className="w-full px-3.5 sm:px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium transition-colors"
               />
             </div>
 
@@ -240,7 +235,7 @@ export const BulkQuotePage: React.FC = () => {
                 value={contactEmail}
                 onChange={(e) => setContactEmail(e.target.value)}
                 placeholder="procurement@hotel.com"
-                className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
+                className="w-full px-3.5 sm:px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium transition-colors"
               />
             </div>
 
@@ -254,7 +249,7 @@ export const BulkQuotePage: React.FC = () => {
                 value={deliveryCity}
                 onChange={(e) => setDeliveryCity(e.target.value)}
                 placeholder="e.g. Jaipur, Rajasthan / Goa"
-                className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
+                className="w-full px-3.5 sm:px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium transition-colors"
               />
             </div>
 
@@ -266,19 +261,19 @@ export const BulkQuotePage: React.FC = () => {
                 type="date"
                 value={expectedDate}
                 onChange={(e) => setExpectedDate(e.target.value)}
-                className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
+                className="w-full px-3.5 sm:px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium transition-colors"
               />
             </div>
           </div>
         </div>
 
         {/* Section 2: Products Required */}
-        <div className="space-y-5">
-          <h2 className="font-serif font-bold text-lg text-charcoal-900 border-b border-cream-200 pb-2">
+        <div className="space-y-4 sm:space-y-5">
+          <h2 className="font-serif font-bold text-base sm:text-lg text-charcoal-900 border-b border-cream-200 pb-2">
             2. Amenities Required (Select all that apply)
           </h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-3">
             {categories.map((cat) => {
               const checked = selectedCategories.includes(cat.name);
               return (
@@ -286,20 +281,20 @@ export const BulkQuotePage: React.FC = () => {
                   type="button"
                   key={cat.id}
                   onClick={() => toggleCategory(cat.name)}
-                  className={`p-3.5 rounded-xl border text-left text-xs font-medium transition-all flex items-center justify-between ${
+                  className={`p-3 sm:p-3.5 rounded-xl border text-left text-xs font-medium transition-all flex items-center justify-between active:scale-95 ${
                     checked
                       ? 'border-charcoal-900 bg-charcoal-900 text-white shadow-sm'
                       : 'border-cream-300 bg-cream-50 text-charcoal-800 hover:border-charcoal-400'
                   }`}
                 >
-                  <span>{cat.name}</span>
-                  {checked && <CheckCircle className="w-4 h-4 text-champagne-400" />}
+                  <span className="truncate pr-2">{cat.name}</span>
+                  {checked && <CheckCircle className="w-4 h-4 text-champagne-400 flex-shrink-0" />}
                 </button>
               );
             })}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 pt-2">
             <div>
               <label className="block text-xs font-semibold text-charcoal-800 uppercase tracking-wider mb-1.5">
                 Estimated Volume / Room Count
@@ -307,7 +302,7 @@ export const BulkQuotePage: React.FC = () => {
               <select
                 value={estimatedQuantity}
                 onChange={(e) => setEstimatedQuantity(e.target.value)}
-                className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
+                className="w-full px-3.5 sm:px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
               >
                 <option value="Under 500 units (Sample / Boutique Trial)">Under 500 units (Sample / Boutique Trial)</option>
                 <option value="500 - 1,000 units / month">500 - 1,000 units / month</option>
@@ -325,14 +320,14 @@ export const BulkQuotePage: React.FC = () => {
                   onChange={(e) => setCustomLogoRequired(e.target.checked)}
                   className="w-4 h-4 rounded text-champagne-600 focus:ring-champagne-500 border-cream-300"
                 />
-                <span>Logo Customization Requirement (for Bags, Coasters, Glass Wraps &amp; Amenities)</span>
+                <span>Logo Customization Requirement (Bags, Coasters, Glass Wraps)</span>
               </label>
               <input
                 type="text"
                 value={customBrandingNotes}
                 onChange={(e) => setCustomBrandingNotes(e.target.value)}
                 placeholder="e.g. Yes, hotel logo on carry bags and coasters"
-                className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
+                className="w-full px-3.5 sm:px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
               />
             </div>
           </div>
@@ -346,14 +341,14 @@ export const BulkQuotePage: React.FC = () => {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Specify requirements such as paraben-free formulas, bamboo handles, white tea fragrance, or custom bottle shapes..."
-              className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-champagne-500"
+              className="w-full px-3.5 sm:px-4 py-2 bg-cream-50 border border-cream-300 rounded-xl text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-champagne-500"
             />
           </div>
         </div>
 
         {/* Section 3: Verified Access Code */}
-        <div className="p-6 rounded-2xl bg-champagne-100/60 border border-champagne-300 space-y-3">
-          <div className="flex items-center justify-between">
+        <div className="p-4 sm:p-6 rounded-2xl bg-champagne-100/60 border border-champagne-300 space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
             <label className="text-xs font-bold text-charcoal-900 uppercase tracking-wider flex items-center gap-2">
               <Key className="w-4 h-4 text-champagne-700" />
               Customer Access Code *
@@ -361,13 +356,13 @@ export const BulkQuotePage: React.FC = () => {
             <button
               type="button"
               onClick={() => setCodeModalOpen(true)}
-              className="text-xs text-champagne-800 hover:text-charcoal-950 font-semibold underline"
+              className="text-xs text-champagne-800 hover:text-charcoal-950 font-semibold underline text-left sm:text-right"
             >
               Request Access Code via WhatsApp
             </button>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <input
               type="text"
               required
@@ -382,15 +377,15 @@ export const BulkQuotePage: React.FC = () => {
                 }
               }}
               placeholder="Enter code (e.g. CC-HOTEL-2026)"
-              className="flex-1 px-4 py-2.5 bg-white border border-champagne-300 rounded-xl text-sm font-mono uppercase focus:outline-none focus:ring-2 focus:ring-champagne-500"
+              className="flex-1 px-3.5 sm:px-4 py-2.5 bg-white border border-champagne-300 rounded-xl text-base sm:text-sm font-mono uppercase focus:outline-none focus:ring-2 focus:ring-champagne-500"
             />
             <button
               type="button"
               onClick={() => handleVerifyCode(accessCode)}
               disabled={checkingCode || !accessCode.trim()}
-              className="px-5 py-2.5 bg-charcoal-900 hover:bg-charcoal-800 text-white rounded-xl text-xs font-medium"
+              className="px-5 py-2.5 bg-charcoal-900 hover:bg-charcoal-800 text-white rounded-xl text-xs font-medium active:scale-95 transition-all disabled:opacity-50"
             >
-              {checkingCode ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Verify'}
+              {checkingCode ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : 'Verify Code'}
             </button>
           </div>
 
@@ -438,21 +433,21 @@ export const BulkQuotePage: React.FC = () => {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full py-4 px-6 bg-charcoal-900 hover:bg-charcoal-800 text-white font-bold rounded-2xl text-base transition-all shadow-md flex items-center justify-center gap-3 disabled:opacity-50"
+            className="w-full py-3.5 sm:py-4 px-6 bg-charcoal-900 hover:bg-charcoal-800 text-white font-bold rounded-2xl text-sm sm:text-base transition-all shadow-md flex items-center justify-center gap-3 disabled:opacity-50 active:scale-95"
           >
             {submitting ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                <span>Recording Quotation &amp; Registering Inquiry...</span>
+                <span>Recording Quotation...</span>
               </>
             ) : (
               <>
                 <Send className="w-4 h-4 text-champagne-300" />
-                <span>Submit Quotation Request to Procurement Desk</span>
+                <span>Submit Quotation Request</span>
               </>
             )}
           </button>
-          <p className="text-xs text-charcoal-800 text-center mt-3 leading-relaxed">
+          <p className="text-[11px] sm:text-xs text-charcoal-800 text-center mt-3 leading-relaxed">
             Upon submission, your quotation parameters are saved directly to our procurement database and logged in the executive admin portal with a unique tracking reference (e.g. CC-ORD-XXXX).
           </p>
         </div>

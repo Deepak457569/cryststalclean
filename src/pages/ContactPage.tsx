@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, MapPin, Clock, ShieldCheck, Key, CheckCircle2, Send, Loader2, AlertCircle } from 'lucide-react';
+import { Mail, MapPin, Clock, ShieldCheck, Key, CheckCircle2, Send, Loader2, AlertCircle, MessageCircle } from 'lucide-react';
 
 export const ContactPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -68,36 +68,54 @@ export const ContactPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
+    <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 sm:space-y-12">
       <div className="text-center max-w-2xl mx-auto space-y-3">
         <span className="text-xs uppercase tracking-widest font-semibold text-champagne-700">Get in Touch</span>
-        <h1 className="font-serif text-4xl font-bold text-charcoal-900">Hospitality Supply Desk</h1>
-        <p className="text-sm text-charcoal-800 leading-relaxed">
+        <h1 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-charcoal-900 leading-tight">
+          Hospitality Supply Desk
+        </h1>
+        <p className="text-xs sm:text-sm text-charcoal-800 leading-relaxed">
           Connect directly with our procurement team for wholesale quotes, access code issuance, custom branding samples, and delivery timelines.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10">
         {/* Left: Contact Info */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="bg-white rounded-3xl p-8 border border-cream-200 shadow-sm space-y-6">
-            <h2 className="font-serif font-bold text-xl text-charcoal-900 border-b border-cream-200 pb-3">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-cream-200 shadow-sm space-y-5 sm:space-y-6">
+            <h2 className="font-serif font-bold text-lg sm:text-xl text-charcoal-900 border-b border-cream-200 pb-3">
               Direct Procurement Channels
             </h2>
 
-            <div className="space-y-4">
-              <div className="flex items-start gap-4 p-4 rounded-2xl bg-cream-50 border border-cream-200">
+            <div className="space-y-3.5 sm:space-y-4">
+              <a
+                href="https://wa.me/919149953610"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-start gap-3.5 sm:gap-4 p-3.5 sm:p-4 rounded-2xl bg-emerald-50 border border-emerald-200 hover:bg-emerald-100/70 transition-colors group"
+              >
+                <div className="w-10 h-10 rounded-xl bg-emerald-700 flex items-center justify-center text-white flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+                  <MessageCircle className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-emerald-900 uppercase tracking-wider block">Official WhatsApp Desk</span>
+                  <span className="font-semibold text-emerald-950 text-sm block mt-0.5">+91 91499 53610</span>
+                  <span className="text-xs text-emerald-800 block mt-0.5">Quick inquiries, catalog access &amp; instant responses</span>
+                </div>
+              </a>
+
+              <div className="flex items-start gap-3.5 sm:gap-4 p-3.5 sm:p-4 rounded-2xl bg-cream-50 border border-cream-200">
                 <div className="w-10 h-10 rounded-xl bg-charcoal-900 flex items-center justify-center text-champagne-300 flex-shrink-0 shadow-sm">
                   <ShieldCheck className="w-5 h-5 text-champagne-300 stroke-[2.2]" />
                 </div>
                 <div>
                   <span className="text-xs font-bold text-charcoal-800 uppercase tracking-wider block">Official Executive Portal</span>
                   <span className="font-semibold text-charcoal-950 text-sm block mt-0.5">Direct Procurement Desk</span>
-                  <span className="text-xs text-charcoal-800 block mt-0.5">Inquiries are logged directly into our executive management system with guaranteed same-day response.</span>
+                  <span className="text-xs text-charcoal-800 block mt-0.5 leading-relaxed">Inquiries are logged directly into our executive management system with guaranteed same-day response.</span>
                 </div>
               </div>
 
-              <div className="flex items-start gap-4 p-4 rounded-2xl bg-cream-50 border border-cream-200">
+              <div className="flex items-start gap-3.5 sm:gap-4 p-3.5 sm:p-4 rounded-2xl bg-cream-50 border border-cream-200">
                 <div className="w-10 h-10 rounded-xl bg-charcoal-900 flex items-center justify-center text-champagne-300 flex-shrink-0 shadow-sm">
                   <Mail className="w-5 h-5 text-champagne-300 stroke-[2.2]" />
                 </div>
@@ -110,7 +128,7 @@ export const ContactPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex items-start gap-4 p-4 rounded-2xl bg-cream-50 border border-cream-200">
+              <div className="flex items-start gap-3.5 sm:gap-4 p-3.5 sm:p-4 rounded-2xl bg-cream-50 border border-cream-200">
                 <div className="w-10 h-10 rounded-xl bg-charcoal-900 flex items-center justify-center text-champagne-300 flex-shrink-0 shadow-sm">
                   <MapPin className="w-5 h-5 text-champagne-300 stroke-[2.2]" />
                 </div>
@@ -125,7 +143,7 @@ export const ContactPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex items-start gap-4 p-4 rounded-2xl bg-cream-50 border border-cream-200">
+              <div className="flex items-start gap-3.5 sm:gap-4 p-3.5 sm:p-4 rounded-2xl bg-cream-50 border border-cream-200">
                 <div className="w-10 h-10 rounded-xl bg-charcoal-900 flex items-center justify-center text-champagne-300 flex-shrink-0 shadow-sm">
                   <Clock className="w-5 h-5 text-champagne-300 stroke-[2.2]" />
                 </div>
@@ -145,25 +163,25 @@ export const ContactPage: React.FC = () => {
         <div className="lg:col-span-7">
           <form
             onSubmit={handleSubmitInquiry}
-            className="bg-white rounded-3xl p-8 sm:p-10 border border-cream-200 shadow-luxury space-y-5"
+            className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-10 border border-cream-200 shadow-luxury space-y-4 sm:space-y-5"
           >
             <div className="flex items-center gap-2">
-              <Key className="w-5 h-5 text-champagne-600" />
-              <h2 className="font-serif font-bold text-2xl text-charcoal-900">
+              <Key className="w-5 h-5 text-champagne-600 flex-shrink-0" />
+              <h2 className="font-serif font-bold text-xl sm:text-2xl text-charcoal-900 leading-tight">
                 Direct Inquiry &amp; Access Code Request
               </h2>
             </div>
-            <p className="text-xs text-charcoal-800">
+            <p className="text-xs text-charcoal-800 leading-relaxed">
               Submit your property details below. Your request will be directly registered in our executive system and our procurement desk will contact you.
             </p>
 
             {submittedRef && (
-              <div className="p-5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 space-y-2 animate-fade-in">
+              <div className="p-4 sm:p-5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 space-y-2 animate-fade-in">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
                   <span className="font-bold text-sm">Inquiry Logged Successfully!</span>
                 </div>
-                <p className="text-xs text-emerald-800">
+                <p className="text-xs text-emerald-800 leading-relaxed">
                   Your reference number is <strong className="font-mono text-emerald-950 font-bold">{submittedRef}</strong>. Our hospitality procurement manager has received your submission in our administrative portal and will reach out to you promptly.
                 </p>
               </div>
@@ -187,7 +205,7 @@ export const ContactPage: React.FC = () => {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="e.g. Anand Mehra"
-                  className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
+                  className="w-full px-3.5 sm:px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium transition-colors"
                 />
               </div>
 
@@ -201,7 +219,7 @@ export const ContactPage: React.FC = () => {
                   value={formData.hotel}
                   onChange={(e) => setFormData({ ...formData, hotel: e.target.value })}
                   placeholder="e.g. Royal Orchid Suites"
-                  className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
+                  className="w-full px-3.5 sm:px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium transition-colors"
                 />
               </div>
             </div>
@@ -217,7 +235,7 @@ export const ContactPage: React.FC = () => {
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="e.g. +91 98765 43210"
-                  className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
+                  className="w-full px-3.5 sm:px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium transition-colors"
                 />
               </div>
 
@@ -230,7 +248,7 @@ export const ContactPage: React.FC = () => {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="e.g. purchase@hotel.com"
-                  className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
+                  className="w-full px-3.5 sm:px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium transition-colors"
                 />
               </div>
             </div>
@@ -244,7 +262,7 @@ export const ContactPage: React.FC = () => {
                 value={formData.city}
                 onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                 placeholder="e.g. Jaipur, Bengaluru, New Delhi"
-                className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
+                className="w-full px-3.5 sm:px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium transition-colors"
               />
             </div>
 
@@ -258,14 +276,14 @@ export const ContactPage: React.FC = () => {
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                 placeholder="Please state your room count, amenity requirements, custom branding needs, or request for an authorized Customer Access Code..."
-                className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500"
+                className="w-full px-3.5 sm:px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500"
               />
             </div>
 
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-4 px-6 bg-charcoal-900 hover:bg-charcoal-800 disabled:opacity-50 text-white font-bold rounded-2xl text-sm transition-all shadow-md flex items-center justify-center gap-2.5"
+              className="w-full py-3.5 sm:py-4 px-6 bg-charcoal-900 hover:bg-charcoal-800 disabled:opacity-50 text-white font-bold rounded-2xl text-sm transition-all shadow-md flex items-center justify-center gap-2.5 active:scale-95"
             >
               {isSubmitting ? (
                 <>

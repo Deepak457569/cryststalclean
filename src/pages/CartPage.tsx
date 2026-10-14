@@ -142,17 +142,17 @@ export const CartPage: React.FC = () => {
 
   if (items.length === 0) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-20 text-center space-y-6">
+      <div className="max-w-4xl mx-auto px-4 py-16 sm:py-20 text-center space-y-6">
         <div className="w-16 h-16 rounded-2xl bg-cream-100 border border-cream-200 flex items-center justify-center text-champagne-600 mx-auto">
           <ShoppingBag className="w-8 h-8" />
         </div>
-        <h1 className="font-serif text-3xl font-bold text-charcoal-900">Your Requirements Cart is Empty</h1>
+        <h1 className="font-serif text-2xl sm:text-3xl font-bold text-charcoal-900">Your Requirements Cart is Empty</h1>
         <p className="text-sm text-charcoal-800 max-w-md mx-auto leading-relaxed">
           Browse our hotel amenities catalog to select products, specify quantities, and configure your property's order.
         </p>
         <Link
           to="/products"
-          className="inline-flex items-center gap-2 px-6 py-3.5 bg-charcoal-900 hover:bg-charcoal-800 text-white font-medium rounded-xl text-sm transition-all shadow-sm"
+          className="inline-flex items-center gap-2 px-6 py-3.5 bg-charcoal-900 hover:bg-charcoal-800 text-white font-medium rounded-xl text-sm transition-all shadow-sm active:scale-95"
         >
           <span>Explore Product Catalog</span>
           <ArrowRight className="w-4 h-4 text-champagne-400" />
@@ -162,62 +162,62 @@ export const CartPage: React.FC = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8">
       {/* Page Title & Procurement Step Progress */}
-      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-cream-200 shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-cream-200">
+      <div className="bg-white rounded-2xl p-5 sm:p-8 border border-cream-200 shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-5 sm:pb-6 border-b border-cream-200">
           <div>
             <span className="text-xs uppercase tracking-widest font-semibold text-champagne-700">Procurement Review</span>
-            <h1 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal-900 mt-1">Requirements Cart</h1>
-            <p className="text-sm text-charcoal-800 mt-1 leading-relaxed">
+            <h1 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-charcoal-900 mt-1">Requirements Cart</h1>
+            <p className="text-xs sm:text-sm text-charcoal-800 mt-1 leading-relaxed">
               Review your selected amenities, configure hotel delivery specifications, and submit for direct quotation.
             </p>
           </div>
-          <div className="text-xs text-charcoal-800 bg-cream-50 border border-cream-300 rounded-xl px-4 py-2.5">
+          <div className="text-xs text-charcoal-800 bg-cream-50 border border-cream-300 rounded-xl px-3 sm:px-4 py-2 sm:py-2.5 self-start md:self-auto">
             <span className="font-semibold text-charcoal-900">{items.length} items</span> ({itemCount} total units)
           </div>
         </div>
 
         {/* 3-Step visual progress helper */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-6">
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-champagne-100/60 border border-champagne-300">
-            <span className="w-6 h-6 rounded-full bg-champagne-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">1</span>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 pt-5 sm:pt-6">
+          <div className="flex items-center gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-xl bg-champagne-100/60 border border-champagne-300">
+            <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-champagne-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">1</span>
             <div className="text-xs">
-              <span className="font-bold text-charcoal-900 block">Review Items</span>
-              <span className="text-charcoal-800">Adjust unit quantities</span>
+              <span className="font-bold text-charcoal-900 block leading-tight">Review Items</span>
+              <span className="text-charcoal-800 text-[11px]">Adjust unit quantities</span>
             </div>
           </div>
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-cream-50 border border-cream-200">
-            <span className="w-6 h-6 rounded-full bg-charcoal-800 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">2</span>
+          <div className="flex items-center gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-xl bg-cream-50 border border-cream-200">
+            <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-charcoal-800 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">2</span>
             <div className="text-xs">
-              <span className="font-bold text-charcoal-900 block">Property Details</span>
-              <span className="text-charcoal-800">Hotel &amp; delivery city</span>
+              <span className="font-bold text-charcoal-900 block leading-tight">Property Details</span>
+              <span className="text-charcoal-800 text-[11px]">Hotel &amp; delivery city</span>
             </div>
           </div>
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-cream-50 border border-cream-200">
-            <span className="w-6 h-6 rounded-full bg-charcoal-800 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">3</span>
+          <div className="flex items-center gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-xl bg-cream-50 border border-cream-200">
+            <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-charcoal-800 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">3</span>
             <div className="text-xs">
-              <span className="font-bold text-charcoal-900 block">Access Code &amp; Quote</span>
-              <span className="text-charcoal-800">Direct portal &amp; WhatsApp log</span>
+              <span className="font-bold text-charcoal-900 block leading-tight">Access Code &amp; Quote</span>
+              <span className="text-charcoal-800 text-[11px]">Direct portal &amp; WhatsApp log</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Main Form & Items Grid */}
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
         
         {/* Left Column: Cart Items List */}
-        <div className="lg:col-span-7 space-y-6">
-          <div className="bg-white rounded-2xl border border-cream-200 p-6 shadow-sm space-y-4">
-            <div className="flex items-center justify-between pb-4 border-b border-cream-200">
-              <h2 className="font-serif font-bold text-lg text-charcoal-900">
+        <div className="lg:col-span-7 space-y-4 sm:space-y-6">
+          <div className="bg-white rounded-2xl border border-cream-200 p-4 sm:p-6 shadow-sm space-y-4">
+            <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-cream-200">
+              <h2 className="font-serif font-bold text-base sm:text-lg text-charcoal-900">
                 Selected Products ({itemCount} total units)
               </h2>
               <button
                 type="button"
                 onClick={clearCart}
-                className="text-xs text-rose-600 hover:text-rose-800 font-medium transition-colors"
+                className="text-xs text-rose-600 hover:text-rose-800 font-medium transition-colors p-1"
               >
                 Clear Cart
               </button>
@@ -225,74 +225,77 @@ export const CartPage: React.FC = () => {
 
             <div className="divide-y divide-cream-100">
               {items.map((item) => (
-                <div key={item.id} className="py-4 flex gap-4 items-center">
-                  {/* Thumbnail */}
-                  <img
-                    src={item.imageUrl}
-                    alt={item.productName}
-                    onError={(e) => { (e.target as HTMLImageElement).src = '/products/placeholder.svg'; }}
-                    className="w-16 h-16 rounded-xl object-contain bg-[#FAF8F5] p-1 border border-cream-200 flex-shrink-0"
-                  />
-
-                  {/* Info */}
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-serif font-bold text-sm text-charcoal-900 truncate">
-                      {item.productName}
-                    </h3>
-                    {item.variant && (
-                      <p className="text-xs text-champagne-700 font-medium mt-0.5">
-                        Variant: {item.variant}
-                      </p>
-                    )}
-                    {item.packSize && (
-                      <p className="text-[11px] text-charcoal-800">
-                        Pack Standard: {item.packSize}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Quantity Stepper */}
-                  <div className="flex items-center border border-cream-300 rounded-lg bg-cream-50 flex-shrink-0 overflow-hidden shadow-inner">
-                    <button
-                      type="button"
-                      onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 50))}
-                      className="px-2.5 py-1.5 text-charcoal-800 hover:text-charcoal-950 hover:bg-cream-200 active:scale-95 transition-all"
-                      aria-label="Decrease quantity"
-                    >
-                      <Minus className="w-3.5 h-3.5" />
-                    </button>
-                    <input
-                      type="number"
-                      min="1"
-                      value={item.quantity}
-                      onChange={(e) => updateQuantity(item.id, Math.max(1, parseInt(e.target.value) || 1))}
-                      className="w-14 text-center text-xs font-semibold bg-transparent py-1.5 border-x border-cream-300 focus:outline-none"
+                <div key={item.id} className="py-3.5 sm:py-4 flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center">
+                  {/* Top / Left: Thumbnail and Title */}
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <img
+                      src={item.imageUrl}
+                      alt={item.productName}
+                      onError={(e) => { (e.target as HTMLImageElement).src = '/products/placeholder.svg'; }}
+                      className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl object-contain bg-[#FAF8F5] p-1 border border-cream-200 flex-shrink-0"
                     />
-                    <button
-                      type="button"
-                      onClick={() => updateQuantity(item.id, item.quantity + 50)}
-                      className="px-2.5 py-1.5 text-charcoal-800 hover:text-charcoal-950 hover:bg-cream-200 active:scale-95 transition-all"
-                      aria-label="Increase quantity"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                    </button>
+
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-serif font-bold text-sm text-charcoal-900 leading-snug truncate">
+                        {item.productName}
+                      </h3>
+                      {item.variant && (
+                        <p className="text-xs text-champagne-700 font-medium mt-0.5">
+                          Variant: {item.variant}
+                        </p>
+                      )}
+                      {item.packSize && (
+                        <p className="text-[11px] text-charcoal-800">
+                          Pack: {item.packSize}
+                        </p>
+                      )}
+                    </div>
                   </div>
 
-                  {/* Remove Button */}
-                  <button
-                    type="button"
-                    onClick={() => removeFromCart(item.id)}
-                    className="p-2 text-charcoal-800 hover:text-rose-600 transition-colors flex-shrink-0"
-                    title="Remove item"
-                    aria-label="Remove item"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  {/* Bottom / Right: Stepper & Remove button */}
+                  <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-cream-100 flex-shrink-0">
+                    <div className="flex items-center border border-cream-300 rounded-lg bg-cream-50 overflow-hidden shadow-inner">
+                      <button
+                        type="button"
+                        onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 50))}
+                        className="px-2.5 py-1.5 text-charcoal-800 hover:text-charcoal-950 hover:bg-cream-200 active:scale-95 transition-all"
+                        aria-label="Decrease quantity"
+                      >
+                        <Minus className="w-3.5 h-3.5" />
+                      </button>
+                      <input
+                        type="number"
+                        min="1"
+                        value={item.quantity}
+                        onChange={(e) => updateQuantity(item.id, Math.max(1, parseInt(e.target.value) || 1))}
+                        className="w-14 text-center text-xs font-semibold bg-transparent py-1.5 border-x border-cream-300 focus:outline-none"
+                        aria-label="Item quantity"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => updateQuantity(item.id, item.quantity + 50)}
+                        className="px-2.5 py-1.5 text-charcoal-800 hover:text-charcoal-950 hover:bg-cream-200 active:scale-95 transition-all"
+                        aria-label="Increase quantity"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => removeFromCart(item.id)}
+                      className="p-2 text-charcoal-800 hover:text-rose-600 transition-colors flex-shrink-0 active:scale-95"
+                      title="Remove item"
+                      aria-label="Remove item"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
 
-            <div className="pt-4 border-t border-cream-200 flex justify-between items-center text-xs text-charcoal-800">
+            <div className="pt-3 sm:pt-4 border-t border-cream-200 flex justify-between items-center text-xs text-charcoal-800">
               <Link to="/products" className="text-champagne-700 font-semibold hover:underline inline-flex items-center gap-1">
                 <span>&larr; Add more products</span>
               </Link>
@@ -301,11 +304,11 @@ export const CartPage: React.FC = () => {
           </div>
 
           {/* Wholesale notice */}
-          <div className="p-4 rounded-xl bg-cream-50 border border-cream-200 text-xs text-charcoal-800 flex items-start gap-3">
+          <div className="p-3.5 sm:p-4 rounded-xl bg-cream-50 border border-cream-200 text-xs text-charcoal-800 flex items-start gap-3">
             <ShieldCheck className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
             <div>
               <p className="font-semibold text-charcoal-900">Wholesale Volume Pricing</p>
-              <p className="mt-0.5 leading-relaxed">
+              <p className="mt-0.5 leading-relaxed text-[11px] sm:text-xs">
                 Direct quotation with customized branding, bulk tier discounts, and freight timeline will be generated upon submission.
               </p>
             </div>
@@ -314,8 +317,8 @@ export const CartPage: React.FC = () => {
 
         {/* Right Column: Hotel Details & Verified Access Code Submission (Sticky on desktop) */}
         <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-24">
-          <div className="bg-white rounded-2xl border border-cream-200 p-6 md:p-8 shadow-luxury space-y-5">
-            <h2 className="font-serif font-bold text-xl text-charcoal-900 pb-2 border-b border-cream-200">
+          <div className="bg-white rounded-2xl border border-cream-200 p-5 sm:p-8 shadow-luxury space-y-4 sm:space-y-5">
+            <h2 className="font-serif font-bold text-lg sm:text-xl text-charcoal-900 pb-2 border-b border-cream-200">
               Procurement &amp; Dispatch Details
             </h2>
 
@@ -337,7 +340,7 @@ export const CartPage: React.FC = () => {
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
                 placeholder="e.g. The Grand Hotel &amp; Suites"
-                className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
+                className="w-full px-3.5 sm:px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium transition-colors"
               />
             </div>
 
@@ -352,12 +355,12 @@ export const CartPage: React.FC = () => {
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
                 placeholder="e.g. Vikram Singhania (Procurement Head)"
-                className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
+                className="w-full px-3.5 sm:px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium transition-colors"
               />
             </div>
 
             {/* Phone & Email */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
                 <label className="block text-xs font-semibold text-charcoal-800 uppercase tracking-wider mb-1">
                   Contact Phone (WhatsApp) *
@@ -368,7 +371,7 @@ export const CartPage: React.FC = () => {
                   value={contactPhone}
                   onChange={(e) => setContactPhone(e.target.value)}
                   placeholder="+91 98765 43210"
-                  className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
+                  className="w-full px-3.5 sm:px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium transition-colors"
                 />
               </div>
 
@@ -381,13 +384,13 @@ export const CartPage: React.FC = () => {
                   value={contactEmail}
                   onChange={(e) => setContactEmail(e.target.value)}
                   placeholder="procurement@hotel.com"
-                  className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
+                  className="w-full px-3.5 sm:px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium transition-colors"
                 />
               </div>
             </div>
 
             {/* City & Expected Date */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
                 <label className="block text-xs font-semibold text-charcoal-800 uppercase tracking-wider mb-1">
                   Delivery City / State *
@@ -398,7 +401,7 @@ export const CartPage: React.FC = () => {
                   value={deliveryCity}
                   onChange={(e) => setDeliveryCity(e.target.value)}
                   placeholder="e.g. Bengaluru / Goa / Delhi"
-                  className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
+                  className="w-full px-3.5 sm:px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium transition-colors"
                 />
               </div>
 
@@ -410,7 +413,7 @@ export const CartPage: React.FC = () => {
                   type="date"
                   value={expectedDate}
                   onChange={(e) => setExpectedDate(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
+                  className="w-full px-3.5 sm:px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium transition-colors"
                 />
               </div>
             </div>
@@ -425,12 +428,12 @@ export const CartPage: React.FC = () => {
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Mention custom logo printing, fragrance preferences, or delivery instructions..."
-                className="w-full px-4 py-2 bg-cream-50 border border-cream-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-champagne-500"
+                className="w-full px-3.5 sm:px-4 py-2 bg-cream-50 border border-cream-300 rounded-xl text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-champagne-500"
               />
             </div>
 
             {/* CUSTOMER ACCESS CODE INPUT */}
-            <div className="p-4 rounded-xl bg-champagne-100/50 border border-champagne-300 space-y-2">
+            <div className="p-3.5 sm:p-4 rounded-xl bg-champagne-100/50 border border-champagne-300 space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-charcoal-900 uppercase tracking-wider flex items-center gap-1.5">
                   <Key className="w-3.5 h-3.5 text-champagne-700" />
@@ -445,7 +448,7 @@ export const CartPage: React.FC = () => {
                 </button>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <input
                   type="text"
                   required
@@ -459,16 +462,16 @@ export const CartPage: React.FC = () => {
                       setCodeVerification(null);
                     }
                   }}
-                  placeholder="Enter code (e.g. CC-HOTEL-2026)"
-                  className="flex-1 px-4 py-2.5 bg-white border border-champagne-300 rounded-lg text-sm font-mono uppercase focus:outline-none focus:ring-2 focus:ring-champagne-500"
+                  placeholder="e.g. CC-HOTEL-2026"
+                  className="flex-1 px-3.5 sm:px-4 py-2.5 bg-white border border-champagne-300 rounded-lg text-base sm:text-sm font-mono uppercase focus:outline-none focus:ring-2 focus:ring-champagne-500"
                 />
                 <button
                   type="button"
                   onClick={() => handleVerifyCode(accessCode)}
                   disabled={checkingCode || !accessCode.trim()}
-                  className="px-4 py-2.5 bg-charcoal-900 hover:bg-charcoal-800 text-white rounded-lg text-xs font-medium transition-colors"
+                  className="px-4 py-2.5 bg-charcoal-900 hover:bg-charcoal-800 text-white rounded-lg text-xs font-medium transition-colors active:scale-95 disabled:opacity-50"
                 >
-                  {checkingCode ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Verify'}
+                  {checkingCode ? <Loader2 className="w-3.5 h-3.5 animate-spin mx-auto" /> : 'Verify Code'}
                 </button>
               </div>
 
@@ -509,7 +512,7 @@ export const CartPage: React.FC = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-4 px-6 bg-charcoal-900 hover:bg-charcoal-800 text-white font-semibold rounded-xl text-sm transition-all shadow-luxury hover:shadow-luxury-hover flex items-center justify-center gap-2.5 disabled:opacity-50 hover:-translate-y-0.5 active:translate-y-0"
+              className="w-full py-3.5 sm:py-4 px-6 bg-charcoal-900 hover:bg-charcoal-800 text-white font-semibold rounded-xl text-sm transition-all shadow-luxury hover:shadow-luxury-hover flex items-center justify-center gap-2.5 disabled:opacity-50 active:scale-95"
             >
               {submitting ? (
                 <>
