@@ -391,10 +391,32 @@ export async function verifyAndConsumeAccessCode(
 
 // --- Sessions & Token Management ---
 export async function createSession(db: D1Database, adminId: string, tokenId: string, expiresAt: string): Promise<void> {
-  await db.prepare(`
-    INSERT INTO sessions (token_id, admin_id, expires_at, revoked, created_at)
-    VALUES (?, ?, ?, 0, datetime('now'))
-  `).bind(tokenId, adminId, expiresAt).run();
+  try {
+    await db.prepare(`
+      INSERT INTO sessions (token_id, admin_id, expires_at, revoked, created_at)
+      VALUES (?, ?, ?, 0, datetime('now'))
+    `).bind(tokenId, adminId, expiresAt).run();
+  } catch {
+    // If sessions table does not exist yet on remote D1, create it automatically and retry
+    try {
+      await db.prepare(`
+        CREATE TABLE IF NOT EXISTS sessions (
+          token_id TEXT PRIMARY KEY,
+          admin_id TEXT NOT NULL,
+          token_hash TEXT,
+          created_at TEXT DEFAULT (datetime('now')),
+          expires_at TEXT NOT NULL,
+          revoked INTEGER DEFAULT 0
+        )
+      `).run();
+      await db.prepare(`
+        INSERT INTO sessions (token_id, admin_id, expires_at, revoked, created_at)
+        VALUES (?, ?, ?, 0, datetime('now'))
+      `).bind(tokenId, adminId, expiresAt).run();
+    } catch (err) {
+      console.warn('[Session Store Warning] Session persistence bypassed:', err);
+    }
+  }
 }
 
 export async function revokeSession(db: D1Database, tokenId: string): Promise<void> {

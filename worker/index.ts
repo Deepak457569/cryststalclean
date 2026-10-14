@@ -191,8 +191,12 @@ export default {
 
           // Record session in D1
           if (env.DB) {
-            const expiresAt = new Date(Date.now() + 8 * 3600 * 1000).toISOString();
-            await createSession(env.DB, adminId, jti, expiresAt);
+            try {
+              const expiresAt = new Date(Date.now() + 8 * 3600 * 1000).toISOString();
+              await createSession(env.DB, adminId, jti, expiresAt);
+            } catch (sessionErr) {
+              console.warn('[Session Warning]:', sessionErr);
+            }
           }
 
           const isSecure = env.ENVIRONMENT === 'production' || request.url.startsWith('https://');
