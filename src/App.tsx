@@ -42,10 +42,11 @@ function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const isAdminRoute = pathname.startsWith('/admin');
 
   return (
-    <div className="min-h-screen flex flex-col bg-porcelain text-ink">
+    <div className="min-h-screen flex flex-col bg-cream-50 text-charcoal-900">
       {!isAdminRoute && <Navbar />}
       <main className="flex-1">{children}</main>
       {!isAdminRoute && <Footer />}
+      {!isAdminRoute && <WhatsAppFloatingButton />}
     </div>
   );
 }

@@ -7,38 +7,46 @@ export default {
   theme: {
     extend: {
       colors: {
-        porcelain: '#F8FAFA',
-        white: '#FFFFFF',
-        ink: '#1C262B',
-        slate: '#5E6D73',
-        mist: '#E3EAEC',
-        teal: {
-          DEFAULT: '#2E6F73',
-          hover: '#24595C',
-          focus: '#1D4649',
-          light: '#EAF2F2',
+        cream: {
+          50: '#FAF9F6',
+          100: '#F5F4EE',
+          200: '#EBE9DF',
+          300: '#DDD9CB',
         },
+        charcoal: {
+          800: '#22252A',
+          900: '#141619',
+          950: '#0C0D0E',
+        },
+        champagne: {
+          100: '#F7F3EB',
+          300: '#E2D5BE',
+          400: '#D4B895',
+          500: '#C5A880',
+          600: '#AF8F63',
+          700: '#907147',
+        },
+        sage: {
+          100: '#EEF2EC',
+          300: '#C2D1BE',
+          600: '#526E54',
+          800: '#344535',
+        },
+        whatsapp: {
+          500: '#25D366',
+          600: '#20BA5A',
+          700: '#128C7E',
+          800: '#075E54',
+        }
       },
       fontFamily: {
-        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        serif: ['"Playfair Display"', 'Cormorant Garamond', 'Georgia', 'serif'],
+        sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
       },
-      borderRadius: {
-        DEFAULT: '4px',
-        sm: '4px',
-        md: '4px',
-        lg: '4px',
-        xl: '4px',
-        '2xl': '4px',
-        '3xl': '4px',
-        full: '4px', // single 4px radius rule
-      },
-      maxWidth: {
-        content: '1200px',
-      },
-      spacing: {
-        'section-desktop': '96px',
-        'section-mobile': '56px',
-      },
+      boxShadow: {
+        'luxury': '0 10px 30px -10px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.03)',
+        'luxury-hover': '0 20px 40px -15px rgba(0, 0, 0, 0.12), 0 6px 12px -3px rgba(0, 0, 0, 0.05)',
+      }
     },
   },
   plugins: [],
