@@ -965,7 +965,16 @@ export default {
 
     // Static Assets fallback for Cloudflare Workers with Static Assets
     if (env.ASSETS) {
-      const assetRes = await env.ASSETS.fetch(request);
+      let assetRes = await env.ASSETS.fetch(request);
+
+      // Single Page Application (SPA) fallback:
+      // If a route (like /admin, /products, /about) does not match a physical static file,
+      // serve index.html with 200 OK so the client-side router mounts seamlessly.
+      if (assetRes.status === 404 && (request.method === 'GET' || request.method === 'HEAD')) {
+        const indexUrl = new URL('/index.html', request.url);
+        assetRes = await env.ASSETS.fetch(new Request(indexUrl.toString(), request));
+      }
+
       const newHeaders = new Headers(assetRes.headers);
       for (const [k, v] of Object.entries(SECURITY_HEADERS)) {
         newHeaders.set(k, v);
