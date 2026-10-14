@@ -4,7 +4,7 @@ import {
   LayoutDashboard, ShoppingCart, Package, FolderTree, Key, 
   Settings, LogOut, Search, Plus, Filter, MessageCircle, 
   CheckCircle2, Clock, AlertTriangle, ChevronRight, Eye, 
-  Trash2, Edit, X, RefreshCw, UserCheck, Shield
+  Trash2, Edit, X, RefreshCw, UserCheck, Shield, Loader2
 } from 'lucide-react';
 import { 
   Inquiry, Product, Category, AccessCode, OrderStatus, 
@@ -118,7 +118,13 @@ export const AdminDashboardPage: React.FC = () => {
 
       if (statsRes.ok) {
         const s = await statsRes.json();
-        setStats(s.stats);
+        const incoming = s?.stats || {};
+        setStats({
+          totalInquiries: Number(incoming.totalInquiries) || 0,
+          statusCounts: incoming.statusCounts || {},
+          activeProductsCount: Number(incoming.activeProductsCount ?? incoming.activeProducts) || 0,
+          activeCodesCount: Number(incoming.activeCodesCount ?? incoming.activeCodes) || 0,
+        });
       }
       if (inqRes.ok) {
         const i = await inqRes.json();
@@ -390,6 +396,37 @@ export const AdminDashboardPage: React.FC = () => {
     'Cancelled',
   ];
 
+  const computedStatusCounts = React.useMemo(() => {
+    const counts: Record<string, number> = { ...(stats?.statusCounts || {}) };
+    for (const inq of inquiries) {
+      if (inq?.status && typeof counts[inq.status] !== 'number') {
+        counts[inq.status] = (counts[inq.status] || 0) + 1;
+      }
+    }
+    return counts;
+  }, [stats?.statusCounts, inquiries]);
+
+  const getStatusCount = (st: string) => {
+    return stats?.statusCounts?.[st] ?? computedStatusCounts[st] ?? 0;
+  };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-cream-50">
+        <div className="text-center space-y-4">
+          <Loader2 className="w-10 h-10 animate-spin text-charcoal-800 mx-auto" />
+          <p className="text-xs uppercase tracking-wider text-charcoal-700 font-semibold">
+            Authenticating CryststalClean Admin Portal...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!adminUser) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-cream-50 flex flex-col">
       {/* Top Admin Header */}
@@ -536,7 +573,7 @@ export const AdminDashboardPage: React.FC = () => {
                   New Uncontacted Inquiries
                 </span>
                 <p className="font-serif text-3xl font-bold text-blue-900">
-                  {stats.statusCounts['New Inquiry'] || 0}
+                  {getStatusCount('New Inquiry')}
                 </p>
                 <p className="text-[11px] text-blue-600">Pending initial response</p>
               </div>
@@ -546,9 +583,9 @@ export const AdminDashboardPage: React.FC = () => {
                   Confirmed / In Progress Orders
                 </span>
                 <p className="font-serif text-3xl font-bold text-emerald-900">
-                  {(stats.statusCounts['Confirmed'] || 0) +
-                    (stats.statusCounts['Preparing Order'] || 0) +
-                    (stats.statusCounts['Ready to Ship'] || 0)}
+                  {getStatusCount('Confirmed') +
+                    getStatusCount('Preparing Order') +
+                    getStatusCount('Ready to Ship')}
                 </p>
                 <p className="text-[11px] text-emerald-600">Manufacturing &amp; packing</p>
               </div>
@@ -575,7 +612,7 @@ export const AdminDashboardPage: React.FC = () => {
 
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 pt-2">
                 {statusesList.map((st) => {
-                  const count = stats.statusCounts[st] || 0;
+                  const count = getStatusCount(st);
                   const colors = ORDER_STATUS_COLORS[st];
                   return (
                     <div
@@ -675,7 +712,7 @@ export const AdminDashboardPage: React.FC = () => {
                   <option value="">All Statuses ({inquiries.length})</option>
                   {statusesList.map((st) => (
                     <option key={st} value={st}>
-                      {st} ({stats.statusCounts[st] || 0})
+                      {st} ({getStatusCount(st)})
                     </option>
                   ))}
                 </select>

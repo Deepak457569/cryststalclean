@@ -110,8 +110,16 @@ export function isEmailAllowed(email: string, env: Env): boolean {
   if (!cleanEmail) return false;
 
   // Standalone passcode mode allowlist bypass for primary admin
-  if (Boolean(env.ADMIN_PASSCODE) && (cleanEmail === 'crystalclean457@gmail.com' || cleanEmail.startsWith('admin_'))) {
-    return true;
+  if (Boolean(env.ADMIN_PASSCODE)) {
+    if (cleanEmail === 'crystalclean457@gmail.com' || cleanEmail.startsWith('admin_')) {
+      return true;
+    }
+    if (env.ADMIN_EMAILS) {
+      const firstEmail = env.ADMIN_EMAILS.split(',')[0]?.trim().toLowerCase();
+      if (firstEmail && cleanEmail === firstEmail) {
+        return true;
+      }
+    }
   }
 
   if (!env.ADMIN_EMAILS || !env.ADMIN_EMAILS.trim()) {

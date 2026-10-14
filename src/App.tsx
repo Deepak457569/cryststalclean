@@ -7,6 +7,7 @@ import { AuthProvider } from './context/AuthContext';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { WhatsAppFloatingButton } from './components/common/WhatsAppButton';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
 
 // Public Pages
 import { HomePage } from './pages/HomePage';
@@ -52,36 +53,38 @@ function LayoutWrapper({ children }: { children: React.ReactNode }) {
 
 export function App() {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <BrowserRouter>
-          <ScrollToTop />
-          <LayoutWrapper>
-            <Routes>
-              {/* Public Website Pages */}
-              <Route path="/" element={<HomePage />} />
-              <Route path="/products" element={<ProductsPage />} />
-              <Route path="/categories" element={<CategoriesPage />} />
-              <Route path="/product/:id" element={<ProductDetailPage />} />
-              <Route path="/cart" element={<CartPage />} />
-              <Route path="/quote" element={<BulkQuotePage />} />
-              <Route path="/confirmation/:reference" element={<ConfirmationPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="/privacy" element={<PrivacyPage />} />
-              <Route path="/terms" element={<TermsPage />} />
+    <ErrorBoundary>
+      <AuthProvider>
+        <CartProvider>
+          <BrowserRouter>
+            <ScrollToTop />
+            <LayoutWrapper>
+              <Routes>
+                {/* Public Website Pages */}
+                <Route path="/" element={<HomePage />} />
+                <Route path="/products" element={<ProductsPage />} />
+                <Route path="/categories" element={<CategoriesPage />} />
+                <Route path="/product/:id" element={<ProductDetailPage />} />
+                <Route path="/cart" element={<CartPage />} />
+                <Route path="/quote" element={<BulkQuotePage />} />
+                <Route path="/confirmation/:reference" element={<ConfirmationPage />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/contact" element={<ContactPage />} />
+                <Route path="/privacy" element={<PrivacyPage />} />
+                <Route path="/terms" element={<TermsPage />} />
 
-              {/* Secure Admin Portal */}
-              <Route path="/admin/login" element={<AdminLoginPage />} />
-              <Route path="/admin" element={<AdminDashboardPage />} />
+                {/* Secure Admin Portal */}
+                <Route path="/admin/login" element={<AdminLoginPage />} />
+                <Route path="/admin" element={<AdminDashboardPage />} />
 
-              {/* 404 Fallback */}
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-          </LayoutWrapper>
-        </BrowserRouter>
-      </CartProvider>
-    </AuthProvider>
+                {/* 404 Fallback */}
+                <Route path="*" element={<NotFoundPage />} />
+              </Routes>
+            </LayoutWrapper>
+          </BrowserRouter>
+        </CartProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 

@@ -609,11 +609,23 @@ export async function getAdminStats(db: D1Database) {
   const activeProducts = (await db.prepare('SELECT COUNT(*) as c FROM products WHERE is_active = 1').first<{ c: number }>())?.c || 0;
   const activeCodes = (await db.prepare("SELECT COUNT(*) as c FROM access_codes WHERE status = 'active'").first<{ c: number }>())?.c || 0;
 
+  const statusRows = await db.prepare('SELECT status, COUNT(*) as c FROM inquiries GROUP BY status').all<{ status: string; c: number }>();
+  const statusCounts: Record<string, number> = {};
+  for (const row of (statusRows.results || [])) {
+    if (row.status) {
+      statusCounts[row.status] = row.c;
+    }
+  }
+
   return {
     totalInquiries,
     newInquiries,
     totalProducts,
     activeProducts,
-    activeCodes
+    activeCodes,
+    activeProductsCount: activeProducts,
+    activeCodesCount: activeCodes,
+    statusCounts
   };
 }
+
