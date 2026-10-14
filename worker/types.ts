@@ -14,6 +14,7 @@ export interface Env {
   GOOGLE_CLIENT_SECRET?: string;
   TURNSTILE_SECRET?: string;
   APP_BASE_URL?: string;
+  ADMIN_PASSCODE?: string;
 }
 
 export type OrderStatus =

@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { ShieldCheck, AlertCircle } from 'lucide-react';
+import { ShieldCheck, AlertCircle, KeyRound, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export const AdminLoginPage: React.FC = () => {
+  const [passcode, setPasscode] = useState('');
+  const [showPasscode, setShowPasscode] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { adminUser } = useAuth();
+  const { adminUser, loginWithToken } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -38,13 +41,42 @@ export const AdminLoginPage: React.FC = () => {
     }
   }, [adminUser, searchParams, navigate]);
 
+  const handlePasscodeLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!passcode.trim() || isSubmitting) return;
+
+    setError(null);
+    setIsSubmitting(true);
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ passcode: passcode.trim() }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        setError(data.error || 'Invalid administrative passcode.');
+        return;
+      }
+
+      loginWithToken(data.token, data.user);
+      navigate('/admin');
+    } catch {
+      setError('Network connection error. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleGoogleLogin = () => {
     window.location.href = '/api/auth/google';
   };
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-16 bg-cream-50">
-      <div className="w-full max-w-md bg-white rounded-3xl border border-cream-200 shadow-luxury p-8 sm:p-10 space-y-8 animate-fade-in">
+      <div className="w-full max-w-md bg-white rounded-3xl border border-cream-200 shadow-luxury p-8 sm:p-10 space-y-6 animate-fade-in">
         {/* Brand Header */}
         <div className="text-center space-y-2">
           <div className="w-16 h-16 rounded-full overflow-hidden bg-white border border-cream-300 flex items-center justify-center p-1 mx-auto shadow-md">
@@ -58,7 +90,7 @@ export const AdminLoginPage: React.FC = () => {
             Admin Authentication
           </h1>
           <p className="text-xs text-charcoal-800">
-            CrystalClean Hotel Amenities Executive Management
+            CrystalClean Hotel Amenities Executive Portal
           </p>
         </div>
 
@@ -69,29 +101,74 @@ export const AdminLoginPage: React.FC = () => {
           </div>
         )}
 
-        {/* Authentication Options */}
-        <div className="space-y-4 pt-2">
-          {/* Cloudflare Zero Trust OTP (Recommended) */}
+        {/* Free Direct Passcode Login Form */}
+        <form onSubmit={handlePasscodeLogin} className="space-y-4 pt-1">
+          <div className="space-y-1.5">
+            <label className="block text-xs font-semibold text-charcoal-800 uppercase tracking-wider">
+              Admin Passcode
+            </label>
+            <div className="relative">
+              <input
+                type={showPasscode ? 'text' : 'password'}
+                value={passcode}
+                onChange={(e) => setPasscode(e.target.value)}
+                placeholder="Enter Admin Passcode"
+                required
+                className="w-full px-4 py-3 bg-cream-50 border border-cream-300 rounded-xl text-charcoal-900 text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 focus:border-champagne-500 pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPasscode(!showPasscode)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-charcoal-500 hover:text-charcoal-700 cursor-pointer p-1"
+                title={showPasscode ? 'Hide passcode' : 'Show passcode'}
+              >
+                {showPasscode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={isSubmitting || !passcode.trim()}
+            className="w-full py-3 px-4 bg-charcoal-900 hover:bg-charcoal-800 disabled:opacity-50 text-white font-semibold rounded-xl text-sm transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin text-champagne-400" />
+                <span>Authenticating...</span>
+              </>
+            ) : (
+              <>
+                <KeyRound className="w-4 h-4 text-champagne-400" />
+                <span>Sign In with Passcode</span>
+              </>
+            )}
+          </button>
+        </form>
+
+        <div className="relative flex py-1 items-center">
+          <div className="flex-grow border-t border-cream-200"></div>
+          <span className="flex-shrink mx-4 text-[11px] font-semibold text-charcoal-500 uppercase tracking-wider">or sign in with</span>
+          <div className="flex-grow border-t border-cream-200"></div>
+        </div>
+
+        {/* Alternative SSO Options */}
+        <div className="space-y-3">
+          {/* Cloudflare Zero Trust OTP */}
           <button
             type="button"
             onClick={() => navigate('/admin')}
-            className="w-full py-3.5 px-4 bg-champagne-600 hover:bg-champagne-700 text-charcoal-950 font-semibold rounded-xl text-sm transition-all shadow-md flex items-center justify-center gap-3 cursor-pointer"
+            className="w-full py-2.5 px-4 bg-cream-100 hover:bg-cream-200 border border-cream-300 text-charcoal-900 font-medium rounded-xl text-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
-            <ShieldCheck className="w-5 h-5 text-charcoal-950" />
-            <span>Login with Cloudflare Zero Trust (OTP)</span>
+            <ShieldCheck className="w-4 h-4 text-emerald-600" />
+            <span>Cloudflare Zero Trust (Email OTP)</span>
           </button>
-
-          <div className="relative flex py-1 items-center">
-            <div className="flex-grow border-t border-cream-300"></div>
-            <span className="flex-shrink mx-4 text-xs font-semibold text-charcoal-600 uppercase tracking-wider">or</span>
-            <div className="flex-grow border-t border-cream-300"></div>
-          </div>
 
           {/* Google OAuth Section */}
           <button
             type="button"
             onClick={handleGoogleLogin}
-            className="w-full py-3.5 px-4 bg-charcoal-900 hover:bg-charcoal-800 text-white font-semibold rounded-xl text-sm transition-all shadow-md flex items-center justify-center gap-3 cursor-pointer"
+            className="w-full py-2.5 px-4 bg-white hover:bg-cream-100 border border-cream-300 text-charcoal-800 font-medium rounded-xl text-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
             {/* Google Monogram SVG */}
             <svg className="w-4 h-4 bg-white rounded-full p-0.5" viewBox="0 0 24 24">
@@ -114,12 +191,6 @@ export const AdminLoginPage: React.FC = () => {
             </svg>
             <span>Continue with Google</span>
           </button>
-          
-          <div className="bg-cream-100 rounded-xl p-3.5 text-center">
-            <p className="text-xs text-charcoal-700 leading-relaxed font-medium">
-              Access is strictly restricted to authorized emails configured in Cloudflare Zero Trust and the server administrator allowlist (<span className="font-mono text-[11px] text-charcoal-900">ADMIN_EMAILS</span>).
-            </p>
-          </div>
         </div>
 
         {/* Footer Navigation */}

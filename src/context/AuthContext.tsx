@@ -7,6 +7,7 @@ interface AuthContextType {
   loading: boolean;
   previewDrafts: boolean;
   setPreviewDrafts: (val: boolean) => void;
+  loginWithToken: (newToken: string, user: AdminUser) => void;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
 }
@@ -17,6 +18,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
   const [token, setToken] = useState<string | null>(() => localStorage.getItem('cc_token'));
   const [loading, setLoading] = useState(true);
+
+  const loginWithToken = (newToken: string, user: AdminUser) => {
+    localStorage.setItem('cc_token', newToken);
+    setToken(newToken);
+    setAdminUser(user);
+  };
   const [previewDrafts, setPreviewDraftsState] = useState<boolean>(() => {
     return localStorage.getItem('cc_preview_drafts') === 'true' || window.location.search.includes('preview=drafts');
   });
@@ -68,7 +75,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ adminUser, token, loading, previewDrafts, setPreviewDrafts, logout, checkAuth }}>
+    <AuthContext.Provider value={{ adminUser, token, loading, previewDrafts, setPreviewDrafts, loginWithToken, logout, checkAuth }}>
       {children}
     </AuthContext.Provider>
   );

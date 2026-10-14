@@ -1048,3 +1048,48 @@ test('Cloudflare Zero Trust (Access): Authenticates via Cf-Access-Authenticated-
   assert.strictEqual(unauthRes.status, 401);
 });
 
+// Test 26: Free Direct Admin Passcode Authentication
+test('Task 10: Free Direct Admin Passcode Authentication (POST /api/auth/login)', async () => {
+  const workerModule = await import('./worker.bundle.mjs');
+  const worker = workerModule.default;
+
+  const env = {
+    ADMIN_PASSCODE: 'CrystalClean@Admin2026!',
+    ADMIN_EMAILS: 'crystalclean457@gmail.com',
+    APP_BASE_URL: 'https://crystalclean.in',
+    JWT_SECRET: 'mock_jwt_secret_for_tests',
+  };
+
+  // Case 1: Incorrect passcode -> 401
+  const wrongReq = new Request('https://crystalclean.in/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ passcode: 'WrongPassword123!' }),
+  });
+  const wrongRes = await worker.fetch(wrongReq, env, {});
+  assert.strictEqual(wrongRes.status, 401);
+
+  // Case 2: Correct passcode -> 200, JWT token, sets cookie
+  const correctReq = new Request('https://crystalclean.in/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ passcode: 'CrystalClean@Admin2026!' }),
+  });
+  const correctRes = await worker.fetch(correctReq, env, {});
+  assert.strictEqual(correctRes.status, 200);
+  const correctBody = await correctRes.json();
+  assert.strictEqual(correctBody.success, true);
+  assert.ok(correctBody.token, 'Token must be issued');
+  const setCookie = correctRes.headers.get('Set-Cookie') || '';
+  assert.ok(setCookie.includes('cc_admin_session='), 'Cookie must be set');
+
+  // Case 3: Use token to access protected route -> 200 OK
+  const meReq = new Request('https://crystalclean.in/api/auth/me', {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${correctBody.token}` },
+  });
+  const meRes = await worker.fetch(meReq, env, {});
+  assert.strictEqual(meRes.status, 200);
+  const meBody = await meRes.json();
+  assert.strictEqual(meBody.authenticated, true);
+});
