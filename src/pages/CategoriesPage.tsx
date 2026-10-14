@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Layers } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Category } from '../types';
 
 export const CategoriesPage: React.FC = () => {
@@ -16,48 +16,49 @@ export const CategoriesPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
-      <div className="text-center max-w-2xl mx-auto space-y-3">
-        <span className="text-xs uppercase tracking-widest font-semibold text-champagne-700">Hospitality Supply</span>
-        <h1 className="font-serif text-4xl font-bold text-charcoal-900">Amenity Categories</h1>
-        <p className="text-sm text-charcoal-800 leading-relaxed">
-          From luxury organic shampoos and hand-crafted bath bars to plush velvet slippers and eco-friendly dental kits, explore our full catalog of wholesale hospitality collections.
+    <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+      <div className="pb-6 border-b border-mist">
+        <h1 className="text-2xl sm:text-3xl font-semibold text-ink tracking-tight">
+          Categories
+        </h1>
+        <p className="text-sm text-slate mt-1 max-w-xl">
+          Browse hospitality supplies by product collection.
         </p>
       </div>
 
       {loading ? (
-        <div className="text-center py-20 text-charcoal-800 font-serif">Loading categories...</div>
+        <div className="text-center py-20 text-slate text-sm">Loading categories...</div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {categories.map((cat) => (
             <Link
               key={cat.id}
               to={`/products?category=${cat.id}`}
-              className="group bg-white rounded-2xl overflow-hidden border border-cream-200 shadow-sm hover:shadow-luxury-hover transition-all duration-300 flex flex-col"
+              className="group block bg-white border border-mist hover:border-slate rounded overflow-hidden transition-colors"
             >
-              <div className="aspect-[4/3] overflow-hidden bg-[#FAF8F5] relative p-4 flex items-center justify-center border-b border-cream-200">
+              <div className="aspect-[4/5] bg-porcelain overflow-hidden">
                 <img
                   src={cat.image_url || '/products/placeholder.svg'}
                   alt={cat.name}
-                  onError={(e) => { (e.target as HTMLImageElement).src = '/products/placeholder.svg'; }}
-                  className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                  loading="lazy"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = '/products/placeholder.svg';
+                  }}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
-              <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
-                <div>
-                  <h3 className="font-serif font-bold text-xl text-charcoal-900 group-hover:text-champagne-700 transition-colors">
-                    {cat.name}
-                  </h3>
-                  <p className="text-xs text-charcoal-800 mt-2 leading-relaxed line-clamp-3">
+              <div className="p-3">
+                <h2 className="font-medium text-xs sm:text-sm text-ink group-hover:text-teal transition-colors line-clamp-2">
+                  {cat.name}
+                </h2>
+                {cat.description && (
+                  <p className="text-xs text-slate line-clamp-2 mt-1 leading-relaxed">
                     {cat.description}
                   </p>
-                </div>
-                <div className="pt-3 border-t border-cream-200 flex items-center justify-between text-xs font-semibold text-champagne-700">
-                  <span className="flex items-center gap-1.5">
-                    <Layers className="w-3.5 h-3.5" />
-                    Explore Amenities
-                  </span>
-                  <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+                )}
+                <div className="mt-3 pt-2 border-t border-mist flex items-center justify-between text-xs text-teal">
+                  <span>Browse</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </div>
               </div>
             </Link>

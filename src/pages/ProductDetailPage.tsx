@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, CheckCircle2, Layers, ShieldCheck, Sparkles, MessageCircle, Package } from 'lucide-react';
+import { ArrowLeft, Check } from 'lucide-react';
 import { Product } from '../types';
 import { useCart } from '../context/CartContext';
 
@@ -40,7 +40,7 @@ export const ProductDetailPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-24 text-center text-charcoal-800 font-serif">
+      <div className="max-w-content mx-auto px-4 py-20 text-center text-slate text-sm">
         Loading product details...
       </div>
     );
@@ -48,11 +48,14 @@ export const ProductDetailPage: React.FC = () => {
 
   if (!product) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-24 text-center space-y-4">
-        <h2 className="font-serif text-2xl font-bold text-charcoal-900">Product not found</h2>
-        <Link to="/products" className="inline-flex items-center gap-2 text-sm text-champagne-700 font-semibold">
+      <div className="max-w-content mx-auto px-4 py-20 text-center space-y-4">
+        <p className="text-base font-medium text-ink">Product not found</p>
+        <Link
+          to="/products"
+          className="inline-flex items-center gap-1.5 text-sm text-teal hover:underline"
+        >
           <ArrowLeft className="w-4 h-4" />
-          Back to Product Catalog
+          <span>Back to catalog</span>
         </Link>
       </div>
     );
@@ -69,11 +72,6 @@ export const ProductDetailPage: React.FC = () => {
     variants = JSON.parse(product.variants_json || '[]');
   } catch {}
 
-  let specs: Record<string, string> = {};
-  try {
-    specs = JSON.parse(product.specs_json || '{}');
-  } catch {}
-
   const handleAdd = () => {
     addToCart({
       productId: product.id,
@@ -84,59 +82,68 @@ export const ProductDetailPage: React.FC = () => {
       imageUrl: product.image_url,
     });
 
-    setToastMessage(`Added ${quantity} units of ${product.name} to requirements!`);
-    setTimeout(() => setToastMessage(null), 3000);
+    setToastMessage(`Added ${product.name} to requirements`);
+    setTimeout(() => setToastMessage(null), 2500);
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
+    <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       {/* Toast */}
       {toastMessage && (
-        <div className="fixed top-24 right-6 z-50 bg-charcoal-900 text-white px-5 py-3 rounded-xl shadow-2xl border border-champagne-500/50 flex items-center gap-3 animate-fade-in text-sm font-medium">
-          <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed top-20 right-6 z-50 bg-ink text-white px-4 py-2.5 rounded text-sm flex items-center gap-2 border border-mist shadow-sm"
+        >
+          <Check className="w-4 h-4 text-teal" />
           <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Back link */}
+      {/* Breadcrumb / Back link */}
       <div>
         <Link
           to="/products"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-charcoal-800 hover:text-charcoal-950 transition-colors uppercase tracking-wider"
+          className="inline-flex items-center gap-1.5 text-xs text-slate hover:text-ink transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Catalog
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>Back to catalog</span>
         </Link>
       </div>
 
-      {/* Product Hero Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-        {/* Gallery Column */}
-        <div className="lg:col-span-6 space-y-4">
-          <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-[#FAF8F5] border border-cream-200 shadow-md p-6 flex items-center justify-center">
+      {/* Main product layout */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-start">
+        {/* Images */}
+        <div className="space-y-4">
+          <div className="aspect-[4/5] bg-porcelain rounded border border-mist overflow-hidden">
             <img
               src={activeImage}
               alt={product.name}
-              onError={(e) => { (e.target as HTMLImageElement).src = '/products/placeholder.svg'; }}
-              className="w-full h-full object-contain"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = '/products/placeholder.svg';
+              }}
+              className="w-full h-full object-cover"
             />
           </div>
 
           {gallery.length > 1 && (
-            <div className="flex gap-3 overflow-x-auto pb-2">
+            <div className="flex gap-2 overflow-x-auto pb-1">
               {gallery.map((imgUrl, i) => (
                 <button
                   key={i}
+                  type="button"
                   onClick={() => setActiveImage(imgUrl)}
-                  className={`w-20 h-20 rounded-xl overflow-hidden bg-[#FAF8F5] p-1 flex items-center justify-center border-2 transition-all flex-shrink-0 ${
-                    activeImage === imgUrl ? 'border-champagne-500 scale-95 shadow-md' : 'border-cream-200 opacity-75'
+                  className={`w-16 h-16 rounded border overflow-hidden flex-shrink-0 transition-colors ${
+                    activeImage === imgUrl ? 'border-ink' : 'border-mist'
                   }`}
                 >
                   <img
                     src={imgUrl}
-                    alt={`${product.name} Thumbnail ${i + 1}`}
-                    onError={(e) => { (e.target as HTMLImageElement).src = '/products/placeholder.svg'; }}
-                    className="w-full h-full object-contain"
+                    alt=""
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = '/products/placeholder.svg';
+                    }}
+                    className="w-full h-full object-cover"
                   />
                 </button>
               ))}
@@ -144,61 +151,46 @@ export const ProductDetailPage: React.FC = () => {
           )}
         </div>
 
-        {/* Specifications & Add to Cart Column */}
-        <div className="lg:col-span-6 space-y-6">
-          <div>
-            <div className="flex flex-wrap items-center gap-2 mb-2">
-              <span className="inline-block px-3 py-1 bg-champagne-100 text-champagne-800 text-[11px] font-semibold tracking-wider uppercase rounded-md">
-                {product.category_name || 'Hospitality Amenity'}
-              </span>
-              {(product.is_customizable === 1 || String(specs.customizable_logo) === 'true') && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-cream-100 border border-champagne-400/80 text-charcoal-900 text-[11px] font-semibold tracking-wide rounded-md">
-                  <Sparkles className="w-3.5 h-3.5 text-champagne-600" />
-                  Customizable with your logo
-                </span>
-              )}
-            </div>
-            <h1 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal-900 leading-tight">
+        {/* Product data: strictly name, description, packaging, variants */}
+        <div className="space-y-6">
+          <div className="space-y-2 border-b border-mist pb-6">
+            {product.category_name && (
+              <p className="text-xs text-slate">
+                {product.category_name}
+              </p>
+            )}
+            <h1 className="text-2xl sm:text-3xl font-semibold text-ink tracking-tight">
               {product.name}
             </h1>
             {product.pack_size && (
-              <p className="text-xs text-charcoal-800 mt-2 font-medium">
-                Standard Packaging: <span className="text-charcoal-900 font-semibold">{product.pack_size}</span>
+              <p className="text-sm text-slate">
+                Packaging: <span className="text-ink font-medium">{product.pack_size}</span>
               </p>
             )}
           </div>
 
-          <p className="text-sm text-charcoal-800 leading-relaxed">
-            {product.description}
-          </p>
-
-          {/* Trade confidentiality note (STRICT NO PRICING RULE) */}
-          <div className="p-4 rounded-xl bg-cream-50 border border-cream-300 text-xs text-charcoal-800 flex items-start gap-3">
-            <ShieldCheck className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="font-semibold text-charcoal-900">Protected B2B Trade Pricing</p>
-              <p className="text-charcoal-800 mt-0.5">
-                Public prices are not shown. Tailored quotations with tiered volume discounts will be prepared when you submit your requirements via WhatsApp.
-              </p>
+          {product.description && (
+            <div className="prose text-sm text-slate leading-relaxed border-b border-mist pb-6">
+              <p>{product.description}</p>
             </div>
-          </div>
+          )}
 
-          {/* Variant Selector */}
+          {/* Variants from database */}
           {variants.length > 0 && (
-            <div>
-              <label className="block text-xs font-semibold text-charcoal-800 uppercase tracking-wider mb-2">
-                Available Packaging &amp; Bottle Formats:
+            <div className="space-y-2">
+              <label className="block text-xs font-medium text-slate">
+                Variant
               </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div className="flex flex-wrap gap-2">
                 {variants.map((v) => (
                   <button
                     key={v}
                     type="button"
                     onClick={() => setSelectedVariant(v)}
-                    className={`px-4 py-3 text-left rounded-xl text-xs font-semibold border transition-all ${
+                    className={`px-3 py-1.5 rounded text-xs font-medium border transition-colors ${
                       selectedVariant === v
-                        ? 'border-charcoal-900 bg-charcoal-900 text-white shadow-sm'
-                        : 'border-cream-300 bg-white text-charcoal-800 hover:border-charcoal-400'
+                        ? 'border-ink bg-ink text-white'
+                        : 'border-mist bg-white text-ink hover:border-slate'
                     }`}
                   >
                     {v}
@@ -208,17 +200,17 @@ export const ProductDetailPage: React.FC = () => {
             </div>
           )}
 
-          {/* Quantity Controls */}
-          <div>
-            <label className="block text-xs font-semibold text-charcoal-800 uppercase tracking-wider mb-2">
-              Units Required:
+          {/* Quantity selector */}
+          <div className="space-y-2">
+            <label className="block text-xs font-medium text-slate">
+              Quantity
             </label>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center border border-cream-300 rounded-xl bg-white overflow-hidden shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center border border-mist rounded bg-white">
                 <button
                   type="button"
                   onClick={() => setQuantity(Math.max(10, quantity - 50))}
-                  className="px-4 py-3 text-sm font-bold text-charcoal-800 hover:bg-cream-100"
+                  className="px-3 py-1.5 text-sm text-slate hover:text-ink font-medium"
                 >
                   -
                 </button>
@@ -227,76 +219,53 @@ export const ProductDetailPage: React.FC = () => {
                   min="1"
                   value={quantity}
                   onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                  className="w-20 text-center text-sm font-semibold py-3 focus:outline-none"
+                  className="w-16 text-center text-sm font-medium py-1.5 border-x border-mist focus:outline-none"
                 />
                 <button
                   type="button"
                   onClick={() => setQuantity(quantity + 50)}
-                  className="px-4 py-3 text-sm font-bold text-charcoal-800 hover:bg-cream-100"
+                  className="px-3 py-1.5 text-sm text-slate hover:text-ink font-medium"
                 >
                   +
                 </button>
               </div>
-
-              {/* Quick increment buttons */}
-              <div className="flex items-center gap-2">
-                {[100, 250, 500].map((quickQty) => (
+              <div className="flex items-center gap-1.5 text-xs">
+                {[100, 250, 500].map((q) => (
                   <button
-                    key={quickQty}
+                    key={q}
                     type="button"
-                    onClick={() => setQuantity(quickQty)}
-                    className="px-3 py-2 text-xs font-semibold rounded-lg bg-cream-100 hover:bg-cream-200 text-charcoal-800 border border-cream-300"
+                    onClick={() => setQuantity(q)}
+                    className="px-2.5 py-1 rounded border border-mist bg-porcelain text-slate hover:text-ink hover:border-slate"
                   >
-                    {quickQty} units
+                    {q}
                   </button>
                 ))}
               </div>
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="pt-4 border-t border-cream-200 flex flex-col sm:flex-row gap-4">
+          {/* Add to requirements action */}
+          <div className="pt-4 border-t border-mist flex flex-col sm:flex-row gap-3">
             <button
+              type="button"
               onClick={handleAdd}
-              className="flex-1 py-4 px-6 bg-charcoal-900 hover:bg-charcoal-800 text-white font-semibold rounded-xl text-sm transition-all shadow-luxury hover:shadow-luxury-hover flex items-center justify-center gap-2.5"
+              className="flex-1 py-3 px-5 bg-ink hover:bg-slate text-white text-sm font-medium rounded transition-colors"
             >
-              <Layers className="w-4 h-4 text-champagne-400" />
-              <span>Add to Requirements Cart</span>
+              Add to requirements
             </button>
             <button
+              type="button"
               onClick={() => {
                 handleAdd();
                 navigate('/cart');
               }}
-              className="py-4 px-6 bg-champagne-100 hover:bg-champagne-200 text-charcoal-900 font-semibold rounded-xl text-sm transition-all border border-champagne-300"
+              className="py-3 px-5 bg-white border border-mist hover:border-slate text-ink text-sm font-medium rounded transition-colors"
             >
-              View Cart &amp; Submit
+              View requirements
             </button>
           </div>
         </div>
       </div>
-
-      {/* Specifications Accordion / Table */}
-      {Object.keys(specs).length > 0 && (
-        <div className="bg-white rounded-2xl p-8 border border-cream-200 shadow-sm space-y-6">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-champagne-600" />
-            <h3 className="font-serif text-2xl font-bold text-charcoal-900">Hospitality Specifications</h3>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Object.entries(specs).map(([key, value]) => (
-              <div key={key} className="p-4 rounded-xl bg-cream-50 border border-cream-200">
-                <span className="text-[11px] uppercase tracking-wider text-charcoal-800 font-semibold block">
-                  {key.replace(/_/g, ' ')}
-                </span>
-                <span className="font-semibold text-charcoal-900 text-sm mt-0.5 block">
-                  {value}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };
