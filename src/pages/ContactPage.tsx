@@ -121,8 +121,8 @@ export const ContactPage: React.FC = () => {
                 </div>
                 <div>
                   <span className="text-xs font-bold text-charcoal-800 uppercase tracking-wider block">Official Procurement Email</span>
-                  <a href="mailto:orders@crystalclean.in" className="font-semibold text-charcoal-950 text-sm block mt-0.5 hover:underline">
-                    orders@crystalclean.in
+                  <a href="mailto:crystalclean457@gmail.com" className="font-semibold text-charcoal-950 text-sm block mt-0.5 hover:underline">
+                    crystalclean457@gmail.com
                   </a>
                   <span className="text-xs text-charcoal-800 block mt-0.5">Formal RFP, tenders &amp; invoice communications</span>
                 </div>
@@ -135,7 +135,7 @@ export const ContactPage: React.FC = () => {
                 <div>
                   <span className="text-xs font-bold text-charcoal-800 uppercase tracking-wider block">Distribution Hub</span>
                   <span className="font-semibold text-charcoal-950 text-sm block mt-0.5">
-                    Sector 18, Gurugram &amp; New Delhi, India
+                    Hospitality Supply Center, Odisha (Orissa), India
                   </span>
                   <span className="text-xs text-charcoal-800 block mt-0.5">
                     Express freight delivery to hotels nationwide

@@ -97,7 +97,7 @@ export const Footer: React.FC = () => {
             <ul className="space-y-3 text-xs text-cream-300/80">
               <li className="flex items-start gap-2.5">
                 <MapPin className="w-4 h-4 text-champagne-500 flex-shrink-0 mt-0.5" />
-                <span>Hospitality Supply Center, Sector 18, Gurugram &amp; New Delhi, India</span>
+                <span>Hospitality Supply Center, Odisha (Orissa), India</span>
               </li>
               <li className="flex items-center gap-2.5">
                 <Send className="w-4 h-4 text-champagne-400 flex-shrink-0" />
@@ -105,7 +105,11 @@ export const Footer: React.FC = () => {
               </li>
               <li className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-champagne-500 flex-shrink-0" />
-                <a href="mailto:orders@crystalclean.in" className="hover:text-white">orders@crystalclean.in</a>
+                <a href="mailto:crystalclean457@gmail.com" className="hover:text-white">crystalclean457@gmail.com</a>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <MessageCircle className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                <a href="https://wa.me/919149953610" target="_blank" rel="noopener noreferrer" className="hover:text-white">WhatsApp +91 91499 53610</a>
               </li>
               <li className="pt-2">
                 <span className="inline-block bg-charcoal-900 border border-charcoal-800 text-[11px] text-cream-200 px-3 py-1.5 rounded-lg">

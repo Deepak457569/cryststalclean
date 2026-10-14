@@ -50,8 +50,8 @@ export const PrivacyPage: React.FC = () => {
           <h2 className="font-serif text-xl font-bold text-charcoal-900">6. Inquiries and Contact</h2>
           <p>
             For privacy inquiries or data update requests, please contact our administrative desk at{' '}
-            <a href="mailto:orders@crystalclean.in" className="text-champagne-700 underline font-semibold">
-              orders@crystalclean.in
+            <a href="mailto:crystalclean457@gmail.com" className="text-champagne-700 underline font-semibold">
+              crystalclean457@gmail.com
             </a>.
           </p>
         </section>

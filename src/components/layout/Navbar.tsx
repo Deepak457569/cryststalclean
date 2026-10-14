@@ -14,7 +14,7 @@ export const Navbar: React.FC = () => {
 
   const navLinks = [
     { label: 'Home', path: '/' },
-    { label: 'Product Catalog', path: '/products' },
+    { label: 'Catalog', path: '/products' },
     { label: 'Categories', path: '/categories' },
     { label: 'Bulk Quotation', path: '/quote' },
     { label: 'About', path: '/about' },
@@ -79,9 +79,9 @@ export const Navbar: React.FC = () => {
 
         {/* Main Navbar */}
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 sm:h-20">
-            {/* Brand Logo */}
-            <Link to="/" className="flex items-center gap-2 sm:gap-3.5 group min-w-0">
+          <div className="flex items-center justify-between h-16 sm:h-20 gap-4">
+            {/* Brand Logo - flex-shrink-0 and whitespace-nowrap ensures brand name NEVER truncates */}
+            <Link to="/" className="flex items-center gap-2.5 sm:gap-3.5 group flex-shrink-0">
               <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-full overflow-hidden bg-white flex items-center justify-center border border-cream-300 shadow-sm group-hover:scale-105 transition-transform p-0.5 flex-shrink-0">
                 <img
                   src="/logo.png"
@@ -89,23 +89,23 @@ export const Navbar: React.FC = () => {
                   className="w-full h-full object-contain"
                 />
               </div>
-              <div className="truncate">
-                <span className="font-serif text-base sm:text-xl lg:text-2xl font-bold tracking-widest text-charcoal-900 block leading-tight truncate">
+              <div className="whitespace-nowrap flex-shrink-0">
+                <span className="font-serif text-lg sm:text-xl lg:text-2xl font-bold tracking-wider text-charcoal-900 block leading-tight">
                   CRYSTSTALCLEAN
                 </span>
-                <span className="text-[8px] sm:text-[9px] lg:text-[10px] tracking-[0.2em] font-semibold text-champagne-600 block uppercase truncate">
+                <span className="text-[8px] sm:text-[9px] lg:text-[10px] tracking-[0.2em] font-semibold text-champagne-600 block uppercase">
                   Hotel Amenities &amp; Hospitality
                 </span>
               </div>
             </Link>
 
-            {/* Desktop Navigation Links */}
-            <nav className="hidden md:flex items-center space-x-1 lg:space-x-6">
+            {/* Desktop Navigation Links - hidden below lg to prevent cramping */}
+            <nav className="hidden lg:flex items-center space-x-1 xl:space-x-4 flex-shrink">
               {navLinks.map((link) => (
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`text-sm tracking-wide font-medium py-1.5 px-3 rounded-lg transition-colors ${
+                  className={`text-sm tracking-wide font-medium py-1.5 px-2.5 xl:px-3 rounded-lg transition-colors whitespace-nowrap ${
                     isActive(link.path)
                       ? 'text-charcoal-950 font-semibold bg-champagne-100/70'
                       : 'text-charcoal-800 hover:text-charcoal-950 hover:bg-cream-100'
@@ -117,13 +117,13 @@ export const Navbar: React.FC = () => {
             </nav>
 
             {/* Right Action Buttons */}
-            <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
+            <div className="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0">
               {/* Access Code Indicator */}
               <button
                 type="button"
                 onClick={() => setCodeModalOpen(true)}
                 title="Customer Access Code Status"
-                className="hidden lg:flex items-center gap-1.5 px-3 py-2 text-xs font-semibold tracking-wider text-charcoal-800 bg-cream-100 hover:bg-champagne-100 rounded-lg border border-cream-200 transition-colors"
+                className="hidden xl:flex items-center gap-1.5 px-3 py-2 text-xs font-semibold tracking-wider text-charcoal-800 bg-cream-100 hover:bg-champagne-100 rounded-lg border border-cream-200 transition-colors whitespace-nowrap"
               >
                 <Key className="w-3.5 h-3.5 text-champagne-600" />
                 <span>Access Code</span>
@@ -132,10 +132,10 @@ export const Navbar: React.FC = () => {
               {/* Requirements Cart CTA */}
               <Link
                 to="/cart"
-                className="relative inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-charcoal-900 hover:bg-charcoal-800 text-white rounded-xl text-xs sm:text-sm font-medium transition-all shadow-sm active:scale-95"
+                className="relative inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-charcoal-900 hover:bg-charcoal-800 text-white rounded-xl text-xs sm:text-sm font-medium transition-all shadow-sm active:scale-95 whitespace-nowrap"
                 aria-label="Requirements Cart"
               >
-                <ShoppingBag className="w-4 h-4 text-champagne-300" />
+                <ShoppingBag className="w-4 h-4 text-champagne-300 flex-shrink-0" />
                 <span className="hidden sm:inline">Requirements</span>
                 {itemCount > 0 && (
                   <span className="inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] sm:text-xs font-bold leading-none text-charcoal-950 bg-champagne-300 rounded-full">
@@ -148,17 +148,17 @@ export const Navbar: React.FC = () => {
               <Link
                 to="/admin"
                 title="Authorized Admin Portal"
-                className="p-2 sm:p-2.5 text-charcoal-800 hover:text-charcoal-950 hover:bg-cream-100 rounded-xl transition-colors border border-cream-200 active:scale-95"
+                className="p-2 sm:p-2.5 text-charcoal-800 hover:text-charcoal-950 hover:bg-cream-100 rounded-xl transition-colors border border-cream-200 active:scale-95 flex-shrink-0"
                 aria-label="Admin Portal"
               >
                 <Shield className="w-4 h-4" />
               </Link>
 
-              {/* Mobile Menu Button */}
+              {/* Mobile / Tablet Menu Button - visible below lg */}
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden p-2 text-charcoal-900 hover:bg-cream-100 rounded-lg active:scale-95 transition-colors"
+                className="lg:hidden p-2 text-charcoal-900 hover:bg-cream-100 rounded-lg active:scale-95 transition-colors flex-shrink-0"
                 aria-label="Toggle Navigation Menu"
               >
                 {mobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
@@ -167,9 +167,9 @@ export const Navbar: React.FC = () => {
           </div>
         </div>
 
-        {/* Mobile Navigation Drawer */}
+        {/* Mobile / Tablet Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-white border-b border-cream-300 px-4 pt-3 pb-6 space-y-2 animate-fade-in shadow-xl">
+          <div className="lg:hidden bg-white border-b border-cream-300 px-4 pt-3 pb-6 space-y-2 animate-fade-in shadow-xl">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
