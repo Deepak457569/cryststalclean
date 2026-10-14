@@ -472,7 +472,9 @@ test('Task 2: Google OAuth rejects state mismatch', async () => {
   const env = {
     GOOGLE_CLIENT_ID: '450276115943-0269d1np0jjvk0avev7hagdik4s309jh.apps.googleusercontent.com',
     GOOGLE_CLIENT_SECRET: 'test-secret',
+    JWT_SECRET: 'mock_jwt_secret_for_tests',
     ADMIN_EMAILS: 'admin@crystalclean.in',
+    APP_BASE_URL: 'https://crystalclean.in',
   };
 
   // State cookie is 'legitimate_state_123', but query param is 'forged_state_attack'
@@ -633,5 +635,385 @@ test('Task 9: Security headers (CSP, HSTS, X-Content-Type-Options, etc.) are pre
   assert.strictEqual(res.headers.get('Referrer-Policy'), 'strict-origin-when-cross-origin');
   assert.strictEqual(res.headers.get('Permissions-Policy'), 'camera=(), microphone=(), geolocation=()');
 });
+
+// Test 17: Draft products are strictly protected (Task 2)
+test('Task 2: Unauthenticated requests cannot access draft products or preview drafts', async () => {
+  const workerModule = await import('./worker.bundle.mjs');
+  const worker = workerModule.default;
+
+  const mockDb = {
+    prepare(sql) {
+      const stmt = {
+        bind(...args) {
+          return {
+            async first() {
+              if (sql.includes('AND p.is_active = 1')) {
+                return null; // active-only filter blocks drafts
+              }
+              return { id: 'prod_draft_1', name: 'Draft Luxury Amenity', is_active: 0 };
+            },
+            async all() { return { results: [] }; },
+            async run() { return { success: true }; },
+          };
+        },
+        async first() { return null; },
+        async all() { return { results: [] }; },
+        async run() { return { success: true }; },
+      };
+      return stmt;
+    }
+  };
+
+  const env = {
+    DB: mockDb,
+    JWT_SECRET: 'test_sec_123456789012345678901234567890',
+  };
+
+  // 1. ?preview=drafts without session returns 401
+  const previewReq = new Request('https://crystalclean.in/api/products?preview=drafts');
+  const previewRes = await worker.fetch(previewReq, env, {});
+  assert.strictEqual(previewRes.status, 401, '?preview=drafts without session must return 401');
+
+  // 2. ?active_only=0 without session returns 401
+  const active0Req = new Request('https://crystalclean.in/api/products?active_only=0');
+  const active0Res = await worker.fetch(active0Req, env, {});
+  assert.strictEqual(active0Res.status, 401, '?active_only=0 without session must return 401');
+
+  // 3. /api/products/:id for draft product without session returns 404
+  const draftIdReq = new Request('https://crystalclean.in/api/products/prod_draft_1');
+  const draftIdRes = await worker.fetch(draftIdReq, env, {});
+  assert.strictEqual(draftIdRes.status, 404, 'Draft product by ID without session must return 404');
+});
+
+// Test 18: Turnstile end to end verification (Task 3)
+test('Task 3: Inquiry without Turnstile token or with failed verification is rejected', async () => {
+  const workerModule = await import('./worker.bundle.mjs');
+  const worker = workerModule.default;
+
+  const env = {
+    TURNSTILE_SECRET: '0x4AAAAAAABBBBBBBCCCCCCCCDDDDDDD',
+    DB: {
+      prepare() {
+        const stmt = {
+          bind() { return stmt; },
+          async first() { return { valid: true }; },
+          async all() { return { results: [] }; },
+          async run() { return { success: true }; },
+        };
+        return stmt;
+      }
+    }
+  };
+
+  // 1. Missing turnstile_token when TURNSTILE_SECRET is set -> 400
+  const missingTokenReq = new Request('https://crystalclean.in/api/inquiries', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      customer_name: 'Test Customer',
+      company_name: 'Test Hotel',
+      contact_phone: '+91 9999999999',
+      delivery_city: 'Mumbai',
+      items: [{ product_name_snapshot: 'Soap', quantity: 100 }],
+    }),
+  });
+  const missingRes = await worker.fetch(missingTokenReq, env, {});
+  assert.strictEqual(missingRes.status, 400, 'Inquiry without Turnstile token must return 400');
+  const missingData = await missingRes.json();
+  assert.match(missingData.error, /Turnstile.*required/i);
+
+  // 2. Failed turnstile verification -> 400
+  const invalidTokenReq = new Request('https://crystalclean.in/api/inquiries', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      customer_name: 'Test Customer',
+      company_name: 'Test Hotel',
+      contact_phone: '+91 9999999999',
+      delivery_city: 'Mumbai',
+      turnstile_token: 'invalid_token_xyz',
+      items: [{ product_name_snapshot: 'Soap', quantity: 100 }],
+    }),
+  });
+  const invalidRes = await worker.fetch(invalidTokenReq, env, {});
+  assert.strictEqual(invalidRes.status, 400, 'Inquiry with invalid Turnstile token must return 400');
+});
+
+// Test 19: Admin allowlist fail-closed validation (Task 4)
+test('Task 4: Admin allowlist fails closed when ADMIN_EMAILS is missing or empty', async () => {
+  const { isEmailAllowed } = await import('./worker.bundle.mjs');
+
+  // Missing or empty env.ADMIN_EMAILS must deny all
+  assert.strictEqual(isEmailAllowed('admin@crystalclean.in', {}), false, 'Empty env must deny');
+  assert.strictEqual(isEmailAllowed('admin@crystalclean.in', { ADMIN_EMAILS: '' }), false, 'Empty string must deny');
+  assert.strictEqual(isEmailAllowed('admin@crystalclean.in', { ADMIN_EMAILS: '   ,  , ' }), false, 'Whitespace/commas must deny');
+
+  // Valid non-empty ADMIN_EMAILS trims and normalizes
+  const validEnv = { ADMIN_EMAILS: '  Owner@CrystalClean.in , Admin@Hotel.com ' };
+  assert.strictEqual(isEmailAllowed('owner@crystalclean.in', validEnv), true);
+  assert.strictEqual(isEmailAllowed('OWNER@CRYSTALCLEAN.IN', validEnv), true);
+  assert.strictEqual(isEmailAllowed('admin@hotel.com', validEnv), true);
+  assert.strictEqual(isEmailAllowed('hacker@hotel.com', validEnv), false);
+});
+
+// Test 20: Session invalidation upon logout (Task 7)
+test('Task 7: Revoking session / logout invalidates the JWT on subsequent requests', async () => {
+  const workerModule = await import('./worker.bundle.mjs');
+  const worker = workerModule.default;
+
+  const secret = 'test_hardened_secret_min_64_chars_length_1234567890_abcdefghij_klmnopqrstuvwxyz';
+  const sessionId = 'session_test_abc123';
+
+  // Create JWT with specific jti
+  const enc = new TextEncoder();
+  const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
+  const payload = Buffer.from(
+    JSON.stringify({
+      id: 'admin_test_1',
+      email: 'admin@crystalclean.in',
+      jti: sessionId,
+      role: 'admin',
+      iat: Math.floor(Date.now() / 1000),
+      exp: Math.floor(Date.now() / 1000) + 3600,
+    })
+  ).toString('base64url');
+  const data = `${header}.${payload}`;
+  const key = await crypto.subtle.importKey('raw', enc.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const sig = Buffer.from(await crypto.subtle.sign('HMAC', key, enc.encode(data))).toString('base64url');
+  const token = `${data}.${sig}`;
+
+  // In-memory session state
+  let isRevoked = 0;
+  const mockDb = {
+    prepare(sql) {
+      const stmt = {
+        bind(...args) {
+          return {
+            async first() {
+              if (sql.includes('SELECT revoked, expires_at FROM sessions')) {
+                return { revoked: isRevoked, expires_at: new Date(Date.now() + 3600000).toISOString() };
+              }
+              if (sql.includes('SELECT * FROM administrators')) {
+                return { id: 'admin_test_1', email: 'admin@crystalclean.in', role: 'admin' };
+              }
+              if (sql.includes('COUNT(*)')) {
+                return { c: 5 };
+              }
+              return null;
+            },
+            async run() {
+              if (sql.includes('UPDATE sessions SET revoked = 1')) {
+                isRevoked = 1;
+              }
+              return { success: true };
+            },
+            async all() { return { results: [] }; },
+          };
+        },
+        async first() {
+          if (sql.includes('COUNT(*)')) return { c: 5 };
+          return null;
+        },
+        async run() {
+          if (sql.includes('UPDATE sessions SET revoked = 1')) {
+            isRevoked = 1;
+          }
+          return { success: true };
+        },
+        async all() { return { results: [] }; },
+      };
+      return stmt;
+    }
+  };
+
+  const env = {
+    JWT_SECRET: secret,
+    ADMIN_EMAILS: 'admin@crystalclean.in',
+    DB: mockDb,
+    APP_BASE_URL: 'https://crystalclean.in',
+  };
+
+  // 1. Initial request with valid session token succeeds
+  const initialReq = new Request('https://crystalclean.in/api/admin/stats', {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  const initialRes = await worker.fetch(initialReq, env, {});
+  assert.strictEqual(initialRes.status, 200, 'Active session must be allowed');
+
+  // 2. Perform logout (revokes session in DB)
+  const logoutReq = new Request('https://crystalclean.in/api/auth/logout', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  const logoutRes = await worker.fetch(logoutReq, env, {});
+  assert.strictEqual(logoutRes.status, 200, 'Logout must succeed');
+
+  // 3. Subsequent request with the SAME token/cookie must return 401 Unauthorized
+  const subsequentReq = new Request('https://crystalclean.in/api/admin/stats', {
+    headers: { 'Cookie': `cc_admin_session=${token}` }
+  });
+  const subsequentRes = await worker.fetch(subsequentReq, env, {});
+  assert.strictEqual(subsequentRes.status, 401, 'Revoked session JWT must be rejected with 401');
+});
+
+// Test 21: Missing GOOGLE_CLIENT_ID returns generic error and logs variable name only
+test('Task 3: Missing GOOGLE_CLIENT_ID returns generic error and logs variable name only', async () => {
+  const workerModule = await import('./worker.bundle.mjs');
+  const worker = workerModule.default;
+
+  // Intercept console.error to verify safe diagnostic logging
+  const loggedErrors = [];
+  const originalConsoleError = console.error;
+  console.error = (...args) => {
+    loggedErrors.push(args.join(' '));
+  };
+
+  try {
+    const envMissingClientId = {
+      APP_BASE_URL: 'https://crystalclean.in',
+      GOOGLE_CLIENT_SECRET: 'test-secret',
+      JWT_SECRET: 'test-jwt-secret',
+      ADMIN_EMAILS: 'admin@crystalclean.in',
+      // GOOGLE_CLIENT_ID is missing
+    };
+
+    const req = new Request('https://crystalclean.in/api/auth/google');
+    const res = await worker.fetch(req, envMissingClientId, {});
+
+    // Must return HTTP 500 with generic public message
+    assert.strictEqual(res.status, 500);
+    const body = await res.json();
+    assert.strictEqual(body.error, 'Google sign-in is not available.', 'Public response must be generic');
+
+    // Verify console.error logged the NAME of the missing variable
+    const hasLoggedName = loggedErrors.some(msg => msg.includes('GOOGLE_CLIENT_ID'));
+    assert.ok(hasLoggedName, 'console.error must log the name of the missing variable');
+
+    // Verify NO secret values leaked in console.error
+    const hasLeakedSecret = loggedErrors.some(msg => msg.includes('test-secret') || msg.includes('test-jwt-secret'));
+    assert.strictEqual(hasLeakedSecret, false, 'console.error must never print secret values');
+  } finally {
+    console.error = originalConsoleError;
+  }
+});
+
+// Test 22: Redirect URI is built strictly from APP_BASE_URL
+test('Task 5: Redirect URI is built strictly from APP_BASE_URL + /api/auth/google/callback', async () => {
+  const workerModule = await import('./worker.bundle.mjs');
+  const worker = workerModule.default;
+
+  const env = {
+    GOOGLE_CLIENT_ID: '450276115943-0269d1np0jjvk0avev7hagdik4s309jh.apps.googleusercontent.com',
+    GOOGLE_CLIENT_SECRET: 'test-secret',
+    JWT_SECRET: 'test-jwt-secret-64-bytes-long-super-secure-key-1234567890',
+    ADMIN_EMAILS: 'admin@crystalclean.in',
+    APP_BASE_URL: 'https://cryststalclean.crystalclean457-a60.workers.dev',
+  };
+
+  const req = new Request('https://crystalclean.in/api/auth/google', {
+    headers: { 'Host': 'crystalclean.in' },
+  });
+  const res = await worker.fetch(req, env, {});
+
+  assert.strictEqual(res.status, 302);
+  const location = res.headers.get('Location');
+  assert.ok(location);
+  const targetUrl = new URL(location);
+
+  const redirectUriParam = targetUrl.searchParams.get('redirect_uri');
+  assert.strictEqual(
+    redirectUriParam,
+    'https://cryststalclean.crystalclean457-a60.workers.dev/api/auth/google/callback',
+    'redirect_uri must be built strictly from APP_BASE_URL, never from request Host'
+  );
+});
+
+// Test 23: Login button route matches real route (/api/auth/google)
+test('Task 1: Login button route /api/auth/google is handled by worker and dev server', async () => {
+  const workerModule = await import('./worker.bundle.mjs');
+  const worker = workerModule.default;
+
+  const env = {
+    GOOGLE_CLIENT_ID: '450276115943-0269d1np0jjvk0avev7hagdik4s309jh.apps.googleusercontent.com',
+    GOOGLE_CLIENT_SECRET: 'test-secret',
+    JWT_SECRET: 'test-jwt-secret-64-bytes-long-super-secure-key-1234567890',
+    ADMIN_EMAILS: 'admin@crystalclean.in',
+    APP_BASE_URL: 'https://crystalclean.in',
+  };
+
+  // Primary route
+  const res = await worker.fetch(new Request('https://crystalclean.in/api/auth/google'), env, {});
+  assert.strictEqual(res.status, 302);
+  assert.ok(res.headers.get('Location').startsWith('https://accounts.google.com/o/oauth2/v2/auth'));
+
+  // Alias route /api/auth/google/url
+  const aliasRes = await worker.fetch(new Request('https://crystalclean.in/api/auth/google/url'), env, {});
+  assert.strictEqual(aliasRes.status, 302);
+  assert.ok(aliasRes.headers.get('Location').startsWith('https://accounts.google.com/o/oauth2/v2/auth'));
+});
+
+// Test 24: Startup config-check route returns 401 without session and booleans only when authenticated
+test('Task 4: GET /api/admin/config-check returns 401 without session and booleans only when authenticated', async () => {
+  const workerModule = await import('./worker.bundle.mjs');
+  const worker = workerModule.default;
+
+  const secret = 'test_hardened_secret_min_64_chars_length_1234567890_abcdefghij_klmnopqrstuvwxyz';
+  const token = await generateTestAdminJwt('admin@crystalclean.in', secret);
+
+  const env = {
+    GOOGLE_CLIENT_ID: '450276115943-0269d1np0jjvk0avev7hagdik4s309jh.apps.googleusercontent.com',
+    GOOGLE_CLIENT_SECRET: 'secret-google-secret',
+    APP_BASE_URL: 'https://crystalclean.in',
+    JWT_SECRET: secret,
+    ADMIN_EMAILS: 'admin@crystalclean.in',
+    TURNSTILE_SECRET: 'turnstile-secret-test',
+    DB: {
+      prepare() {
+        const stmt = {
+          bind() { return stmt; },
+          async first() { return { revoked: 0, expires_at: new Date(Date.now() + 3600000).toISOString() }; },
+          async run() { return { success: true }; },
+          async all() { return { results: [] }; },
+        };
+        return stmt;
+      }
+    }
+  };
+
+  // 1. Unauthenticated request must return 401
+  const unauthRes = await worker.fetch(new Request('https://crystalclean.in/api/admin/config-check'), env, {});
+  assert.strictEqual(unauthRes.status, 401, 'Must return 401 without valid session');
+
+  // 2. Authenticated request returns 200 with booleans ONLY
+  const authReq = new Request('https://crystalclean.in/api/admin/config-check', {
+    headers: { 'Authorization': `Bearer ${token}` },
+  });
+  const authRes = await worker.fetch(authReq, env, {});
+  assert.strictEqual(authRes.status, 200);
+
+  const body = await authRes.json();
+  assert.strictEqual(body.success, true);
+  assert.ok(body.config, 'config object must be present');
+
+  // Verify all keys are strictly boolean, never secret strings
+  for (const [key, val] of Object.entries(body.config)) {
+    assert.strictEqual(typeof val, 'boolean', `Config check key [${key}] must be boolean. Got ${typeof val}`);
+  }
+
+  assert.strictEqual(body.config.GOOGLE_CLIENT_ID, true);
+  assert.strictEqual(body.config.GOOGLE_CLIENT_SECRET, true);
+  assert.strictEqual(body.config.APP_BASE_URL, true);
+  assert.strictEqual(body.config.JWT_SECRET, true);
+  assert.strictEqual(body.config.ADMIN_EMAILS, true);
+  assert.strictEqual(body.config.TURNSTILE_SECRET, true);
+  assert.strictEqual(body.config.DB, true);
+
+  // Assert NO secret values appear in the raw JSON response text
+  const rawText = JSON.stringify(body);
+  assert.strictEqual(rawText.includes('secret-google-secret'), false);
+  assert.strictEqual(rawText.includes(secret), false);
+  assert.strictEqual(rawText.includes('turnstile-secret-test'), false);
+});
+
 
 

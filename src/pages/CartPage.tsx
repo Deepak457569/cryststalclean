@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { AccessCodeModal } from '../components/common/AccessCodeModal';
+import { TurnstileWidget } from '../components/TurnstileWidget';
 
 export const CartPage: React.FC = () => {
   const { items, updateQuantity, removeFromCart, clearCart, itemCount } = useCart();
@@ -20,6 +21,7 @@ export const CartPage: React.FC = () => {
   const [expectedDate, setExpectedDate] = useState('');
   const [notes, setNotes] = useState('');
   const [accessCode, setAccessCode] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState('');
 
   // Access code live checking state
   const [checkingCode, setCheckingCode] = useState(false);
@@ -76,6 +78,12 @@ export const CartPage: React.FC = () => {
       return;
     }
 
+    const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
+    if (siteKey && !turnstileToken) {
+      setErrorMsg('Please complete the security verification challenge before submitting.');
+      return;
+    }
+
     setSubmitting(true);
 
     try {
@@ -89,6 +97,7 @@ export const CartPage: React.FC = () => {
         delivery_city: deliveryCity.trim(),
         expected_date: expectedDate || undefined,
         notes: notes.trim() || undefined,
+        turnstile_token: turnstileToken || undefined,
         items: items.map((i) => ({
           product_id: i.productId,
           product_name: i.productName,
@@ -451,6 +460,16 @@ export const CartPage: React.FC = () => {
                 </div>
               )}
             </div>
+
+            {/* Cloudflare Turnstile Human Verification */}
+            <TurnstileWidget
+              onVerify={(token) => {
+                setTurnstileToken(token);
+                setErrorMsg(null);
+              }}
+              onExpire={() => setTurnstileToken('')}
+              onError={(err) => setErrorMsg(err)}
+            />
 
             {/* Submission CTA with WhatsApp Handoff */}
             <div className="pt-2">

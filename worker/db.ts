@@ -166,13 +166,17 @@ export async function getProducts(
   return result.results || [];
 }
 
-export async function getProductById(db: D1Database, id: string): Promise<Product | null> {
-  const result = await db.prepare(`
+export async function getProductById(db: D1Database, id: string, activeOnly = false): Promise<Product | null> {
+  let query = `
     SELECT p.*, c.name as category_name
     FROM products p
     LEFT JOIN categories c ON p.category_id = c.id
-    WHERE p.id = ? OR p.slug = ?
-  `).bind(id, id).first<Product>();
+    WHERE (p.id = ? OR p.slug = ?)
+  `;
+  if (activeOnly) {
+    query += ' AND p.is_active = 1';
+  }
+  const result = await db.prepare(query).bind(id, id).first<Product>();
   return result || null;
 }
 

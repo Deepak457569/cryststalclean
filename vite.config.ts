@@ -654,10 +654,11 @@ function devApiPlugin(): Plugin {
 
         // --- AUTH ---
         // --- AUTH (Google-only) ---
-        if (pathname === '/api/auth/google/url' && method === 'GET') {
-          return json({
-            url: '/api/auth/google/callback?code=mock_code_dev&state=mock_state'
-          });
+        if (pathname === '/api/auth/google' && method === 'GET') {
+          res.statusCode = 302;
+          res.setHeader('Location', '/api/auth/google/callback?code=mock_code_dev&state=mock_state');
+          res.end();
+          return;
         }
         if (pathname === '/api/auth/google/callback' && method === 'GET') {
           const token = 'dev_mock_token_' + Date.now();

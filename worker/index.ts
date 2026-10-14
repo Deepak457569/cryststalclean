@@ -40,7 +40,7 @@ import { generateWhatsAppLink } from './whatsapp';
 
 // Security Headers applied to EVERY response (API and static assets)
 const SECURITY_HEADERS: Record<string, string> = {
-  'Content-Security-Policy': "default-src 'self'; img-src 'self' data: https:; script-src 'self' https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
+  'Content-Security-Policy': "default-src 'self'; img-src 'self' data:; script-src 'self' https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
   'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
   'X-Content-Type-Options': 'nosniff',
   'X-Frame-Options': 'DENY',
@@ -154,8 +154,8 @@ export default {
       try {
         // --- AUTHENTICATION ENDPOINTS (GOOGLE-ONLY) ---
 
-        // GET /api/auth/google (Initiates Google OAuth with secure State cookie)
-        if (url.pathname === '/api/auth/google' && request.method === 'GET') {
+        // GET /api/auth/google (Initiates Google OAuth with secure State cookie; alias: /api/auth/google/url)
+        if ((url.pathname === '/api/auth/google' || url.pathname === '/api/auth/google/url') && request.method === 'GET') {
           // D1 Rate limiting: Google login start max 10/min
           if (env.DB) {
             const limit = await checkD1RateLimit(env.DB, `google_auth:${clientIp}`, 10, 60);
@@ -166,14 +166,23 @@ export default {
             }
           }
 
-          const clientId = env.GOOGLE_CLIENT_ID;
-          if (!clientId) {
-            return errorResponse('Google OAuth is not configured on this server.', 500);
+          // Strict configuration check for Google OAuth initiation (fail-closed)
+          const missingVars: string[] = [];
+          if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_ID.trim()) missingVars.push('GOOGLE_CLIENT_ID');
+          if (!env.APP_BASE_URL || !env.APP_BASE_URL.trim()) missingVars.push('APP_BASE_URL');
+          if (!env.GOOGLE_CLIENT_SECRET || !env.GOOGLE_CLIENT_SECRET.trim()) missingVars.push('GOOGLE_CLIENT_SECRET');
+          if (!env.JWT_SECRET || !env.JWT_SECRET.trim()) missingVars.push('JWT_SECRET');
+          if (!env.ADMIN_EMAILS || !env.ADMIN_EMAILS.trim()) missingVars.push('ADMIN_EMAILS');
+
+          if (missingVars.length > 0) {
+            console.error(`[Google OAuth Configuration Error] Missing required environment variables: ${missingVars.join(', ')}`);
+            return errorResponse('Google sign-in is not available.', 500);
           }
 
+          const clientId = env.GOOGLE_CLIENT_ID!.trim();
           const state = crypto.randomUUID();
-          // Use canonical redirect URI built from config value, never from request Host header alone
-          const baseUrl = env.APP_BASE_URL ? env.APP_BASE_URL.replace(/\/+$/, '') : url.origin;
+          // Use canonical redirect URI built strictly from APP_BASE_URL config
+          const baseUrl = env.APP_BASE_URL!.trim().replace(/\/+$/, '');
           const redirectUri = `${baseUrl}/api/auth/google/callback`;
 
           const googleAuthUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
@@ -200,7 +209,33 @@ export default {
 
         // GET /api/auth/google/callback (Google OAuth Callback & Strict Security Verification)
         if (url.pathname === '/api/auth/google/callback' && request.method === 'GET') {
-          const baseUrl = env.APP_BASE_URL ? env.APP_BASE_URL.replace(/\/+$/, '') : url.origin;
+          const isSecure = env.ENVIRONMENT === 'production' || request.url.startsWith('https://');
+          const clearStateCookie = `cc_oauth_state=; HttpOnly; SameSite=Lax; Path=/api/auth/google/callback; Max-Age=0${isSecure ? '; Secure' : ''}`;
+
+          const missingCallbackVars: string[] = [];
+          if (!env.APP_BASE_URL || !env.APP_BASE_URL.trim()) missingCallbackVars.push('APP_BASE_URL');
+          if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_ID.trim()) missingCallbackVars.push('GOOGLE_CLIENT_ID');
+          if (!env.GOOGLE_CLIENT_SECRET || !env.GOOGLE_CLIENT_SECRET.trim()) missingCallbackVars.push('GOOGLE_CLIENT_SECRET');
+          if (!env.JWT_SECRET || !env.JWT_SECRET.trim()) missingCallbackVars.push('JWT_SECRET');
+          if (!env.ADMIN_EMAILS || !env.ADMIN_EMAILS.trim()) missingCallbackVars.push('ADMIN_EMAILS');
+
+          if (missingCallbackVars.length > 0) {
+            console.error(`[Google OAuth Callback Error] Missing required environment variables: ${missingCallbackVars.join(', ')}`);
+            const baseUrl = env.APP_BASE_URL ? env.APP_BASE_URL.trim().replace(/\/+$/, '') : '';
+            if (baseUrl) {
+              return new Response(null, {
+                status: 302,
+                headers: {
+                  Location: `${baseUrl}/admin/login?error=oauth_not_configured`,
+                  'Set-Cookie': clearStateCookie,
+                  ...SECURITY_HEADERS,
+                },
+              });
+            }
+            return errorResponse('Google sign-in is not available.', 500);
+          }
+
+          const baseUrl = env.APP_BASE_URL!.trim().replace(/\/+$/, '');
           const code = url.searchParams.get('code');
           const error = url.searchParams.get('error');
           const returnedState = url.searchParams.get('state') || '';
@@ -208,8 +243,6 @@ export default {
           // Validate CSRF state parameter against cookie using constant-time comparison
           const cookieHeader = request.headers.get('Cookie') || '';
           const expectedState = cookieHeader.match(/cc_oauth_state=([^;]+)/)?.[1] || '';
-          const isSecure = env.ENVIRONMENT === 'production' || request.url.startsWith('https://');
-          const clearStateCookie = `cc_oauth_state=; HttpOnly; SameSite=Lax; Path=/api/auth/google/callback; Max-Age=0${isSecure ? '; Secure' : ''}`;
 
           if (!returnedState || !expectedState || !constantTimeEqual(returnedState, expectedState)) {
             return new Response(null, {
@@ -233,20 +266,9 @@ export default {
             });
           }
 
-          const clientId = env.GOOGLE_CLIENT_ID;
-          const clientSecret = env.GOOGLE_CLIENT_SECRET;
+          const clientId = env.GOOGLE_CLIENT_ID!.trim();
+          const clientSecret = env.GOOGLE_CLIENT_SECRET!.trim();
           const redirectUri = `${baseUrl}/api/auth/google/callback`;
-
-          if (!clientId || !clientSecret) {
-            return new Response(null, {
-              status: 302,
-              headers: {
-                Location: `${baseUrl}/admin/login?error=oauth_not_configured`,
-                'Set-Cookie': clearStateCookie,
-                ...SECURITY_HEADERS,
-              },
-            });
-          }
 
           // Exchange authorization code for tokens
           const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
@@ -340,7 +362,7 @@ export default {
 
           // Issue session JWT pinned to HS256, 8-hour maximum expiration
           const jti = crypto.randomUUID();
-          const secret = env.JWT_SECRET || 'crystalclean-jwt-secret-default-key';
+          const secret = env.JWT_SECRET!.trim();
           const sessionToken = await createJWT({ sub: admin.id, email: admin.email, name: admin.name, role: admin.role, jti }, secret);
 
           // Record session in D1
@@ -380,8 +402,8 @@ export default {
             token = cookieHeader?.match(/cc_admin_session=([^;]+)/)?.[1] || null;
           }
 
-          if (token) {
-            const secret = env.JWT_SECRET || 'crystalclean-jwt-secret-default-key';
+          if (token && env.JWT_SECRET && env.JWT_SECRET.trim()) {
+            const secret = env.JWT_SECRET.trim();
             const payload = await verifyJWT(token, secret);
             if (payload?.jti && env.DB) {
               await revokeSession(env.DB, String(payload.jti));
@@ -452,23 +474,30 @@ export default {
 
         // --- PUBLIC & ADMIN PRODUCTS ---
 
-        // GET /api/products (Public active only, Admin can view all)
+        // GET /api/products (Public active only, Admin can view drafts/all)
         if (url.pathname === '/api/products' && request.method === 'GET') {
           const categoryId = url.searchParams.get('category') || undefined;
           const search = url.searchParams.get('q') || undefined;
           const featuredOnly = url.searchParams.get('featured') === '1';
+          const wantsDrafts = url.searchParams.get('preview') === 'drafts' || url.searchParams.get('active_only') === '0';
 
           const admin = await authenticateAdmin(request, env);
-          const activeOnly = !admin || url.searchParams.get('active_only') === '1';
+          if (wantsDrafts && !admin) {
+            return errorResponse('Unauthorized: Administrative session required to preview drafts', 401);
+          }
 
+          const activeOnly = !admin || (url.searchParams.get('active_only') === '1');
           const products = await getProducts(env.DB, { categoryId, search, activeOnly, featuredOnly });
           return jsonResponse({ products });
         }
 
-        // GET /api/products/:id (Public)
+        // GET /api/products/:id (Public active only, Admin can view drafts)
         if (url.pathname.startsWith('/api/products/') && request.method === 'GET') {
           const id = url.pathname.replace('/api/products/', '');
-          const product = await getProductById(env.DB, id);
+          const admin = await authenticateAdmin(request, env);
+          const activeOnly = !admin;
+
+          const product = await getProductById(env.DB, id, activeOnly);
           if (!product) return errorResponse('Product not found', 404);
           return jsonResponse({ product });
         }
@@ -784,6 +813,25 @@ export default {
 
           const stats = await getAdminStats(env.DB);
           return jsonResponse({ stats });
+        }
+
+        // GET /api/admin/config-check (Admin - Auth Required, returns booleans ONLY, never secrets)
+        if (url.pathname === '/api/admin/config-check' && request.method === 'GET') {
+          const admin = await authenticateAdmin(request, env);
+          if (!admin) return errorResponse('Unauthorized', 401);
+
+          return jsonResponse({
+            success: true,
+            config: {
+              GOOGLE_CLIENT_ID: !!env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_ID.trim().length > 0,
+              GOOGLE_CLIENT_SECRET: !!env.GOOGLE_CLIENT_SECRET && env.GOOGLE_CLIENT_SECRET.trim().length > 0,
+              APP_BASE_URL: !!env.APP_BASE_URL && env.APP_BASE_URL.trim().length > 0,
+              JWT_SECRET: !!env.JWT_SECRET && env.JWT_SECRET.trim().length > 0,
+              ADMIN_EMAILS: !!env.ADMIN_EMAILS && env.ADMIN_EMAILS.trim().length > 0,
+              TURNSTILE_SECRET: !!env.TURNSTILE_SECRET && env.TURNSTILE_SECRET.trim().length > 0,
+              DB: !!env.DB,
+            },
+          });
         }
 
         // POST /api/upload (Admin - Auth & CSRF Required, Strict Magic Byte Validation)

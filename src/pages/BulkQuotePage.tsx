@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { Category } from '../types';
 import { AccessCodeModal } from '../components/common/AccessCodeModal';
+import { TurnstileWidget } from '../components/TurnstileWidget';
 
 export const BulkQuotePage: React.FC = () => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ export const BulkQuotePage: React.FC = () => {
   const [accessCode, setAccessCode] = useState('');
   const [customLogoRequired, setCustomLogoRequired] = useState(false);
   const [customBrandingNotes, setCustomBrandingNotes] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState('');
 
   // Access code check state
   const [checkingCode, setCheckingCode] = useState(false);
@@ -91,6 +93,12 @@ export const BulkQuotePage: React.FC = () => {
       return;
     }
 
+    const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
+    if (siteKey && !turnstileToken) {
+      setErrorMsg('Please complete the security verification challenge before submitting.');
+      return;
+    }
+
     setSubmitting(true);
 
     try {
@@ -112,6 +120,7 @@ export const BulkQuotePage: React.FC = () => {
         delivery_city: deliveryCity.trim(),
         expected_date: expectedDate || undefined,
         notes: combinedNotes,
+        turnstile_token: turnstileToken || undefined,
         items: selectedCategories.map((catName) => ({
           product_name: `Bulk Category Request: ${catName}${customLogoRequired ? ' (Logo Customization Required)' : ''}`,
           pack_size: estimatedQuantity,
@@ -416,6 +425,16 @@ export const BulkQuotePage: React.FC = () => {
             </div>
           )}
         </div>
+
+        {/* Cloudflare Turnstile Human Verification */}
+        <TurnstileWidget
+          onVerify={(token) => {
+            setTurnstileToken(token);
+            setErrorMsg(null);
+          }}
+          onExpire={() => setTurnstileToken('')}
+          onError={(err) => setErrorMsg(err)}
+        />
 
         {/* Submit */}
         <div>

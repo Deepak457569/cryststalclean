@@ -103,20 +103,19 @@ export async function verifyJWT(token: string, secret: string): Promise<Record<s
   }
 }
 
-// Check admin allowlist from environment variables (No hardcoded emails)
+// Check admin allowlist from environment variables (Fail-closed: strictly requires non-empty ADMIN_EMAILS)
 export function isEmailAllowed(email: string, env: Env): boolean {
-  if (!email) return false;
+  if (!email || !env.ADMIN_EMAILS) return false;
   const cleanEmail = email.trim().toLowerCase();
+  if (!cleanEmail) return false;
   
-  // Accept ADMIN_EMAILS or fallback to ADMIN_ALLOWLIST / INITIAL_ADMIN_EMAIL
-  const allowlistStr = env.ADMIN_EMAILS || env.ADMIN_ALLOWLIST || env.INITIAL_ADMIN_EMAIL || '';
-  const allowedEmails = allowlistStr
+  const allowedEmails = env.ADMIN_EMAILS
     .split(',')
     .map(e => e.trim().toLowerCase())
     .filter(Boolean);
 
   if (allowedEmails.length === 0) {
-    return false; // Deny by default if no allowlist is configured
+    return false; // Deny by default if ADMIN_EMAILS is empty or contains only whitespace/commas
   }
 
   return allowedEmails.includes(cleanEmail);
@@ -124,7 +123,10 @@ export function isEmailAllowed(email: string, env: Env): boolean {
 
 // Extract current authenticated admin user from request
 export async function authenticateAdmin(request: Request, env: Env): Promise<AdminUser | null> {
-  const secret = env.JWT_SECRET || 'crystalclean-jwt-secret-default-key';
+  if (!env.JWT_SECRET || !env.JWT_SECRET.trim()) {
+    return null;
+  }
+  const secret = env.JWT_SECRET.trim();
   
   // 1. Check Authorization Bearer header
   const authHeader = request.headers.get('Authorization');
@@ -154,16 +156,25 @@ export async function authenticateAdmin(request: Request, env: Env): Promise<Adm
     return null;
   }
 
-  // Check if session has been revoked in database
+  // Check if session exists and is active in database (strict server-side revocation)
   if (payload.jti && env.DB) {
     try {
-      const session = await env.DB.prepare('SELECT revoked, expires_at FROM sessions WHERE token_id = ?').bind(payload.jti).first<{ revoked: number; expires_at: string }>();
-      if (session) {
-        if (session.revoked === 1) return null;
-        if (session.expires_at && new Date(session.expires_at).getTime() < Date.now()) return null;
+      const session = await env.DB
+        .prepare('SELECT revoked, expires_at FROM sessions WHERE token_id = ?')
+        .bind(payload.jti)
+        .first<{ revoked: number; expires_at: string }>();
+
+      if (!session) {
+        return null; // Session record was purged or does not exist
+      }
+      if (session.revoked === 1) {
+        return null; // Session has been revoked (e.g. via logout or emergency revoke)
+      }
+      if (session.expires_at && new Date(session.expires_at).getTime() < Date.now()) {
+        return null; // Session expired
       }
     } catch {
-      // In case session table is momentarily unreachable
+      return null; // Fail closed if session check encounters error
     }
   }
 
