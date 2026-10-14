@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingBag, Key, Menu, X, Shield, PhoneCall, Eye } from 'lucide-react';
+import { ShoppingBag, Key, Menu, X, Shield, PhoneCall, Eye, FileText } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { AccessCodeModal } from '../common/AccessCodeModal';
@@ -56,15 +56,13 @@ export const Navbar: React.FC = () => {
               Official B2B Hospitality Amenities Supply Desk
             </p>
             <div className="flex items-center gap-4 text-[11px] tracking-wider">
-              <a
-                href="https://wa.me/919149953610"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-champagne-300 transition-colors flex items-center gap-1"
+              <Link
+                to="/quote"
+                className="hover:text-champagne-300 transition-colors flex items-center gap-1 text-champagne-400 font-semibold"
               >
-                <PhoneCall className="w-3 h-3 text-whatsapp-500" />
-                WhatsApp: +91 91499 53610
-              </a>
+                <FileText className="w-3 h-3 text-champagne-400" />
+                Request Bulk Quote
+              </Link>
               <span className="text-charcoal-800">|</span>
               <button
                 onClick={() => setCodeModalOpen(true)}
@@ -191,14 +189,14 @@ export const Navbar: React.FC = () => {
                 <Key className="w-4 h-4 text-champagne-600" />
                 Customer Access Code Status
               </button>
-              <a
-                href="https://wa.me/919149953610"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full py-2.5 text-xs font-semibold bg-whatsapp-600 text-white rounded-lg"
+              <Link
+                to="/quote"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-center gap-2 w-full py-2.5 text-xs font-semibold bg-charcoal-900 text-white rounded-lg"
               >
-                WhatsApp Hotline: +91 91499 53610
-              </a>
+                <FileText className="w-4 h-4 text-champagne-300" />
+                Request Bulk Quotation
+              </Link>
             </div>
           </div>
         )}

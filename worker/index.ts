@@ -731,31 +731,32 @@ export default {
             }
           }
 
-          // Field validation & max length bounds
+          // Field validation & max length bounds with graceful defaults for general contact inquiries
           const customer_name = (body.customer_name || '').trim();
-          const company_name = (body.company_name || '').trim();
+          const company_name = (body.company_name || 'Hospitality Client').trim();
           const contact_phone = (body.contact_phone || '').trim();
           const contact_email = (body.contact_email || '').trim();
-          const delivery_city = (body.delivery_city || '').trim();
+          const delivery_city = (body.delivery_city || 'Pan-India').trim();
           const notes = (body.notes || '').trim();
 
           if (!customer_name || customer_name.length > 100) return errorResponse('Valid customer name is required (max 100 characters)', 400);
           if (!company_name || company_name.length > 120) return errorResponse('Valid hotel/company name is required (max 120 characters)', 400);
           if (!contact_phone || contact_phone.length > 30) return errorResponse('Valid contact phone is required (max 30 characters)', 400);
           if (contact_email && contact_email.length > 100) return errorResponse('Contact email exceeds 100 characters', 400);
-          if (!delivery_city || delivery_city.length > 100) return errorResponse('Delivery city is required (max 100 characters)', 400);
+          if (delivery_city.length > 100) return errorResponse('Delivery city exceeds 100 characters', 400);
           if (notes.length > 1000) return errorResponse('Notes must not exceed 1000 characters', 400);
 
-          if (!body.items || !Array.isArray(body.items) || body.items.length === 0) {
-            return errorResponse('Inquiry must contain at least one item', 400);
-          }
-          if (body.items.length > 50) {
+          const rawItems = (body.items && Array.isArray(body.items) && body.items.length > 0)
+            ? body.items
+            : [{ product_name_snapshot: 'General Hospitality Procurement Inquiry', quantity: 1 }];
+
+          if (rawItems.length > 50) {
             return errorResponse('Maximum 50 items allowed per inquiry', 400);
           }
 
           // Validate items and confirm product existence
           const sanitizedItems = [];
-          for (const item of body.items) {
+          for (const item of rawItems) {
             if (!item.product_name_snapshot || !item.quantity || item.quantity <= 0) {
               return errorResponse('Each item must have a valid name and positive quantity', 400);
             }

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   ArrowRight, ShieldCheck, Sparkles, CheckCircle2, 
-  MessageCircle, Leaf, Award, PackageCheck, Layers, Key
+  MessageCircle, Leaf, Award, PackageCheck, Layers, Key, FileText, Send
 } from 'lucide-react';
 import { Product, Category } from '../types';
 import { useCart } from '../context/CartContext';
@@ -147,20 +147,19 @@ export const HomePage: React.FC = () => {
                 <ArrowRight className="w-4 h-4 text-champagne-400" />
               </Link>
               <Link
-                to="/bulk-quote"
+                to="/quote"
                 className="inline-flex items-center gap-2 px-5 py-3.5 bg-white hover:bg-cream-100 text-charcoal-900 font-medium rounded-xl text-sm transition-all border border-cream-300 shadow-sm"
               >
+                <FileText className="w-4 h-4 text-champagne-600" />
                 <span>Request Bulk Quotation</span>
               </Link>
-              <a
-                href="https://wa.me/919149953610"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-3.5 bg-whatsapp-600 hover:bg-whatsapp-700 text-white font-medium rounded-xl text-sm transition-all shadow-sm"
+              <Link
+                to="/contact"
+                className="inline-flex items-center gap-2 px-5 py-3.5 bg-charcoal-900 hover:bg-charcoal-800 text-white font-medium rounded-xl text-sm transition-all shadow-sm"
               >
-                <MessageCircle className="w-4 h-4 fill-white stroke-none" />
-                <span>WhatsApp Order Desk</span>
-              </a>
+                <Send className="w-4 h-4 text-champagne-300" />
+                <span>Contact Supply Desk</span>
+              </Link>
             </div>
           </div>
 
@@ -202,11 +201,11 @@ export const HomePage: React.FC = () => {
 
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 rounded-xl bg-cream-100 flex items-center justify-center text-champagne-600 flex-shrink-0">
-              <MessageCircle className="w-5 h-5 text-whatsapp-600" />
+              <Send className="w-5 h-5 text-champagne-600" />
             </div>
             <div>
-              <h4 className="font-serif font-bold text-charcoal-900 text-sm">WhatsApp Ordering</h4>
-              <p className="text-xs text-charcoal-800 mt-0.5">Quick quotations at +91 91499 53610.</p>
+              <h4 className="font-serif font-bold text-charcoal-900 text-sm">Direct Executive Desk</h4>
+              <p className="text-xs text-charcoal-800 mt-0.5">Quick inquiries logged directly to admin portal.</p>
             </div>
           </div>
         </div>
@@ -451,43 +450,42 @@ export const HomePage: React.FC = () => {
             </div>
 
             <div className="bg-charcoal-900 border border-charcoal-800 p-8 rounded-2xl space-y-4">
-              <div className="w-12 h-12 rounded-xl bg-whatsapp-600/20 border border-whatsapp-500/40 text-whatsapp-500 flex items-center justify-center font-serif text-xl font-bold">
+              <div className="w-12 h-12 rounded-xl bg-champagne-500/20 border border-champagne-500/40 text-champagne-400 flex items-center justify-center font-serif text-xl font-bold">
                 3
               </div>
-              <h3 className="font-serif text-xl font-bold text-white">Direct WhatsApp Handoff</h3>
+              <h3 className="font-serif text-xl font-bold text-white">Direct Executive Logging</h3>
               <p className="text-xs text-cream-300/80 leading-relaxed">
-                Get redirected to our official WhatsApp order desk (+91 91499 53610) with your prepared requirement list for personalized quotation and dispatch scheduling.
+                Your inquiry is directly registered into our executive management system with a tracking reference for instant quotation review and dispatch scheduling.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* WHATSAPP CALLOUT BANNER */}
+      {/* PROCUREMENT CALLOUT BANNER */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-gradient-to-r from-cream-100 via-white to-champagne-100 rounded-3xl p-8 sm:p-12 border border-champagne-300 shadow-luxury flex flex-col lg:flex-row items-center justify-between gap-8">
           <div className="space-y-3 max-w-xl text-left">
             <span className="text-xs uppercase tracking-wider font-semibold text-champagne-700">Need Custom Hotel Logo Printing?</span>
-            <h2 className="font-serif text-3xl font-bold text-charcoal-900">Talk Directly with our Amenities Specialist</h2>
+            <h2 className="font-serif text-3xl font-bold text-charcoal-900">Direct Consultation with Amenities Specialist</h2>
             <p className="text-sm text-charcoal-800 leading-relaxed">
-              We offer bespoke labeling, luxury fragrance tailoring, and volume contract supply for hotel properties across India. Connect with us on WhatsApp for rapid responses.
+              We offer bespoke labeling, luxury fragrance tailoring, and volume contract supply for hotel properties across India. Submit your requirements directly to our executive procurement desk.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
-            <a
-              href="https://wa.me/919149953610"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2.5 px-8 py-4 bg-whatsapp-600 hover:bg-whatsapp-700 text-white font-semibold rounded-xl text-sm transition-all shadow-lg shadow-whatsapp-600/20"
-            >
-              <MessageCircle className="w-5 h-5 fill-white stroke-none" />
-              <span>Connect on WhatsApp: +91 91499 53610</span>
-            </a>
             <Link
               to="/quote"
-              className="inline-flex items-center justify-center gap-2 px-6 py-4 bg-charcoal-900 hover:bg-charcoal-800 text-white font-semibold rounded-xl text-sm transition-all"
+              className="inline-flex items-center justify-center gap-2.5 px-8 py-4 bg-charcoal-900 hover:bg-charcoal-800 text-white font-semibold rounded-xl text-sm transition-all shadow-md"
             >
-              Request Bulk Quotation
+              <FileText className="w-4 h-4 text-champagne-300" />
+              <span>Request Bulk Quotation</span>
+            </Link>
+            <Link
+              to="/contact"
+              className="inline-flex items-center justify-center gap-2 px-6 py-4 bg-white border border-cream-300 hover:bg-cream-100 text-charcoal-900 font-semibold rounded-xl text-sm transition-all"
+            >
+              <Send className="w-4 h-4 text-champagne-600" />
+              <span>Contact Procurement Desk</span>
             </Link>
           </div>
         </div>

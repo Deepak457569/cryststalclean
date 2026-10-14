@@ -184,14 +184,12 @@ export const AboutPage: React.FC = () => {
           >
             Request Bulk Quotation
           </Link>
-          <a
-            href="https://wa.me/919149953610"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-6 py-3.5 bg-whatsapp-600 hover:bg-whatsapp-700 text-white font-medium rounded-xl text-sm transition-all"
+          <Link
+            to="/contact"
+            className="px-6 py-3.5 bg-white border border-cream-300 hover:bg-cream-100 text-charcoal-900 font-medium rounded-xl text-sm transition-all"
           >
-            WhatsApp Hotline
-          </a>
+            Contact Procurement Desk
+          </Link>
         </div>
       </section>
     </div>

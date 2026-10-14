@@ -1,31 +1,70 @@
 import React, { useState } from 'react';
-import { MessageCircle, Phone, Mail, MapPin, Clock, ShieldCheck, Key, CheckCircle2 } from 'lucide-react';
+import { Mail, MapPin, Clock, ShieldCheck, Key, CheckCircle2, Send, Loader2, AlertCircle } from 'lucide-react';
 
 export const ContactPage: React.FC = () => {
   const [formData, setFormData] = useState({
     name: '',
     hotel: '',
     phone: '',
+    email: '',
+    city: '',
     message: '',
   });
-  const [sent, setSent] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [submittedRef, setSubmittedRef] = useState<string | null>(null);
 
-  const handleQuickWhatsApp = (e: React.FormEvent) => {
+  const handleSubmitInquiry = async (e: React.FormEvent) => {
     e.preventDefault();
-    const msg = [
-      `Hello CryststalClean,`,
-      ``,
-      `I am reaching out regarding hotel amenities procurement.`,
-      `Name: ${formData.name}`,
-      `Hotel/Establishment: ${formData.hotel}`,
-      `Phone: ${formData.phone}`,
-      `Inquiry: ${formData.message}`,
-      ``,
-      `Thank you.`
-    ].join('\n');
+    if (!formData.name.trim() || !formData.phone.trim()) return;
 
-    window.open(`https://wa.me/919149953610?text=${encodeURIComponent(msg)}`, '_blank');
-    setSent(true);
+    setErrorMsg(null);
+    setIsSubmitting(true);
+
+    try {
+      const payload = {
+        inquiry_type: 'bulk_quote',
+        customer_name: formData.name.trim(),
+        company_name: formData.hotel.trim() || 'Hospitality Client',
+        contact_phone: formData.phone.trim(),
+        contact_email: formData.email.trim() || undefined,
+        delivery_city: formData.city.trim() || 'Pan-India',
+        notes: formData.message.trim(),
+        items: [
+          {
+            product_name_snapshot: 'Direct Contact / Procurement Inquiry',
+            quantity: 1,
+            variant_snapshot: formData.hotel.trim() ? `Property: ${formData.hotel.trim()}` : undefined,
+          },
+        ],
+      };
+
+      const res = await fetch('/api/inquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setErrorMsg(data.error || 'Failed to submit inquiry. Please check your details.');
+        return;
+      }
+
+      setSubmittedRef(data.reference || 'CC-ORD-RECEIVED');
+      setFormData({
+        name: '',
+        hotel: '',
+        phone: '',
+        email: '',
+        city: '',
+        message: '',
+      });
+    } catch {
+      setErrorMsg('Network connection error. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -43,25 +82,20 @@ export const ContactPage: React.FC = () => {
         <div className="lg:col-span-5 space-y-6">
           <div className="bg-white rounded-3xl p-8 border border-cream-200 shadow-sm space-y-6">
             <h2 className="font-serif font-bold text-xl text-charcoal-900 border-b border-cream-200 pb-3">
-              Direct Contact Channels
+              Direct Procurement Channels
             </h2>
 
             <div className="space-y-4">
-              <a
-                href="https://wa.me/919149953610"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-start gap-4 p-4 rounded-2xl bg-whatsapp-600/10 border border-whatsapp-500/30 hover:bg-whatsapp-600/20 transition-colors group"
-              >
-                <div className="w-10 h-10 rounded-xl bg-whatsapp-600 flex items-center justify-center text-white flex-shrink-0">
-                  <MessageCircle className="w-5 h-5 fill-white stroke-none" />
+              <div className="flex items-start gap-4 p-4 rounded-2xl bg-cream-50 border border-cream-200">
+                <div className="w-10 h-10 rounded-xl bg-charcoal-900 flex items-center justify-center text-champagne-300 flex-shrink-0 shadow-sm">
+                  <ShieldCheck className="w-5 h-5 text-champagne-300 stroke-[2.2]" />
                 </div>
                 <div>
-                  <span className="text-xs font-bold text-whatsapp-700 uppercase tracking-wider block">Official WhatsApp Desk</span>
-                  <span className="font-semibold text-charcoal-950 text-base block mt-0.5">+91 91499 53610</span>
-                  <span className="text-xs text-charcoal-800 block mt-0.5">Instant quotes, sample dispatch &amp; ordering</span>
+                  <span className="text-xs font-bold text-charcoal-800 uppercase tracking-wider block">Official Executive Portal</span>
+                  <span className="font-semibold text-charcoal-950 text-sm block mt-0.5">Direct Procurement Desk</span>
+                  <span className="text-xs text-charcoal-800 block mt-0.5">Inquiries are logged directly into our executive management system with guaranteed same-day response.</span>
                 </div>
-              </a>
+              </div>
 
               <div className="flex items-start gap-4 p-4 rounded-2xl bg-cream-50 border border-cream-200">
                 <div className="w-10 h-10 rounded-xl bg-charcoal-900 flex items-center justify-center text-champagne-300 flex-shrink-0 shadow-sm">
@@ -100,98 +134,150 @@ export const ContactPage: React.FC = () => {
                   <span className="font-semibold text-charcoal-950 text-sm block mt-0.5">
                     Monday to Saturday: 9:00 AM – 7:30 PM IST
                   </span>
-                  <span className="text-xs text-charcoal-800 block mt-0.5">Emergency Sunday hotel dispatches on request</span>
+                  <span className="text-xs text-charcoal-800 block mt-0.5">Emergency hotel dispatch scheduling on request</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Right: Quick Inquiry Form */}
+        {/* Right: Direct Inquiry Form */}
         <div className="lg:col-span-7">
           <form
-            onSubmit={handleQuickWhatsApp}
+            onSubmit={handleSubmitInquiry}
             className="bg-white rounded-3xl p-8 sm:p-10 border border-cream-200 shadow-luxury space-y-5"
           >
             <div className="flex items-center gap-2">
               <Key className="w-5 h-5 text-champagne-600" />
               <h2 className="font-serif font-bold text-2xl text-charcoal-900">
-                Send a Direct Message or Request Access Code
+                Direct Inquiry &amp; Access Code Request
               </h2>
             </div>
             <p className="text-xs text-charcoal-800">
-              Submit your property details below to instantly connect with our specialist on WhatsApp with a pre-filled request.
+              Submit your property details below. Your request will be directly registered in our executive system and our procurement desk will contact you.
             </p>
 
-            {sent && (
-              <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                <span>Redirecting to WhatsApp (+91 91499 53610)...</span>
+            {submittedRef && (
+              <div className="p-5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 space-y-2 animate-fade-in">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+                  <span className="font-bold text-sm">Inquiry Logged Successfully!</span>
+                </div>
+                <p className="text-xs text-emerald-800">
+                  Your reference number is <strong className="font-mono text-emerald-950 font-bold">{submittedRef}</strong>. Our hospitality procurement manager has received your submission in our administrative portal and will reach out to you promptly.
+                </p>
               </div>
             )}
 
+            {errorMsg && (
+              <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0" />
+                <span>{errorMsg}</span>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-charcoal-800 uppercase tracking-wider mb-1">
+                  Your Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="e.g. Anand Mehra"
+                  className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-charcoal-800 uppercase tracking-wider mb-1">
+                  Hotel / Establishment *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.hotel}
+                  onChange={(e) => setFormData({ ...formData, hotel: e.target.value })}
+                  placeholder="e.g. Royal Orchid Suites"
+                  className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-charcoal-800 uppercase tracking-wider mb-1">
+                  Phone Number *
+                </label>
+                <input
+                  type="tel"
+                  required
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  placeholder="e.g. +91 98765 43210"
+                  className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-charcoal-800 uppercase tracking-wider mb-1">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  placeholder="e.g. purchase@hotel.com"
+                  className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
+                />
+              </div>
+            </div>
+
             <div>
               <label className="block text-xs font-semibold text-charcoal-800 uppercase tracking-wider mb-1">
-                Your Name *
+                City / Location
               </label>
               <input
                 type="text"
-                required
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="e.g. Anand Mehra"
+                value={formData.city}
+                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                placeholder="e.g. Jaipur, Bengaluru, New Delhi"
                 className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
               />
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-charcoal-800 uppercase tracking-wider mb-1">
-                Hotel / Establishment Name *
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.hotel}
-                onChange={(e) => setFormData({ ...formData, hotel: e.target.value })}
-                placeholder="e.g. Royal Orchid Hotel &amp; Suites"
-                className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-charcoal-800 uppercase tracking-wider mb-1">
-                Contact Phone / WhatsApp *
-              </label>
-              <input
-                type="tel"
-                required
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                placeholder="+91 98765 43210"
-                className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-charcoal-800 uppercase tracking-wider mb-1">
-                Your Inquiry or Access Code Request
+                Your Inquiry or Requirement Details *
               </label>
               <textarea
                 rows={3}
                 required
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                placeholder="Please state your room count, amenity requirements, or request for an authorized Customer Access Code..."
-                className="w-full px-4 py-2 bg-cream-50 border border-cream-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-champagne-500"
+                placeholder="Please state your room count, amenity requirements, custom branding needs, or request for an authorized Customer Access Code..."
+                className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full py-4 px-6 bg-whatsapp-600 hover:bg-whatsapp-700 text-white font-bold rounded-2xl text-sm transition-all shadow-lg shadow-whatsapp-600/20 flex items-center justify-center gap-2.5"
+              disabled={isSubmitting}
+              className="w-full py-4 px-6 bg-charcoal-900 hover:bg-charcoal-800 disabled:opacity-50 text-white font-bold rounded-2xl text-sm transition-all shadow-md flex items-center justify-center gap-2.5"
             >
-              <MessageCircle className="w-5 h-5 fill-white stroke-none" />
-              <span>Connect on WhatsApp Now</span>
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>Submitting to Executive Desk...</span>
+                </>
+              ) : (
+                <>
+                  <Send className="w-4 h-4 text-champagne-300" />
+                  <span>Submit Inquiry to Procurement Desk</span>
+                </>
+              )}
             </button>
           </form>
         </div>

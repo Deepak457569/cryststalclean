@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Building2, MessageCircle, ShieldCheck, Key, Loader2, 
-  AlertCircle, CheckCircle, Sparkles 
+  AlertCircle, CheckCircle, Sparkles, Send
 } from 'lucide-react';
 import { Category } from '../types';
 import { AccessCodeModal } from '../components/common/AccessCodeModal';
@@ -141,11 +141,6 @@ export const BulkQuotePage: React.FC = () => {
         return;
       }
 
-      // Open WhatsApp handoff
-      if (data.whatsapp_url) {
-        window.open(data.whatsapp_url, '_blank');
-      }
-
       // Redirect to confirmation
       navigate(`/confirmation/${data.reference}`, {
         state: {
@@ -231,7 +226,7 @@ export const BulkQuotePage: React.FC = () => {
                 required
                 value={contactPhone}
                 onChange={(e) => setContactPhone(e.target.value)}
-                placeholder="+91 91499 53610"
+                placeholder="e.g. +91 98765 43210"
                 className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
               />
             </div>
@@ -441,22 +436,22 @@ export const BulkQuotePage: React.FC = () => {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full py-4 px-6 bg-whatsapp-600 hover:bg-whatsapp-700 text-white font-bold rounded-2xl text-base transition-all shadow-lg shadow-whatsapp-600/20 flex items-center justify-center gap-3 disabled:opacity-50"
+            className="w-full py-4 px-6 bg-charcoal-900 hover:bg-charcoal-800 text-white font-bold rounded-2xl text-base transition-all shadow-md flex items-center justify-center gap-3 disabled:opacity-50"
           >
             {submitting ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                <span>Recording Quotation &amp; Preparing WhatsApp...</span>
+                <span>Recording Quotation &amp; Registering Inquiry...</span>
               </>
             ) : (
               <>
-                <MessageCircle className="w-5 h-5 fill-white stroke-none" />
-                <span>Submit Quotation Request &amp; Handoff to WhatsApp</span>
+                <Send className="w-4 h-4 text-champagne-300" />
+                <span>Submit Quotation Request to Procurement Desk</span>
               </>
             )}
           </button>
           <p className="text-xs text-charcoal-800 text-center mt-3 leading-relaxed">
-            Upon submission, your quotation parameters are saved in our database with a unique inquiry reference (e.g. CC-ORD-XXXX) and you are connected directly to our executive on WhatsApp (+91 91499 53610).
+            Upon submission, your quotation parameters are saved directly to our procurement database and logged in the executive admin portal with a unique tracking reference (e.g. CC-ORD-XXXX).
           </p>
         </div>
       </form>

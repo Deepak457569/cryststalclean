@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Key, ShieldCheck, MessageCircle, X, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Key, ShieldCheck, MessageCircle, X, CheckCircle, AlertCircle, Loader2, Send } from 'lucide-react';
 
 interface AccessCodeModalProps {
   isOpen: boolean;
@@ -7,6 +8,7 @@ interface AccessCodeModalProps {
 }
 
 export const AccessCodeModal: React.FC<AccessCodeModalProps> = ({ isOpen, onClose }) => {
+  const navigate = useNavigate();
   const [testCode, setTestCode] = useState('');
   const [verifying, setVerifying] = useState(false);
   const [verificationResult, setVerificationResult] = useState<{
@@ -39,10 +41,6 @@ export const AccessCodeModal: React.FC<AccessCodeModalProps> = ({ isOpen, onClos
       setVerifying(false);
     }
   };
-
-  const whatsappRequestUrl = `https://wa.me/919149953610?text=${encodeURIComponent(
-    'Hello CryststalClean,\n\nI represent a hotel/hospitality establishment and would like to request an authorized Customer Access Code to submit product requirements and receive wholesale pricing.\n\nHotel/Establishment Name: \nContact Person: \nCity: \n\nThank you.'
-  )}`;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-charcoal-950/70 backdrop-blur-sm animate-fade-in">
@@ -134,15 +132,16 @@ export const AccessCodeModal: React.FC<AccessCodeModalProps> = ({ isOpen, onClos
 
         {/* Action Button to Request Code */}
         <div className="border-t border-cream-200 pt-4 flex flex-col sm:flex-row gap-3">
-          <a
-            href={whatsappRequestUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 bg-whatsapp-600 hover:bg-whatsapp-700 text-white font-medium rounded-xl text-sm transition-all shadow-md shadow-whatsapp-600/20"
+          <button
+            onClick={() => {
+              onClose();
+              navigate('/contact');
+            }}
+            className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 bg-charcoal-900 hover:bg-charcoal-800 text-white font-medium rounded-xl text-sm transition-all shadow-md"
           >
-            <MessageCircle className="w-4 h-4" />
-            Request Code on WhatsApp
-          </a>
+            <Send className="w-4 h-4 text-champagne-300" />
+            Request Access Code Online
+          </button>
           <button
             onClick={onClose}
             className="px-5 py-3 bg-cream-100 hover:bg-cream-200 text-charcoal-800 rounded-xl text-sm font-medium transition-colors"

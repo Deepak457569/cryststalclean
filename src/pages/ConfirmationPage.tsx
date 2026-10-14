@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useLocation, Link } from 'react-router-dom';
-import { CheckCircle2, MessageCircle, Copy, Check, ArrowRight, ShieldCheck, PhoneCall } from 'lucide-react';
+import { CheckCircle2, Copy, Check, ArrowRight, ShieldCheck } from 'lucide-react';
 
 export const ConfirmationPage: React.FC = () => {
   const { reference } = useParams<{ reference: string }>();
@@ -8,9 +8,6 @@ export const ConfirmationPage: React.FC = () => {
   const state = (location.state as any) || {};
 
   const displayRef = reference || state.reference || 'CC-ORD-CONFIRMED';
-  const whatsappUrl = state.whatsappUrl || `https://wa.me/919149953610?text=${encodeURIComponent(
-    `Hello CryststalClean, following up on inquiry reference: ${displayRef}`
-  )}`;
 
   const [copied, setCopied] = useState(false);
 
@@ -35,7 +32,7 @@ export const ConfirmationPage: React.FC = () => {
           Thank You for Your Requirements
         </h1>
         <p className="text-sm text-charcoal-800 max-w-lg mx-auto leading-relaxed">
-          Your product requirements have been saved to the CryststalClean procurement system. Please connect with our order desk via WhatsApp to finalize pricing, bulk tiers, and shipping schedules.
+          Your product requirements have been recorded directly in the CryststalClean executive procurement system. Our management team has received your submission and will reach out with personalized bulk quotations and dispatch timelines.
         </p>
       </div>
 
@@ -67,20 +64,14 @@ export const ConfirmationPage: React.FC = () => {
         )}
       </div>
 
-      {/* WhatsApp Handoff CTA */}
-      <div className="space-y-4 max-w-lg mx-auto">
-        <a
-          href={whatsappUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-full inline-flex items-center justify-center gap-3 px-8 py-4 bg-whatsapp-600 hover:bg-whatsapp-700 text-white font-bold rounded-2xl text-base transition-all shadow-lg shadow-whatsapp-600/20"
-        >
-          <MessageCircle className="w-5 h-5 fill-white stroke-none" />
-          <span>Open WhatsApp With Prepared Inquiry</span>
-        </a>
-
+      {/* Executive Portal Status Notice */}
+      <div className="bg-cream-100/80 rounded-2xl p-6 border border-cream-300 max-w-lg mx-auto text-center space-y-2">
+        <div className="flex items-center justify-center gap-2 text-charcoal-900 font-semibold text-sm">
+          <ShieldCheck className="w-5 h-5 text-emerald-600" />
+          <span>Received at CryststalClean Executive Desk</span>
+        </div>
         <p className="text-xs text-charcoal-800 leading-relaxed">
-          If your WhatsApp window did not open automatically, click the button above to start your direct chat with our procurement team (+91 91499 53610).
+          Our procurement team has received your inquiry in our admin portal. An executive will contact you directly on your phone or email shortly.
         </p>
       </div>
 

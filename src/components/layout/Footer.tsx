@@ -1,31 +1,29 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShieldCheck, MessageCircle, Phone, Mail, MapPin, Key } from 'lucide-react';
+import { ShieldCheck, MessageCircle, Phone, Mail, MapPin, Key, FileText, Send } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
     <footer className="bg-charcoal-950 text-cream-100 border-t border-charcoal-800 transition-colors">
-      {/* WhatsApp Trade Hotline Banner */}
+      {/* Direct Order Desk Banner */}
       <div className="bg-charcoal-900 border-b border-charcoal-800 py-6 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-whatsapp-600/20 border border-whatsapp-500/40 flex items-center justify-center text-whatsapp-500">
-              <MessageCircle className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-full bg-champagne-500/20 border border-champagne-500/40 flex items-center justify-center text-champagne-400">
+              <FileText className="w-5 h-5" />
             </div>
             <div>
-              <p className="font-serif font-bold text-white text-base">Direct Hospitality Order Desk</p>
+              <p className="font-serif font-bold text-white text-base">Direct Hospitality Procurement Desk</p>
               <p className="text-xs text-cream-300">Quick inquiries, availability checks &amp; customized branding quotations.</p>
             </div>
           </div>
-          <a
-            href="https://wa.me/919149953610"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-2.5 bg-whatsapp-600 hover:bg-whatsapp-700 text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-whatsapp-600/10"
+          <Link
+            to="/quote"
+            className="inline-flex items-center gap-2 px-6 py-2.5 bg-champagne-500 hover:bg-champagne-400 text-charcoal-950 rounded-xl text-sm font-semibold transition-all shadow-md"
           >
-            <MessageCircle className="w-4 h-4 fill-white stroke-none" />
-            <span>Chat on WhatsApp: +91 91499 53610</span>
-          </a>
+            <Send className="w-4 h-4 text-charcoal-950" />
+            <span>Request Bulk Quotation</span>
+          </Link>
         </div>
       </div>
 
@@ -102,8 +100,8 @@ export const Footer: React.FC = () => {
                 <span>Hospitality Supply Center, Sector 18, Gurugram &amp; New Delhi, India</span>
               </li>
               <li className="flex items-center gap-2.5">
-                <Phone className="w-4 h-4 text-whatsapp-500 flex-shrink-0" />
-                <a href="tel:+919149953610" className="hover:text-white">+91 91499 53610</a>
+                <Send className="w-4 h-4 text-champagne-400 flex-shrink-0" />
+                <Link to="/contact" className="hover:text-white">Online Procurement Contact Desk</Link>
               </li>
               <li className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-champagne-500 flex-shrink-0" />

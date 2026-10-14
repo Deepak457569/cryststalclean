@@ -33,9 +33,9 @@ export const PrivacyPage: React.FC = () => {
         </section>
 
         <section className="space-y-2">
-          <h2 className="font-serif text-xl font-bold text-charcoal-900">4. Third-Party Communications &amp; WhatsApp</h2>
+          <h2 className="font-serif text-xl font-bold text-charcoal-900">4. Direct Procurement Communications</h2>
           <p>
-            When submitting requirements, clients are handed off to WhatsApp (owned by Meta Platforms, Inc.) to communicate with our order desk (+91 91499 53610). Conversations conducted on WhatsApp are subject to WhatsApp's respective privacy policy and end-to-end encryption standards.
+            When submitting requirements, client procurement requests and contact details are logged directly into our secure executive database for internal fulfillment, quotation calculation, and direct order communication.
           </p>
         </section>
 

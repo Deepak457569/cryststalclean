@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   Trash2, ShoppingBag, ArrowRight, ShieldCheck, Key, 
-  MessageCircle, Loader2, AlertCircle, CheckCircle, Plus, Minus
+  MessageCircle, Loader2, AlertCircle, CheckCircle, Plus, Minus, Send
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { AccessCodeModal } from '../components/common/AccessCodeModal';
@@ -123,11 +123,6 @@ export const CartPage: React.FC = () => {
 
       // Inquiry successfully recorded in database!
       clearCart();
-
-      // Attempt to open WhatsApp handoff link
-      if (data.whatsapp_url) {
-        window.open(data.whatsapp_url, '_blank');
-      }
 
       // Navigate to confirmation page
       navigate(`/confirmation/${data.reference}`, {
@@ -476,22 +471,22 @@ export const CartPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-4 px-6 bg-whatsapp-600 hover:bg-whatsapp-700 text-white font-bold rounded-xl text-sm transition-all shadow-lg shadow-whatsapp-600/20 flex items-center justify-center gap-2.5 disabled:opacity-50"
+                className="w-full py-4 px-6 bg-charcoal-900 hover:bg-charcoal-800 text-white font-bold rounded-xl text-sm transition-all shadow-md flex items-center justify-center gap-2.5 disabled:opacity-50"
               >
                 {submitting ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>Verifying Code &amp; Generating Reference...</span>
+                    <span>Verifying Code &amp; Registering Inquiry...</span>
                   </>
                 ) : (
                   <>
-                    <MessageCircle className="w-5 h-5 fill-white stroke-none" />
-                    <span>Send Requirements on WhatsApp</span>
+                    <Send className="w-4 h-4 text-champagne-300" />
+                    <span>Submit Order to Procurement Desk</span>
                   </>
                 )}
               </button>
               <p className="text-[11px] text-charcoal-800 text-center mt-2.5 leading-relaxed">
-                Requirements are saved to our database with a unique reference number before redirecting to WhatsApp (+91 91499 53610).
+                Requirements are saved directly to our database and logged in the executive admin portal with a unique tracking reference.
               </p>
             </div>
           </div>
