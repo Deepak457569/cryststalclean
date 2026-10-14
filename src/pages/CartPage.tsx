@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   Trash2, ShoppingBag, ArrowRight, ShieldCheck, Key, 
-  MessageCircle, Loader2, AlertCircle, CheckCircle, Plus, Minus, Send
+  MessageCircle, Loader2, AlertCircle, CheckCircle, Plus, Minus, Send, Check
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { AccessCodeModal } from '../components/common/AccessCodeModal';
@@ -162,18 +162,50 @@ export const CartPage: React.FC = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
-      {/* Page Title */}
-      <div>
-        <span className="text-xs uppercase tracking-widest font-semibold text-champagne-700">Procurement Review</span>
-        <h1 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal-900 mt-1">Requirements Cart</h1>
-        <p className="text-sm text-charcoal-800 mt-1">
-          Review your selected items and provide delivery details. Zero prices are displayed; our wholesale desk will prepare a quotation based on your exact volume.
-        </p>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+      {/* Page Title & Procurement Step Progress */}
+      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-cream-200 shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-cream-200">
+          <div>
+            <span className="text-xs uppercase tracking-widest font-semibold text-champagne-700">Procurement Review</span>
+            <h1 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal-900 mt-1">Requirements Cart</h1>
+            <p className="text-sm text-charcoal-800 mt-1 leading-relaxed">
+              Review your selected amenities, configure hotel delivery specifications, and submit for direct quotation.
+            </p>
+          </div>
+          <div className="text-xs text-charcoal-800 bg-cream-50 border border-cream-300 rounded-xl px-4 py-2.5">
+            <span className="font-semibold text-charcoal-900">{items.length} items</span> ({itemCount} total units)
+          </div>
+        </div>
+
+        {/* 3-Step visual progress helper */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-6">
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-champagne-100/60 border border-champagne-300">
+            <span className="w-6 h-6 rounded-full bg-champagne-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">1</span>
+            <div className="text-xs">
+              <span className="font-bold text-charcoal-900 block">Review Items</span>
+              <span className="text-charcoal-800">Adjust unit quantities</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-cream-50 border border-cream-200">
+            <span className="w-6 h-6 rounded-full bg-charcoal-800 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">2</span>
+            <div className="text-xs">
+              <span className="font-bold text-charcoal-900 block">Property Details</span>
+              <span className="text-charcoal-800">Hotel &amp; delivery city</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-cream-50 border border-cream-200">
+            <span className="w-6 h-6 rounded-full bg-charcoal-800 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">3</span>
+            <div className="text-xs">
+              <span className="font-bold text-charcoal-900 block">Access Code &amp; Quote</span>
+              <span className="text-charcoal-800">Direct portal &amp; WhatsApp log</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Main Form & Items Grid */}
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* Left Column: Cart Items List */}
         <div className="lg:col-span-7 space-y-6">
@@ -185,7 +217,7 @@ export const CartPage: React.FC = () => {
               <button
                 type="button"
                 onClick={clearCart}
-                className="text-xs text-rose-600 hover:text-rose-800 font-medium"
+                className="text-xs text-rose-600 hover:text-rose-800 font-medium transition-colors"
               >
                 Clear Cart
               </button>
@@ -220,11 +252,11 @@ export const CartPage: React.FC = () => {
                   </div>
 
                   {/* Quantity Stepper */}
-                  <div className="flex items-center border border-cream-300 rounded-lg bg-cream-50 flex-shrink-0">
+                  <div className="flex items-center border border-cream-300 rounded-lg bg-cream-50 flex-shrink-0 overflow-hidden shadow-inner">
                     <button
                       type="button"
                       onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 50))}
-                      className="p-1.5 text-charcoal-800 hover:text-charcoal-950"
+                      className="px-2.5 py-1.5 text-charcoal-800 hover:text-charcoal-950 hover:bg-cream-200 active:scale-95 transition-all"
                       aria-label="Decrease quantity"
                     >
                       <Minus className="w-3.5 h-3.5" />
@@ -234,12 +266,12 @@ export const CartPage: React.FC = () => {
                       min="1"
                       value={item.quantity}
                       onChange={(e) => updateQuantity(item.id, Math.max(1, parseInt(e.target.value) || 1))}
-                      className="w-14 text-center text-xs font-semibold bg-transparent py-1 border-x border-cream-300 focus:outline-none"
+                      className="w-14 text-center text-xs font-semibold bg-transparent py-1.5 border-x border-cream-300 focus:outline-none"
                     />
                     <button
                       type="button"
                       onClick={() => updateQuantity(item.id, item.quantity + 50)}
-                      className="p-1.5 text-charcoal-800 hover:text-charcoal-950"
+                      className="px-2.5 py-1.5 text-charcoal-800 hover:text-charcoal-950 hover:bg-cream-200 active:scale-95 transition-all"
                       aria-label="Increase quantity"
                     >
                       <Plus className="w-3.5 h-3.5" />
@@ -252,6 +284,7 @@ export const CartPage: React.FC = () => {
                     onClick={() => removeFromCart(item.id)}
                     className="p-2 text-charcoal-800 hover:text-rose-600 transition-colors flex-shrink-0"
                     title="Remove item"
+                    aria-label="Remove item"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -260,16 +293,27 @@ export const CartPage: React.FC = () => {
             </div>
 
             <div className="pt-4 border-t border-cream-200 flex justify-between items-center text-xs text-charcoal-800">
-              <Link to="/products" className="text-champagne-700 font-semibold hover:underline">
-                &larr; Add more items to requirements
+              <Link to="/products" className="text-champagne-700 font-semibold hover:underline inline-flex items-center gap-1">
+                <span>&larr; Add more products</span>
               </Link>
               <span>{items.length} distinct item types</span>
             </div>
           </div>
+
+          {/* Wholesale notice */}
+          <div className="p-4 rounded-xl bg-cream-50 border border-cream-200 text-xs text-charcoal-800 flex items-start gap-3">
+            <ShieldCheck className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold text-charcoal-900">Wholesale Volume Pricing</p>
+              <p className="mt-0.5 leading-relaxed">
+                Direct quotation with customized branding, bulk tier discounts, and freight timeline will be generated upon submission.
+              </p>
+            </div>
+          </div>
         </div>
 
-        {/* Right Column: Hotel Details & Verified Access Code Submission */}
-        <div className="lg:col-span-5 space-y-6">
+        {/* Right Column: Hotel Details & Verified Access Code Submission (Sticky on desktop) */}
+        <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-24">
           <div className="bg-white rounded-2xl border border-cream-200 p-6 md:p-8 shadow-luxury space-y-5">
             <h2 className="font-serif font-bold text-xl text-charcoal-900 pb-2 border-b border-cream-200">
               Procurement &amp; Dispatch Details
@@ -292,7 +336,7 @@ export const CartPage: React.FC = () => {
                 required
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
-                placeholder="e.g. The Oberoi Grand / Boutique Suites"
+                placeholder="e.g. The Grand Hotel &amp; Suites"
                 className="w-full px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium"
               />
             </div>
@@ -360,7 +404,7 @@ export const CartPage: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-semibold text-charcoal-800 uppercase tracking-wider mb-1">
-                  Expected Date
+                  Expected Delivery Date
                 </label>
                 <input
                   type="date"
@@ -395,7 +439,7 @@ export const CartPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setCodeModalOpen(true)}
-                  className="text-[11px] text-champagne-800 hover:text-charcoal-950 font-semibold underline"
+                  className="text-[11px] text-champagne-800 hover:text-charcoal-950 font-semibold underline transition-colors"
                 >
                   Need a code?
                 </button>
@@ -416,13 +460,13 @@ export const CartPage: React.FC = () => {
                     }
                   }}
                   placeholder="Enter code (e.g. CC-HOTEL-2026)"
-                  className="flex-1 px-4 py-2 bg-white border border-champagne-300 rounded-lg text-sm font-mono uppercase focus:outline-none focus:ring-2 focus:ring-champagne-500"
+                  className="flex-1 px-4 py-2.5 bg-white border border-champagne-300 rounded-lg text-sm font-mono uppercase focus:outline-none focus:ring-2 focus:ring-champagne-500"
                 />
                 <button
                   type="button"
                   onClick={() => handleVerifyCode(accessCode)}
                   disabled={checkingCode || !accessCode.trim()}
-                  className="px-3 py-2 bg-charcoal-900 hover:bg-charcoal-800 text-white rounded-lg text-xs font-medium"
+                  className="px-4 py-2.5 bg-charcoal-900 hover:bg-charcoal-800 text-white rounded-lg text-xs font-medium transition-colors"
                 >
                   {checkingCode ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Verify'}
                 </button>
@@ -448,7 +492,7 @@ export const CartPage: React.FC = () => {
                       <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" />
                       <div>
                         <p className="font-semibold">Invalid Code</p>
-                        <p>{codeVerification.message || 'Please contact CryststalClean for an active access code.'}</p>
+                        <p>{codeVerification.message || 'Please verify code spelling or request one.'}</p>
                       </div>
                     </>
                   )}
@@ -456,47 +500,39 @@ export const CartPage: React.FC = () => {
               )}
             </div>
 
-            {/* Cloudflare Turnstile Human Verification */}
-            {/* Cloudflare Turnstile Human Verification (only if configured) */}
-            {Boolean(import.meta.env.VITE_TURNSTILE_SITE_KEY) && (
-              <TurnstileWidget
-                onVerify={(token) => {
-                  setTurnstileToken(token);
-                  setErrorMsg(null);
-                }}
-                onExpire={() => setTurnstileToken('')}
-                onError={(err) => setErrorMsg(err)}
-              />
-            )}
-
-            {/* Submission CTA with WhatsApp Handoff */}
-            <div className="pt-2">
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full py-4 px-6 bg-charcoal-900 hover:bg-charcoal-800 text-white font-bold rounded-xl text-sm transition-all shadow-md flex items-center justify-center gap-2.5 disabled:opacity-50"
-              >
-                {submitting ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>Verifying Code &amp; Registering Inquiry...</span>
-                  </>
-                ) : (
-                  <>
-                    <Send className="w-4 h-4 text-champagne-300" />
-                    <span>Submit Order to Procurement Desk</span>
-                  </>
-                )}
-              </button>
-              <p className="text-[11px] text-charcoal-800 text-center mt-2.5 leading-relaxed">
-                Requirements are saved directly to our database and logged in the executive admin portal with a unique tracking reference.
-              </p>
+            {/* Turnstile Captcha */}
+            <div>
+              <TurnstileWidget onVerify={(token) => setTurnstileToken(token)} />
             </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={submitting}
+              className="w-full py-4 px-6 bg-charcoal-900 hover:bg-charcoal-800 text-white font-semibold rounded-xl text-sm transition-all shadow-luxury hover:shadow-luxury-hover flex items-center justify-center gap-2.5 disabled:opacity-50 hover:-translate-y-0.5 active:translate-y-0"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin text-champagne-400" />
+                  <span>Recording Requirements...</span>
+                </>
+              ) : (
+                <>
+                  <Send className="w-4 h-4 text-champagne-400" />
+                  <span>Submit Requirements for Quotation</span>
+                </>
+              )}
+            </button>
+
+            <p className="text-[11px] text-charcoal-800/80 text-center leading-relaxed">
+              Upon submission, your reference number is generated instantly and forwarded to our executive desk for volume quotation.
+            </p>
           </div>
         </div>
+
       </form>
 
-      {/* Modal */}
+      {/* Access Code Modal */}
       <AccessCodeModal isOpen={codeModalOpen} onClose={() => setCodeModalOpen(false)} />
     </div>
   );
