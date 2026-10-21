@@ -18,7 +18,7 @@ database_id = "2acab671-cf07-429f-bb04-dbf3f2ad7ae9"
 [vars]
 ENVIRONMENT = "production"
 BUSINESS_WHATSAPP = "919149953610"
-APP_BASE_URL = "https://cryststalclean.crystalclean457-a60.workers.dev"
+APP_BASE_URL = "https://cryststalclean.com"
 GOOGLE_CLIENT_ID = "450276115943-0269d1np0jjvk0avev7hagdik4s309jh.apps.googleusercontent.com"
 ADMIN_PASSCODE = "CrystalClean@Admin2026!"
 

@@ -73,6 +73,12 @@ export const CartPage: React.FC = () => {
       return;
     }
 
+    const cleanPhone = contactPhone.replace(/\D/g, '');
+    if (cleanPhone.length !== 10) {
+      setErrorMsg('Please enter a valid 10-digit mobile number.');
+      return;
+    }
+
     if (!accessCode.trim()) {
       setErrorMsg('A valid customer access code is required to submit requirements.');
       return;
@@ -362,17 +368,29 @@ export const CartPage: React.FC = () => {
             {/* Phone & Email */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <label className="block text-xs font-semibold text-charcoal-800 uppercase tracking-wider mb-1">
-                  Contact Phone (WhatsApp) *
-                </label>
+                <div className="flex justify-between items-center mb-1">
+                  <label className="text-xs font-semibold text-charcoal-800 uppercase tracking-wider">
+                    Contact Phone (WhatsApp) *
+                  </label>
+                  <span className="text-[11px] text-charcoal-600 font-mono">
+                    {contactPhone ? `${contactPhone.length}/10 digits` : '10 digits'}
+                  </span>
+                </div>
                 <input
                   type="tel"
                   required
+                  maxLength={10}
+                  pattern="[0-9]{10}"
                   value={contactPhone}
-                  onChange={(e) => setContactPhone(e.target.value)}
-                  placeholder="+91 98765 43210"
-                  className="w-full px-3.5 sm:px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-medium transition-colors"
+                  onChange={(e) => setContactPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                  placeholder="e.g. 9876543210"
+                  className="w-full px-3.5 sm:px-4 py-2.5 bg-cream-50 border border-cream-300 rounded-xl text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne-500 font-mono font-medium transition-colors"
                 />
+                {contactPhone && contactPhone.length !== 10 && (
+                  <p className="text-[11px] text-amber-700 mt-1">
+                    Mobile number must be exactly 10 digits
+                  </p>
+                )}
               </div>
 
               <div>

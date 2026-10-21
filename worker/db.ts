@@ -251,7 +251,7 @@ export async function deleteProduct(db: D1Database, id: string): Promise<boolean
 
 // --- Access Codes (Hardened with SHA-256 Hashes) ---
 export async function getAccessCodes(db: D1Database): Promise<AccessCode[]> {
-  const result = await db.prepare('SELECT id, client_name, contact_name, contact_phone, max_uses, used_count, expires_at, status, created_by, created_at, updated_at FROM access_codes ORDER BY created_at DESC').all<AccessCode>();
+  const result = await db.prepare('SELECT id, code, client_name, contact_name, contact_phone, max_uses, used_count, expires_at, status, created_by, created_at, updated_at FROM access_codes ORDER BY created_at DESC').all<AccessCode>();
   return result.results || [];
 }
 
@@ -260,9 +260,8 @@ export async function createAccessCode(
   data: Partial<AccessCode>
 ): Promise<{ access_code: AccessCode; plaintext_code: string }> {
   const id = `code_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
-  const plaintextCode = generateSecureAccessCode();
+  const plaintextCode = (data.code && data.code.trim()) ? data.code.trim().toUpperCase() : generateSecureAccessCode();
   const codeHash = await sha256Hex(plaintextCode);
-  const maskedDisplay = `${plaintextCode.substring(0, 7)}****-****`;
 
   await db.prepare(`
     INSERT INTO access_codes (
@@ -270,7 +269,7 @@ export async function createAccessCode(
     ) VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?)
   `).bind(
     id,
-    maskedDisplay,
+    plaintextCode,
     codeHash,
     data.client_name,
     data.contact_name || null,

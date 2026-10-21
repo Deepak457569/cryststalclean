@@ -4,7 +4,7 @@ import {
   LayoutDashboard, ShoppingCart, Package, FolderTree, Key, 
   Settings, LogOut, Search, Plus, Filter, MessageCircle, 
   CheckCircle2, Clock, AlertTriangle, ChevronRight, Eye, 
-  Trash2, Edit, X, RefreshCw, UserCheck, Shield, Loader2
+  Trash2, Edit, X, RefreshCw, UserCheck, Shield, Loader2, Copy
 } from 'lucide-react';
 import { 
   Inquiry, Product, Category, AccessCode, OrderStatus, 
@@ -307,6 +307,13 @@ export const AdminDashboardPage: React.FC = () => {
   // Save Access Code
   const handleSaveAccessCode = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (newCodeData.contact_phone) {
+      const cleanPhone = newCodeData.contact_phone.replace(/\D/g, '');
+      if (cleanPhone.length !== 10) {
+        alert('Registered contact mobile number must be exactly 10 digits.');
+        return;
+      }
+    }
     try {
       const res = await authFetch('/api/access-codes', {
         method: 'POST',
@@ -1115,7 +1122,25 @@ export const AdminDashboardPage: React.FC = () => {
                       return (
                         <tr key={code.id} className="hover:bg-cream-50 transition-colors">
                           <td className="py-3.5 px-4 font-mono font-bold text-sm text-charcoal-900">
-                            {code.code}
+                            <div className="flex items-center gap-2">
+                              <span className="bg-cream-100 px-2 py-0.5 rounded border border-cream-200">
+                                {code.code || '—'}
+                              </span>
+                              {code.code && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigator.clipboard.writeText(code.code);
+                                    alert(`Copied access code "${code.code}" to clipboard!`);
+                                  }}
+                                  title="Copy Access Code"
+                                  className="p-1 hover:bg-cream-200 rounded text-charcoal-600 hover:text-charcoal-900 transition-colors"
+                                >
+                                  <Copy className="w-3.5 h-3.5" />
+                                </button>
+                              )}
+                            </div>
                           </td>
                           <td className="py-3.5 px-4 font-semibold text-charcoal-900">
                             {code.client_name}
@@ -1734,16 +1759,31 @@ export const AdminDashboardPage: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-charcoal-800 uppercase mb-1">
-                Registered Contact Phone
-              </label>
+              <div className="flex justify-between items-center mb-1">
+                <label className="text-xs font-semibold text-charcoal-800 uppercase">
+                  Registered Contact Phone
+                </label>
+                <span className="text-[11px] text-charcoal-600 font-mono">
+                  {newCodeData.contact_phone ? `${newCodeData.contact_phone.length}/10 digits` : '10 digits'}
+                </span>
+              </div>
               <input
                 type="tel"
+                maxLength={10}
+                pattern="[0-9]{10}"
                 value={newCodeData.contact_phone}
-                onChange={(e) => setNewCodeData({ ...newCodeData, contact_phone: e.target.value })}
-                placeholder="+91 98765 43210"
-                className="w-full px-3 py-2 bg-cream-50 border border-cream-300 rounded-lg text-xs"
+                onChange={(e) => {
+                  const cleaned = e.target.value.replace(/\D/g, '').slice(0, 10);
+                  setNewCodeData({ ...newCodeData, contact_phone: cleaned });
+                }}
+                placeholder="e.g. 9876543210"
+                className="w-full px-3 py-2 bg-cream-50 border border-cream-300 rounded-lg text-xs font-mono"
               />
+              {newCodeData.contact_phone && newCodeData.contact_phone.length !== 10 && (
+                <p className="text-[11px] text-amber-700 mt-1">
+                  Mobile number must be exactly 10 digits
+                </p>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-3">
