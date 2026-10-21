@@ -1773,8 +1773,13 @@ export const AdminDashboardPage: React.FC = () => {
                 pattern="[0-9]{10}"
                 value={newCodeData.contact_phone}
                 onChange={(e) => {
-                  const cleaned = e.target.value.replace(/\D/g, '').slice(0, 10);
-                  setNewCodeData({ ...newCodeData, contact_phone: cleaned });
+                  let cleaned = e.target.value.replace(/\D/g, '');
+                  if (cleaned.startsWith('91') && cleaned.length > 10) {
+                    cleaned = cleaned.slice(2);
+                  } else if (cleaned.startsWith('0') && cleaned.length > 10) {
+                    cleaned = cleaned.slice(1);
+                  }
+                  setNewCodeData({ ...newCodeData, contact_phone: cleaned.slice(0, 10) });
                 }}
                 placeholder="e.g. 9876543210"
                 className="w-full px-3 py-2 bg-cream-50 border border-cream-300 rounded-lg text-xs font-mono"

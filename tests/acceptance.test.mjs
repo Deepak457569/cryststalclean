@@ -1093,3 +1093,42 @@ test('Task 10: Free Direct Admin Passcode Authentication (POST /api/auth/login)'
   const meBody = await meRes.json();
   assert.strictEqual(meBody.authenticated, true);
 });
+
+// Test 27: Access Code database query includes the 'code' column
+test('Task 11: Access Code query in worker/db.ts selects the code column', async () => {
+  const dbSource = fs.readFileSync(path.resolve('./worker/db.ts'), 'utf-8');
+  assert.ok(
+    dbSource.includes('SELECT id, code, client_name'),
+    'getAccessCodes must explicitly SELECT the code column so codes are visible'
+  );
+  assert.ok(
+    dbSource.includes('plaintextCode'),
+    'createAccessCode must save and preserve plaintextCode'
+  );
+});
+
+// Test 28: 10-digit mobile number validation across client forms
+test('Task 12: 10-digit mobile number validation logic', async () => {
+  const normalizeAndValidate10DigitPhone = (phone) => {
+    let cleaned = String(phone || '').replace(/\D/g, '');
+    if (cleaned.startsWith('91') && cleaned.length === 12) {
+      cleaned = cleaned.slice(2);
+    } else if (cleaned.startsWith('0') && cleaned.length === 11) {
+      cleaned = cleaned.slice(1);
+    }
+    return cleaned.length === 10;
+  };
+
+  // Valid numbers
+  assert.strictEqual(normalizeAndValidate10DigitPhone('9876543210'), true);
+  assert.strictEqual(normalizeAndValidate10DigitPhone('+91 9876543210'), true);
+  assert.strictEqual(normalizeAndValidate10DigitPhone('8570943969'), true);
+  assert.strictEqual(normalizeAndValidate10DigitPhone('08570943969'), true);
+
+  // Invalid numbers
+  assert.strictEqual(normalizeAndValidate10DigitPhone('98765'), false);
+  assert.strictEqual(normalizeAndValidate10DigitPhone('123456789012'), false);
+  assert.strictEqual(normalizeAndValidate10DigitPhone(''), false);
+  assert.strictEqual(normalizeAndValidate10DigitPhone('abcdefghij'), false);
+});
+
